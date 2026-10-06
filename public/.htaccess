@@ -1,3 +1,6 @@
+# The site starts at index.php (some hosts list index.html first).
+DirectoryIndex index.php
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

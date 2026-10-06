@@ -2,6 +2,7 @@
 
 use App\Services\Commercial\QuotationService;
 use App\Services\Maintenance\MaintenanceReminders;
+use App\Support\BackgroundTasks;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -15,14 +16,16 @@ Artisan::command('nebo:maintenance-reminders', function (MaintenanceReminders $r
     $this->info("Maintenance reminders: {$sent['overdue']} overdue, {$sent['due_soon']} due soon.");
 })->purpose('Notify maintenance managers about scheduled maintenance that is due');
 
-Schedule::command('nebo:maintenance-reminders')->dailyAt('07:00')->timezone('Africa/Lagos');
-
 Artisan::command('nebo:expire-quotations', function (QuotationService $quotes) {
     $this->info($quotes->expireOverdue().' quotation(s) expired.');
 })->purpose('Mark sent quotations past their validity date as expired');
 
-Schedule::command('nebo:expire-quotations')->dailyAt('00:15')->timezone('Africa/Lagos');
+Artisan::command('nebo:tick', function (BackgroundTasks $tasks) {
+    $ran = $tasks->run(50);
+    $this->info($ran ? 'Ran: '.implode(', ', $ran).'.' : 'Nothing due.');
+})->purpose('Run due daily jobs (once per day each) and send queued emails');
 
-// Shared hosting can't keep a queue worker running: the scheduler drains the
-// queue (customer emails, notifications) every minute instead (D67).
-Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')->everyMinute()->withoutOverlapping()->runInBackground();
+// Shared hosting can't keep a queue worker running: one cron line running
+// schedule:run calls the tick every minute (D67). The daily jobs inside it
+// run once per Lagos day, so the web fallback (NEBO_WEB_CRON) never doubles them (D69).
+Schedule::command('nebo:tick')->everyMinute()->withoutOverlapping();

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Support\Permissions\PermissionCatalog;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AuthorizationTest extends TestCase
@@ -13,10 +14,11 @@ class AuthorizationTest extends TestCase
     {
         $admin = $this->superAdmin();
         $other = User::factory()->create();
+        $role = Role::query()->value('id'); // ids aren't 1 on MySQL once earlier tests rolled back
 
         foreach ([
             '/app', '/app/users', '/app/users/create', "/app/users/{$other->id}/edit",
-            '/app/roles', '/app/roles/create', '/app/roles/1/edit',
+            '/app/roles', '/app/roles/create', "/app/roles/{$role}/edit",
             '/app/audit', '/app/settings', '/app/notifications', '/app/profile', '/app/search?q=ad',
         ] as $url) {
             $this->actingAs($admin)->get($url)->assertOk();

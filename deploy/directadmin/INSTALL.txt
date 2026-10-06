@@ -1,0 +1,86 @@
+NEBO STAGE — INSTALLING ON DIRECTADMIN (NO TERMINAL NEEDED)
+===========================================================
+
+This zip contains two folders:
+
+  nebo/          the application. Browsers can never reach it.
+  public_html/   the website itself.
+
+You need: PHP 8.3 or 8.4, a MySQL/MariaDB database, and ideally an SSL
+certificate (https) for the domain.
+
+
+1. CHOOSE PHP 8.3 OR 8.4
+   DirectAdmin → Domain Setup → your domain → PHP version (on some servers:
+   "Select PHP Version"). Pick 8.3 or 8.4.
+
+2. CREATE A DATABASE
+   DirectAdmin → Account Manager → MySQL Management → Create new database.
+   Write down the database name, user name and password it shows you
+   (DirectAdmin adds your username as a prefix, e.g. "myuser_nebo").
+
+3. UPLOAD AND EXTRACT
+   DirectAdmin → File Manager → open  domains/YOURDOMAIN.COM/
+   - Delete the default  public_html/index.html  (if it is there).
+   - Upload this zip into  domains/YOURDOMAIN.COM/  and choose "Extract".
+     You should then see  nebo/  and  public_html/  side by side.
+   (The zip's public_html merges into the existing one.)
+
+4. RUN THE INSTALLER
+   Open  https://YOURDOMAIN.COM  in a browser. It goes to the installer:
+   - The server check must be all green.
+   - Enter the database details from step 2, your administrator account,
+     and the email settings (an email account you created in DirectAdmin →
+     E-mail Manager works: server mail.YOURDOMAIN.COM, port 587 or 465,
+     the full email address and its password).
+   - Tick "Load demo data for testing" to try the system with a year of
+     sample productions. Leave it unticked for the real, live install.
+   Keep the page open while it works (1–5 minutes). It ends at the
+   sign-in page.
+
+5. SIGN IN
+   Use the administrator email and password you entered.
+   With demo data, every role also has a demo account, password "password":
+     admin@nebostage.test, operations@, inventory@, production@,
+     finance@, technician@, crew@, viewer@nebostage.test
+   Then open Settings → General and enter the real company details.
+   Settings → System shows a readiness check.
+
+
+SUBDOMAIN OR ANOTHER FOLDER
+   For a subdomain (e.g. ops.yourdomain.com) DirectAdmin's web folder is
+   usually  domains/YOURDOMAIN.COM/public_html/ops . Put the contents of the
+   zip's public_html in that folder, put nebo/ in  domains/YOURDOMAIN.COM/ ,
+   and edit the line  $appPath = __DIR__.'/../nebo';  at the top of
+   index.php to  $appPath = __DIR__.'/../../nebo';
+
+
+UPDATING TO A NEW VERSION
+   1. Back up the database (DirectAdmin → Backups, or phpMyAdmin → Export).
+   2. Extract the new zip in the same place, overwriting files. Your
+      settings (nebo/.env), uploads and data are kept.
+   3. Sign in and open Settings → System → Apply update.
+
+
+REINSTALLING (e.g. live install after testing with demo data)
+   1. Empty the database (phpMyAdmin → select all tables → Drop), or create
+      a new one.
+   2. Delete  nebo/storage/app/installed.lock  and  nebo/.env
+   3. Open the site again; the installer starts over.
+
+
+BACKGROUND JOBS
+   No cron job is needed: emails and the daily jobs (expiring old quotes,
+   maintenance reminders) run in the background after page visits.
+   Optional, for exact timing: DirectAdmin → Advanced Features → Cron Jobs,
+   every minute (* * * * *):
+     /usr/local/bin/php /home/USERNAME/domains/YOURDOMAIN.COM/nebo/artisan schedule:run >/dev/null 2>&1
+
+
+TROUBLESHOOTING
+   - "500 error" or blank page: check  nebo/storage/logs/  for the newest
+     log file. Make sure the folders  nebo/storage  and  nebo/bootstrap/cache
+     are writable (permission 755).
+   - The PWA "Install app" option needs https.
+   - Emails not arriving: Settings → System shows queued and failed emails;
+     check the SMTP details in  nebo/.env  (MAIL_ lines).

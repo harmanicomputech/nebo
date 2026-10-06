@@ -3,6 +3,7 @@
 <html lang="en" class="h-full bg-white">
 <head>
     @include('partials.head', ['title' => $title])
+    @stack('head')
     <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="h-full bg-white">

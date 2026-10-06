@@ -37,6 +37,9 @@ class PermissionCatalog
                 'settings.view' => 'View system settings',
                 'settings.manage' => 'Change system settings and option lists',
             ]],
+            'system' => ['label' => 'System', 'permissions' => [
+                'system.manage' => 'See system health and apply updates after uploading a new version',
+            ]],
             'audit' => ['label' => 'Audit log', 'permissions' => [
                 'audit.view' => 'View the audit log',
             ]],

@@ -47,6 +47,14 @@ return [
         'password' => env('NEBO_ADMIN_PASSWORD'),
     ],
 
+    // Browser installer for hosts without a terminal (D69). The upload package
+    // turns it on; it switches itself off by writing storage/app/installed.lock.
+    'installer' => (bool) env('NEBO_INSTALLER', false),
+
+    // Run the daily jobs and drain the queue after page responses, for hosts
+    // without cron (D69). A cron running `schedule:run` works with it or without it.
+    'web_cron' => (bool) env('NEBO_WEB_CRON', false),
+
     'auth' => [
         'max_login_attempts' => 5, // per email + IP per minute
     ],

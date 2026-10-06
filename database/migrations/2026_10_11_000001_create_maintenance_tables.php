@@ -55,7 +55,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['asset_id', 'status']);
-            $table->index(['status', 'scheduled_starts_at', 'scheduled_ends_at']);
+            $table->index(['status', 'scheduled_starts_at', 'scheduled_ends_at'], 'maintenance_records_status_window_index'); // default name exceeds MySQL's 64 characters
         });
 
         // Condition history: every inspection and every condition change made

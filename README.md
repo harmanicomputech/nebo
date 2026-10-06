@@ -44,7 +44,9 @@ The demo data (all marked `[Demo]` or with `DEMO-` SKUs) covers a full year of b
 
 ## Production setup
 
-Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short:
+**Shared hosting with no terminal (DirectAdmin, cPanel):** run `scripts/build-directadmin.sh` to build `nebo-stage-directadmin.zip`, extract it next to `public_html`, open the site and complete the browser installer (optionally with demo data). Updates are applied from **Settings → System**. Step-by-step: `deploy/directadmin/INSTALL.txt`.
+
+Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). With a terminal:
 
 ```bash
 php artisan migrate --force
@@ -63,9 +65,11 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 | `php artisan nebo:create-admin` | Create or promote a Super Administrator |
 | `php artisan db:seed --class=ReferenceDataSeeder` | Sync permissions and add missing roles, statuses, services and option lists |
 | `php scripts/generate-icons.php` | Rebuild the PWA icons, favicon and email logos from `resources/brand/nebo-stage.png` |
-| `php artisan nebo:maintenance-reminders` | Send the maintenance-due digest. Run it once a day from cron (or run `php artisan schedule:run` from cron at least hourly; it is scheduled for 07:00 Lagos) |
+| `php artisan nebo:maintenance-reminders` | Send the maintenance-due digest now (normally run once a day from 07:00 Lagos by `nebo:tick`) |
 | `php artisan nebo:check-production` | Pre-flight check for a live server; exits non-zero if anything unsafe or missing |
-| `php artisan nebo:expire-quotations` | Mark sent quotations past their validity date as expired (scheduled daily at 00:15 Lagos) |
+| `scripts/build-directadmin.sh` | Build the no-terminal upload zip with the browser installer |
+| `php artisan nebo:tick` | Send queued emails and run due daily jobs (cron calls it every minute through `schedule:run`) |
+| `php artisan nebo:expire-quotations` | Mark sent quotations past their validity date as expired (normally run once a day from 00:15 Lagos by `nebo:tick`) |
 
 ## What works today (all phases)
 
@@ -84,5 +88,6 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Reports with charts and CSV export: utilisation, events and pipeline, maintenance, logistics, inventory and commercial; dashboard trends.
 - Hardening: strict security headers and CSP, an automated access audit of every route, WCAG AA colour contrast, tuned queries and a production readiness check.
 - Every tap shows feedback and can't be submitted twice.
+- Installs on shared hosting with no terminal: an upload zip, a browser installer with optional demo data, updates from Settings → System, and background jobs without cron.
 
 The sidebar lists every module still to come under **Coming next**. Those modules are not active yet; see the roadmap.

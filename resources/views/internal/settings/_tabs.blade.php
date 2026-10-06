@@ -10,4 +10,8 @@
     @can('settings.view')
     <a href="{{ route('app.settings.options') }}" @if ($onOptions) aria-current="page" @endif @class(['-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold', 'border-brand-600 text-ink-900' => $onOptions, 'border-transparent text-ink-500 hover:text-ink-900' => ! $onOptions])>Option lists</a>
     @endcan
+    @can('system.manage')
+        @php $onSystem = request()->routeIs('app.settings.system*'); @endphp
+        <a href="{{ route('app.settings.system') }}" @if ($onSystem) aria-current="page" @endif @class(['-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold', 'border-brand-600 text-ink-900' => $onSystem, 'border-transparent text-ink-500 hover:text-ink-900' => ! $onSystem])>System</a>
+    @endcan
 </nav>

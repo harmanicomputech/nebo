@@ -142,9 +142,31 @@ class HistoryDemoSeeder extends Seeder
         private MaintenanceService $maintenance,
     ) {}
 
+    /** Productions seeded per batch (the web installer runs one batch per request). */
+    public const BATCH_SIZE = 3;
+
+    public static function batches(): int
+    {
+        return (int) ceil(count(self::PAST) / self::BATCH_SIZE) + 1;
+    }
+
     public function run(): void
     {
-        if (Event::where('name', 'like', '[Demo] Horizon Telecom Dealers Conference')->exists()) {
+        for ($batch = 0; $batch < self::batches(); $batch++) {
+            $this->runBatch($batch);
+        }
+    }
+
+    /**
+     * One slice of the history: a batch of past productions, or (the last
+     * batch) the lost deals, the live pipeline and customer details. Each
+     * batch skips itself when its data already exists, so it can be retried.
+     */
+    public function runBatch(int $batch): void
+    {
+        $productions = array_slice(self::PAST, $batch * self::BATCH_SIZE, self::BATCH_SIZE, true);
+        $marker = $productions ? '[Demo] '.end($productions)[1] : '[Demo] Horizon Telecom End of Year Party';
+        if (Event::where('name', $marker)->exists()) {
             return;
         }
 
@@ -158,22 +180,27 @@ class HistoryDemoSeeder extends Seeder
         $this->base = trim($this->warehouse->name.($this->warehouse->address ? ', '.$this->warehouse->address : ''));
         $this->staff = Staff::query()->get()->keyBy('role')->all();
         $this->fleet = LogisticsDemoSeeder::fleet($this->staff['driver'] ?? null, $this->warehouse);
+        $this->seq = $batch * self::BATCH_SIZE;
         auth()->login($this->admin);
 
         try {
-            foreach (self::PAST as $i => [$ago, $name, $type, $customer, $venue, $days, $size, $services, $damage]) {
+            foreach ($productions as $i => [$ago, $name, $type, $customer, $venue, $days, $size, $services, $damage]) {
                 $this->production($now->subDays($ago)->setTime(18, 0), $name, $type, $customer, $venue, $days, $size, $services, $damage, $i);
             }
 
-            $this->lostDeals($now);
-            $this->pipeline($now);
+            if (! $productions) {
+                $this->lostDeals($now);
+                $this->pipeline($now);
+            }
         } finally {
             Carbon::setTestNow();
             CarbonImmutable::setTestNow();
         }
 
-        foreach (self::CUSTOMERS as [$company, $contact, $email, , $type, $city, $state]) {
-            Customer::where('email', $email)->update(['type' => $type, 'city' => $city, 'state' => $state]);
+        if (! $productions) {
+            foreach (self::CUSTOMERS as [$company, $contact, $email, , $type, $city, $state]) {
+                Customer::where('email', $email)->update(['type' => $type, 'city' => $city, 'state' => $state]);
+            }
         }
 
         auth()->logout();

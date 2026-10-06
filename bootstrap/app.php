@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\RedirectToInstaller;
+use App\Http\Middleware\RunBackgroundTasks;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [SecurityHeaders::class]);
+        $middleware->web(prepend: [RedirectToInstaller::class], append: [SecurityHeaders::class, RunBackgroundTasks::class]);
         $middleware->alias([
             'active' => EnsureUserIsActive::class,
         ]);

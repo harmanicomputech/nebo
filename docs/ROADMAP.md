@@ -174,3 +174,9 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - Crawled in Chromium at 1440px and 390px: all 68 pages load, no horizontal scroll, no JS errors, no serious or critical accessibility violations.
 
 All ten phases of the brief are now delivered.
+
+## After phase 10: demo data and no-terminal hosting
+
+- **Demo data:** `HistoryDemoSeeder` adds a year of business through the real services (24 completed productions with quotes, load lists, trips, check-ins, damage and repairs; lost deals; a live pipeline), so every report and screen has data. It runs in batches so the web installer can load it.
+- **DirectAdmin / cPanel package (D69):** upload zip, browser installer, Settings → System for health checks and updates, background jobs without cron (`nebo:tick`, `NEBO_WEB_CRON`).
+- **MySQL verified:** full migrate, seed, rollback and the whole test suite run on MariaDB 10.11. This found an index name longer than MySQL's 64-character limit (now named explicitly) and a test that assumed auto-increment ids restart.

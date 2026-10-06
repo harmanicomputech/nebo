@@ -38,11 +38,13 @@ use App\Http\Controllers\Internal\RoleController;
 use App\Http\Controllers\Internal\SearchController;
 use App\Http\Controllers\Internal\ServiceController;
 use App\Http\Controllers\Internal\SettingsController;
+use App\Http\Controllers\Internal\SystemController;
 use App\Http\Controllers\Internal\UserController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\QuotationController as PublicQuotationController;
 use App\Http\Controllers\Public\RequestController;
 use App\Http\Controllers\Public\TrackingController;
+use App\Http\Controllers\Setup\InstallController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,6 +61,13 @@ Route::post('/track', [TrackingController::class, 'lookup'])->middleware('thrott
 Route::get('/track/{token}', [TrackingController::class, 'show'])->middleware('throttle:60,1')->name('requests.track');
 Route::get('/q/{token}', [PublicQuotationController::class, 'show'])->middleware('throttle:60,1')->name('quotations.public');
 Route::post('/q/{token}', [PublicQuotationController::class, 'respond'])->middleware('throttle:10,1')->name('quotations.public.respond');
+
+/*
+| Web installer (D69): 404 unless NEBO_INSTALLER is on and the install isn't finished.
+*/
+Route::get('/install', [InstallController::class, 'show'])->name('install.show');
+Route::post('/install', [InstallController::class, 'store'])->middleware('throttle:10,1')->name('install.store');
+Route::get('/install/run', [InstallController::class, 'run'])->name('install.run');
 
 /*
 | Authentication
@@ -108,6 +117,10 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
         Route::get('/audit/{auditLog}', [AuditLogController::class, 'show'])->name('audit.show');
     });
 
+    Route::middleware('can:system.manage')->group(function () {
+        Route::get('/settings/system', [SystemController::class, 'show'])->name('settings.system');
+        Route::post('/settings/system/update', [SystemController::class, 'update'])->name('settings.system.update');
+    });
     Route::get('/settings', [SettingsController::class, 'edit'])->middleware('can:settings.view')->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->middleware('can:settings.manage')->name('settings.update');
     Route::middleware('can:services.manage')->group(function () {
