@@ -4,9 +4,10 @@
  | Security rule: pages and data are NEVER cached. Internal screens show live
  | operational data and devices get shared or lost, so HTML navigations always
  | go to the network; if the network is down the offline page is shown.
- | Only static, fingerprinted assets (/build), icons and the offline page are cached.
+ | Only static, fingerprinted assets (/build), icons, the brand logo files and
+ | the offline page are cached. Bump VERSION whenever icons or logos change.
  */
-const VERSION = 'nebo-v1';
+const VERSION = 'nebo-v2'; // v2: new brand logo and icons
 const STATIC_CACHE = `${VERSION}-static`;
 const OFFLINE_URL = '/offline';
 const MAX_ASSETS = 80;
@@ -14,14 +15,14 @@ const MAX_ASSETS = 80;
 self.addEventListener('install', (event) => {
     event.waitUntil((async () => {
         const cache = await caches.open(STATIC_CACHE);
-        await cache.addAll(['/icons/icon-192.png', '/favicon.svg', '/manifest.webmanifest']);
+        await cache.addAll(['/icons/icon-192.png', '/favicon.svg', '/manifest.webmanifest', '/images/brand/nebo-stage-white.svg']);
 
         // Cache the offline page and the CSS/JS/fonts it needs to render.
         const res = await fetch(OFFLINE_URL, { cache: 'no-store', credentials: 'omit' });
         if (res.ok) {
             const html = await res.clone().text();
             await cache.put(OFFLINE_URL, res);
-            const assets = [...html.matchAll(/(?:href|src)="([^"]*\/build\/[^"]+)"/g)].map((m) => new URL(m[1], self.location.origin).pathname);
+            const assets = [...html.matchAll(/(?:href|src)="([^"]*\/(?:build|images\/brand)\/[^"]+)"/g)].map((m) => new URL(m[1], self.location.origin).pathname);
             await Promise.all(assets.map((a) => cache.add(a).catch(() => {})));
         }
         await self.skipWaiting();
@@ -36,7 +37,7 @@ self.addEventListener('activate', (event) => {
     })());
 });
 
-const isStatic = (url) => url.pathname.startsWith('/build/') || url.pathname.startsWith('/icons/') || url.pathname === '/favicon.svg';
+const isStatic = (url) => url.pathname.startsWith('/build/') || url.pathname.startsWith('/icons/') || url.pathname.startsWith('/images/brand/') || url.pathname === '/favicon.svg';
 
 async function trim(cache) {
     const keys = await cache.keys();

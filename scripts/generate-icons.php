@@ -1,65 +1,75 @@
 <?php
 
 /*
- | Generates the PWA / favicon PNGs from the Nebo Stage mark (same geometry as
- | resources/views/components/ui/logo.blade.php). Run: php scripts/generate-icons.php
+ | Generates the brand images from the logo artwork in resources/brand/nebo-stage.png
+ | (black ink on transparent, 784×212; the mark is columns 0–319).
+ |
+ |   public/icons/*.png          PWA, Apple touch and favicon icons: white mark on ink (#1A1A1A)
+ |   public/favicon.ico          32 px icon for old browsers
+ |   public/images/brand/*.png   full logo in ink and in white, for emails (no SVG support)
+ |
+ | The SVG logos in public/images/brand and public/favicon.svg are traced from the
+ | same artwork. Run after changing the artwork: php scripts/generate-icons.php
  */
 
-function nebo_icon(int $size, bool $maskable, string $path): void
+const INK = [0x1A, 0x1A, 0x1A];
+const MARK_WIDTH = 320;
+
+/** The artwork recoloured to one colour, keeping its alpha (anti-aliased edges). */
+function nebo_recolour(GdImage $src, array $rgb): GdImage
+{
+    $w = imagesx($src);
+    $h = imagesy($src);
+    $out = imagecreatetruecolor($w, $h);
+    imagesavealpha($out, true);
+    imagealphablending($out, false);
+    for ($y = 0; $y < $h; $y++) {
+        for ($x = 0; $x < $w; $x++) {
+            $alpha = (imagecolorat($src, $x, $y) >> 24) & 0x7F;
+            imagesetpixel($out, $x, $y, imagecolorallocatealpha($out, $rgb[0], $rgb[1], $rgb[2], $alpha));
+        }
+    }
+
+    return $out;
+}
+
+function nebo_crop(GdImage $src, int $width): GdImage
+{
+    $out = imagecreatetruecolor($width, imagesy($src));
+    imagesavealpha($out, true);
+    imagealphablending($out, false);
+    imagecopy($out, $src, 0, 0, 0, 0, $width, imagesy($src));
+
+    return $out;
+}
+
+/** Square icon: white mark centred on ink, rounded unless maskable (full bleed, 80% safe zone). */
+function nebo_icon(GdImage $mark, int $size, bool $maskable, string $path): void
 {
     $scale = 4;
     $s = $size * $scale;
     $img = imagecreatetruecolor($s, $s);
     imagesavealpha($img, true);
+    imagealphablending($img, false);
+    imagefill($img, 0, 0, imagecolorallocatealpha($img, 0, 0, 0, 127));
     imagealphablending($img, true);
-
-    $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
-    $red = imagecolorallocate($img, 0xCC, 0x1F, 0x1F);
-    $white = imagecolorallocate($img, 255, 255, 255);
-    $faint = imagecolorallocatealpha($img, 255, 255, 255, 57);
-    imagefill($img, 0, 0, $transparent);
+    $ink = imagecolorallocate($img, ...INK);
 
     if ($maskable) {
-        // Full-bleed background; the mark sits inside the 80% safe zone.
-        imagefilledrectangle($img, 0, 0, $s, $s, $red);
-        $inset = 0.18;
+        imagefilledrectangle($img, 0, 0, $s, $s, $ink);
+        $markWidth = $s * 0.56;
     } else {
-        $r = (int) round($s * 0.25);
-        imagefilledrectangle($img, $r, 0, $s - $r, $s, $red);
-        imagefilledrectangle($img, 0, $r, $s, $s - $r, $red);
+        $r = (int) round($s * 0.22);
+        imagefilledrectangle($img, $r, 0, $s - $r, $s, $ink);
+        imagefilledrectangle($img, 0, $r, $s, $s - $r, $ink);
         foreach ([[$r, $r], [$s - $r, $r], [$r, $s - $r], [$s - $r, $s - $r]] as [$cx, $cy]) {
-            imagefilledellipse($img, $cx, $cy, $r * 2, $r * 2, $red);
+            imagefilledellipse($img, $cx, $cy, $r * 2, $r * 2, $ink);
         }
-        $inset = 0.0;
+        $markWidth = $s * 0.70;
     }
 
-    // Map the 40x40 logo grid into the drawable area.
-    $area = $s * (1 - 2 * $inset);
-    $off = $s * $inset;
-    $p = fn (float $x, float $y) => [(int) round($off + $x / 40 * $area), (int) round($off + $y / 40 * $area)];
-    $stroke = (int) round(3.6 / 40 * $area);
-
-    // "N": thick polyline M11 29 V12 L29 29 V12 with round joins.
-    $points = [$p(11, 29), $p(11, 12), $p(29, 29), $p(29, 12)];
-    for ($i = 0; $i < count($points) - 1; $i++) {
-        [$x1, $y1] = $points[$i];
-        [$x2, $y2] = $points[$i + 1];
-        $len = max(1, hypot($x2 - $x1, $y2 - $y1));
-        $nx = -($y2 - $y1) / $len * $stroke / 2;
-        $ny = ($x2 - $x1) / $len * $stroke / 2;
-        imagefilledpolygon($img, [
-            (int) ($x1 + $nx), (int) ($y1 + $ny), (int) ($x2 + $nx), (int) ($y2 + $ny),
-            (int) ($x2 - $nx), (int) ($y2 - $ny), (int) ($x1 - $nx), (int) ($y1 - $ny),
-        ], $white);
-    }
-    foreach ($points as [$x, $y]) {
-        imagefilledellipse($img, $x, $y, $stroke, $stroke, $white);
-    }
-
-    // Stage riser bar.
-    [$bx1, $by1] = $p(7, 31);
-    [$bx2, $by2] = $p(33, 33.4);
-    imagefilledrectangle($img, $bx1, $by1, $bx2, $by2, $faint);
+    $markHeight = $markWidth * imagesy($mark) / imagesx($mark);
+    imagecopyresampled($img, $mark, (int) (($s - $markWidth) / 2), (int) (($s - $markHeight) / 2), 0, 0, (int) $markWidth, (int) $markHeight, imagesx($mark), imagesy($mark));
 
     $out = imagecreatetruecolor($size, $size);
     imagesavealpha($out, true);
@@ -69,11 +79,32 @@ function nebo_icon(int $size, bool $maskable, string $path): void
     imagepng($out, $path, 9);
 }
 
-$dir = __DIR__.'/../public/icons';
-nebo_icon(192, false, "$dir/icon-192.png");
-nebo_icon(512, false, "$dir/icon-512.png");
-nebo_icon(192, true, "$dir/maskable-192.png");
-nebo_icon(512, true, "$dir/maskable-512.png");
-nebo_icon(180, true, "$dir/apple-touch-icon.png"); // iOS applies its own rounding
-nebo_icon(32, false, "$dir/favicon-32.png");
-echo "Icons written to public/icons\n";
+/** Wraps a PNG in an ICO container (PNG-compressed icons are valid ICO entries). */
+function nebo_ico(string $png, string $path, int $size): void
+{
+    $data = file_get_contents($png);
+    $header = pack('vvv', 0, 1, 1);
+    $entry = pack('CCCCvvVV', $size, $size, 0, 0, 1, 32, strlen($data), 6 + 16);
+    file_put_contents($path, $header.$entry.$data);
+}
+
+$root = dirname(__DIR__);
+$art = imagecreatefrompng("$root/resources/brand/nebo-stage.png");
+imagesavealpha($art, true);
+
+$whiteMark = nebo_crop(nebo_recolour($art, [255, 255, 255]), MARK_WIDTH);
+$icons = "$root/public/icons";
+nebo_icon($whiteMark, 192, false, "$icons/icon-192.png");
+nebo_icon($whiteMark, 512, false, "$icons/icon-512.png");
+nebo_icon($whiteMark, 192, true, "$icons/maskable-192.png");
+nebo_icon($whiteMark, 512, true, "$icons/maskable-512.png");
+nebo_icon($whiteMark, 180, true, "$icons/apple-touch-icon.png"); // iOS rounds the corners itself
+nebo_icon($whiteMark, 32, false, "$icons/favicon-32.png");
+nebo_ico("$icons/favicon-32.png", "$root/public/favicon.ico", 32);
+
+$brand = "$root/public/images/brand";
+@mkdir($brand, 0755, true);
+imagepng(nebo_recolour($art, INK), "$brand/nebo-stage.png", 9);
+imagepng(nebo_recolour($art, [255, 255, 255]), "$brand/nebo-stage-white.png", 9);
+
+echo "Icons and brand images written.\n";

@@ -60,7 +60,7 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 | `vendor/bin/pint` | Format code (CI runs `pint --test`) |
 | `php artisan nebo:create-admin` | Create or promote a Super Administrator |
 | `php artisan db:seed --class=ReferenceDataSeeder` | Sync permissions and add missing roles, statuses, services and option lists |
-| `php scripts/generate-icons.php` | Regenerate the PWA icons from the logo geometry |
+| `php scripts/generate-icons.php` | Rebuild the PWA icons, favicon and email logos from `resources/brand/nebo-stage.png` |
 | `php artisan nebo:maintenance-reminders` | Send the maintenance-due digest. Run it once a day from cron (or run `php artisan schedule:run` from cron at least hourly; it is scheduled for 07:00 Lagos) |
 | `php artisan nebo:check-production` | Pre-flight check for a live server; exits non-zero if anything unsafe or missing |
 | `php artisan nebo:expire-quotations` | Mark sent quotations past their validity date as expired (scheduled daily at 00:15 Lagos) |
