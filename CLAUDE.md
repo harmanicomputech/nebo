@@ -1,0 +1,28 @@
+# Nebo Stage
+
+Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`).
+
+Read `docs/ARCHITECTURE.md` (decisions D1–D20), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+
+## Commands
+
+- `php artisan test`: run the suite. CI runs it on PHP 8.3/8.4 with SQLite and on MySQL 8.
+- `vendor/bin/pint`: format. CI runs `pint --test`.
+- `npm run build`: build assets. Fonts come from `@fontsource` and are bundled; never add a font CDN.
+- `php artisan migrate:fresh --seed`: reset local data with demo users (`admin@nebostage.test` / `password`).
+
+## Conventions
+
+- **Thin controllers.** Business rules belong in `app/Services`, validation in `app/Http/Requests`, and record-level authorization in `app/Policies`. Use `Internal\*` controllers for `/app` and `Public\*` controllers for the public site. Public controllers must never load internal models (inventory, staff, pricing).
+- **Permissions** are `module.action` and are defined only in `App\Support\Permissions\PermissionCatalog`. After adding one, run `RolesAndPermissionsSeeder`. `Gate::before` grants Super Administrator every *permission* (an ability containing a dot), but policy methods still apply to them. Keep structural rules (for example "system roles can't be deleted") in policies or services.
+- **Nobody grants access they don't hold.** `UserAdministration` and `RoleAdministration` enforce this. The last active super administrator cannot be removed.
+- **Audit:** add `App\Support\Audit\Auditable` to models. For actions that aren't model diffs (status changes, allocation, sign-in), call `Audit::record()`. Audit logs are append-only. Passwords and tokens are never logged.
+- **Settings:** use `App\Support\Settings`. Defaults live in `config('nebo.defaults')`. Keys contain dots, so never read them with dot-notation `config()`.
+- **References** come from `ReferenceGenerator::next('request'|'event'|…)`. Formats are settings.
+- **Notifications** extend `App\Notifications\NeboNotification`. They are in-app by default; channels come from `NotificationChannels`.
+- **Money** is stored as integer kobo. Times are stored in UTC and displayed with `App\Support\Format` (Africa/Lagos).
+- **No hard-coded business lists.** Services, categories, locations, statuses and option lists belong in the database. The public home page's service list is a temporary exception until Phase 3.
+- **Nothing fake.** A module that isn't built appears only under "Coming next" in `App\Support\Navigation` (pass `planned(...)`), never as a working link or button.
+- **UI:** use the Blade components in `resources/views/components/ui` (button, badge, card, stat, page-header, input, select, textarea, modal, confirm, drawer, table, empty-state, skeleton) and the layouts `x-layouts.app|auth|public|error`. Wrap tables in `<x-ui.table>`, which scrolls on phones. Check every page at 390px wide with no horizontal scroll.
+- **PWA:** `public/sw.js` caches only `/build`, icons and `/offline`. Never cache HTML or JSON. Bump `VERSION` when the caching logic changes.
+- **Destructive actions** use `<x-ui.confirm>`. Forms that should not double-submit use `data-once`.

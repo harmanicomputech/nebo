@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\User;
+use App\Support\Navigation;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        // Super Administrator has every permission (module.action), including ones
+        // added later. Policy methods (update, delete, …) still run for them, so
+        // structural rules such as "system roles cannot be deleted" hold for everyone.
+        Gate::before(fn (User $user, string $ability) => str_contains($ability, '.') && $user->isSuperAdmin() ? true : null);
+
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+
+        Password::defaults(fn () => $this->app->isProduction()
+            ? Password::min(10)->letters()->mixedCase()->numbers()->uncompromised()
+            : Password::min(8));
+
+        Paginator::defaultView('components.ui.pagination');
+
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(config('nebo.auth.max_login_attempts'))
+            ->by(mb_strtolower((string) $request->input('email')).'|'.$request->ip()));
+
+        // Data for the internal shell: sidebar, notification bell.
+        View::composer('components.layouts.app', function ($view) {
+            $user = auth()->user();
+            $view->with([
+                'navigation' => Navigation::for($user),
+                'unreadCount' => $user->unreadNotifications()->count(),
+                'recentNotifications' => $user->notifications()->latest()->limit(6)->get(),
+            ]);
+        });
+
+        RateLimiter::for('search', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
+    }
+}

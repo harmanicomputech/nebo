@@ -1,0 +1,119 @@
+/* Fonts are bundled into /build (no third-party CDN), so they work offline in the PWA. */
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/space-grotesk/wght.css';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+@source '../../app';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ | Nebo Stage design tokens.
+ | brand = #CC1F1F (primary red), ink = #1A1A1A (stage black).
+ */
+@theme {
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Space Grotesk Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --color-brand-50: #fdf3f3;
+    --color-brand-100: #fbe4e4;
+    --color-brand-200: #f8cdcd;
+    --color-brand-300: #f1a8a8;
+    --color-brand-400: #e67474;
+    --color-brand-500: #d94545;
+    --color-brand-600: #cc1f1f;
+    --color-brand-700: #a91a1a;
+    --color-brand-800: #8c1919;
+    --color-brand-900: #751b1b;
+    --color-brand-950: #3f0909;
+
+    --color-ink-50: #f6f6f6;
+    --color-ink-100: #e7e7e7;
+    --color-ink-200: #d1d1d1;
+    --color-ink-300: #b0b0b0;
+    --color-ink-400: #888888;
+    --color-ink-500: #6d6d6d;
+    --color-ink-600: #5d5d5d;
+    --color-ink-700: #4f4f4f;
+    --color-ink-800: #333333;
+    --color-ink-900: #1a1a1a;
+    --color-ink-950: #0f0f0f;
+
+    --shadow-card: 0 1px 2px rgb(16 16 16 / 0.04), 0 1px 3px rgb(16 16 16 / 0.06);
+    --shadow-lift: 0 10px 30px -12px rgb(16 16 16 / 0.25);
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-ink-50 text-ink-900 antialiased;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3, .font-display {
+        font-family: var(--font-display);
+        letter-spacing: -0.015em;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand-600;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .field {
+        @apply block w-full rounded-lg border border-ink-200 bg-white px-3 py-2.5 text-sm text-ink-900 shadow-xs
+            placeholder:text-ink-400 transition
+            focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 focus:outline-none
+            disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-500;
+    }
+
+    .field-error {
+        @apply border-brand-600 ring-4 ring-brand-600/10;
+    }
+
+    .table-nebo {
+        @apply min-w-full text-sm;
+    }
+
+    .table-nebo thead th {
+        @apply bg-ink-50/80 px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-ink-500 uppercase whitespace-nowrap;
+    }
+
+    .table-nebo tbody td {
+        @apply border-t border-ink-100 px-4 py-3 align-middle;
+    }
+
+    .table-nebo tbody tr {
+        @apply transition-colors hover:bg-ink-50/60;
+    }
+
+    /* Stage-light grid used on hero and auth panels. */
+    .stage-grid {
+        background-image:
+            linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    .stage-beam {
+        background:
+            radial-gradient(60% 50% at 20% 0%, rgb(204 31 31 / 0.45), transparent 70%),
+            radial-gradient(40% 40% at 85% 10%, rgb(204 31 31 / 0.25), transparent 70%);
+    }
+
+    .skeleton {
+        @apply animate-pulse rounded-md bg-ink-100;
+    }
+}
