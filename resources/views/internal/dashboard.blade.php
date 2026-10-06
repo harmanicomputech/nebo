@@ -211,21 +211,15 @@
     @endif
 
     <div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <x-ui.card title="Module roadmap" description="What goes live next. Nothing below is active yet." class="xl:col-span-2">
-            <ol class="grid gap-4 sm:grid-cols-2">
-                @foreach ($roadmap as $module)
-                    <li class="flex gap-4 rounded-xl border border-dashed border-ink-200 p-4">
-                        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-ink-50 text-ink-500 ring-1 ring-ink-100"><x-ui.icon :name="$module['icon']" /></span>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <p class="text-sm font-semibold text-ink-900">{{ $module['name'] }}</p>
-                                <x-ui.badge tone="neutral" :dot="false">Phase {{ $module['phase'] }}</x-ui.badge>
-                            </div>
-                            <p class="mt-1 text-xs text-ink-500">{{ $module['text'] }}</p>
-                        </div>
-                    </li>
-                @endforeach
-            </ol>
+        <x-ui.card title="Trends" description="Events by month, three back and three ahead{{ $trends['won'] ? ', and accepted quotation value' : '' }}." class="xl:col-span-2">
+            @if ($trends['events'])
+                <x-chart.columns label="Events by month" :categories="$trends['months']" :series="$trends['events']" />
+            @endif
+            @if ($trends['won'])
+                <h3 class="mt-6 mb-3 text-sm font-semibold">Accepted quotation value</h3>
+                <x-chart.columns label="Accepted quotation value by month" :categories="$trends['wonMonths']" :series="$trends['won']" format="naira" />
+            @endif
+            @can('reports.view')<p class="mt-4 text-right"><a href="{{ route('app.reports.index') }}" class="text-sm font-semibold text-brand-700 hover:underline">All reports →</a></p>@endcan
         </x-ui.card>
 
         <x-ui.card title="Notifications" :padding="false">

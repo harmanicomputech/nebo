@@ -12,15 +12,17 @@ use App\Models\EventRequest;
 use App\Models\LoadList;
 use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
+use App\Models\Quotation;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Inventory\InventorySummary;
+use App\Services\Reports\ReportPeriod;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Dashboard: live figures for the modules that exist; the roadmap panel says
- * plainly what is coming. Each panel is gated by its module's permission.
+ * Dashboard: live figures and trends for each module. Each panel is gated by
+ * its module's permission, so people only see what they work with.
  */
 class DashboardController extends Controller
 {
@@ -66,10 +68,38 @@ class DashboardController extends Controller
                 'maintenanceDue' => $inventory->maintenanceDue(),
                 'openJobs' => $user->can('viewAny', MaintenanceRecord::class) ? MaintenanceRecord::query()->visibleTo($user)->open()->count() : null,
             ] : null,
-            'roadmap' => [
-                ['phase' => 9, 'name' => 'Reports', 'icon' => 'chart-column', 'text' => 'Utilisation, events, maintenance and commercial reports.'],
-            ],
+            'trends' => $this->trends($user),
         ]);
+    }
+
+    /**
+     * Small charts for the dashboard: events by month (3 back, 3 ahead) and
+     * accepted quotation value for the last 6 months.
+     *
+     * @return array<string, mixed>
+     */
+    private function trends(User $user): array
+    {
+        $tz = config('nebo.display_timezone');
+        $start = now($tz)->startOfMonth()->subMonths(3);
+        $months = collect(range(0, 5))->mapWithKeys(fn ($i) => [$start->copy()->addMonths($i)->format('Y-m') => $start->copy()->addMonths($i)->format('M y')]);
+        $events = $user->can('viewAny', Event::class)
+            ? Event::query()->visibleTo($user)->where('status', '!=', 'cancelled')
+                ->whereBetween('starts_at', [$start->copy()->utc(), $start->copy()->addMonths(6)->utc()])->pluck('starts_at')
+            : null;
+
+        $wonStart = now($tz)->startOfMonth()->subMonths(5);
+        $wonMonths = collect(range(0, 5))->mapWithKeys(fn ($i) => [$wonStart->copy()->addMonths($i)->format('Y-m') => $wonStart->copy()->addMonths($i)->format('M y')]);
+        $won = $user->can('financial.view') && $user->can('quotations.view')
+            ? Quotation::query()->where('status', 'accepted')->where('responded_at', '>=', $wonStart->copy()->utc())->get(['responded_at', 'total_kobo'])
+            : null;
+
+        return [
+            'months' => $months->values()->all(),
+            'events' => $events === null ? null : [['name' => 'Events', 'values' => $months->keys()->map(fn ($k) => $events->filter(fn ($at) => ReportPeriod::monthOf($at) === $k)->count())->all()]],
+            'wonMonths' => $wonMonths->values()->all(),
+            'won' => $won === null ? null : [['name' => 'Accepted', 'values' => $wonMonths->keys()->map(fn ($k) => (int) $won->filter(fn ($q) => ReportPeriod::monthOf($q->responded_at) === $k)->sum('total_kobo'))->all()]],
+        ];
     }
 
     /**

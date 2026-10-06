@@ -52,7 +52,7 @@ class Navigation
                 self::item('Customers', 'contact', 'app.customers.index', 'customers.view', 'app.customers.*'),
                 self::item('Quotations', 'receipt', 'app.quotations.index', 'quotations.view', 'app.quotations.*'),
                 self::item('Packages', 'package', 'app.packages.index', fn (User $u) => $u->can('viewAny', ProductionPackage::class), 'app.packages.*'),
-                self::planned('Reports', 'chart-column', 'reports.view', 9),
+                self::item('Reports', 'chart-column', 'app.reports.index', 'reports.view', 'app.reports.*'),
             ]],
             ['label' => 'Administration', 'items' => [
                 self::item('Staff & crew', 'contact', 'app.staff.index', 'staff.view'),

@@ -32,6 +32,7 @@ use App\Http\Controllers\Internal\Maintenance\MaintenanceController;
 use App\Http\Controllers\Internal\Maintenance\ScheduleController;
 use App\Http\Controllers\Internal\NotificationController;
 use App\Http\Controllers\Internal\ProfileController;
+use App\Http\Controllers\Internal\ReportController;
 use App\Http\Controllers\Internal\RequestController as InternalRequestController;
 use App\Http\Controllers\Internal\RoleController;
 use App\Http\Controllers\Internal\SearchController;
@@ -172,6 +173,9 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
         Route::post('/vehicles/{id}/restore', [VehicleController::class, 'restore'])->whereNumber('id')->name('vehicles.restore');
         Route::post('/vehicles/{vehicle}/notes', [VehicleController::class, 'note'])->name('vehicles.notes');
     });
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [ReportController::class, 'show'])->where('report', '[a-z]+')->name('reports.show');
 
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('/customers/create', [CustomerController::class, 'create'])->name('customers.create');

@@ -136,6 +136,45 @@ Alpine.data('lineItems', (initial = [], catalogue = { equipment: [], services: [
 }));
 
 /*
+ | Chart tooltips (D64): any element with data-tip shows it on hover or
+ | keyboard focus. Text only (textContent), never HTML.
+ */
+(() => {
+    let tip;
+    const show = (el, x, y) => {
+        if (!tip) {
+            tip = document.createElement('div');
+            tip.className = 'chart-tip';
+            tip.setAttribute('role', 'tooltip');
+            document.body.appendChild(tip);
+        }
+        tip.textContent = el.dataset.tip;
+        tip.hidden = false;
+        const r = tip.getBoundingClientRect();
+        const left = Math.min(Math.max(8, x - r.width / 2), window.innerWidth - r.width - 8);
+        tip.style.left = `${left + window.scrollX}px`;
+        tip.style.top = `${Math.max(8, y - r.height - 10) + window.scrollY}px`;
+    };
+    const hide = () => tip && (tip.hidden = true);
+    document.addEventListener('pointerover', (e) => {
+        const el = e.target instanceof Element ? e.target.closest('[data-tip]') : null;
+        if (el) show(el, e.clientX, e.clientY); else hide();
+    });
+    document.addEventListener('pointermove', (e) => {
+        const el = e.target instanceof Element ? e.target.closest('[data-tip]') : null;
+        if (el) show(el, e.clientX, e.clientY);
+    });
+    document.addEventListener('focusin', (e) => {
+        const el = e.target instanceof Element ? e.target.closest('[data-tip]') : null;
+        if (!el) return hide();
+        const r = el.getBoundingClientRect();
+        show(el, r.left + r.width / 2, r.top);
+    });
+    document.addEventListener('focusout', hide);
+    window.addEventListener('scroll', hide, { passive: true });
+})();
+
+/*
  | Tap feedback and double-submit protection (D59).
  |
  | - Any form submit marks the tapped button busy (spinner, no more taps)

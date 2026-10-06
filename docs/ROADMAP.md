@@ -13,8 +13,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | **Done** (see below) |
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | **Done** (see below) |
 | 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | **Done** (see below) |
-| 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Next |
-| 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Planned |
+| 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | **Done** (see below) |
+| 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Next |
 
 ## Phase 1 deliverables
 
@@ -145,3 +145,16 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 204 tests / 1,224 assertions pass (9 new commercial tests).
 - Every new page renders at 1440px and 390px with no horizontal scroll and no console errors. In Chromium a quotation was built with the line editor (₦387,000 preview matched the saved total), approved and sent, then accepted on a phone through the customer link.
 - Fixed during the gate: a discount entered before any lines was lost (now kept and applied up to the subtotal), package lines passing the section as an enum, the copy-link button's script, an unlabeled catalogue picker, and line tables that scrolled sideways on phones (now stacked cards).
+
+## Phase 9 deliverables
+
+- **Reports** (`/app/reports`): equipment utilisation, events & request pipeline, maintenance, logistics, inventory and commercial (financial permission), each with summary figures, charts, a table view, period presets or a custom range, print and CSV export (D65).
+- **Charts** (D64): column (single and stacked) and ranked-bar components, server-rendered, with validated colour-blind-safe colours, legends, tooltips on hover and keyboard focus, and a table view.
+- **Dashboard:** a Trends panel (events three months back and ahead; accepted quotation value for the last six months with `financial.view`) replaces the module roadmap — every module is now live and the sidebar's "Coming next" group is gone.
+- **Responsive fix everywhere:** stat tiles stack their icon above the figure on phones and long figures wrap; cards can shrink inside grids.
+
+### Phase 9 gate (§62)
+
+- 209 tests / 1,264 assertions pass (5 new: utilisation maths, report access, CSV export with formula neutralising, dashboard trends, chart scales; the sidebar test now expects no "Coming next").
+- Every report and the dashboard render at 1440px and 390px with no horizontal scroll and no console errors; a tooltip and a CSV download were exercised in Chromium (the export link doesn't stay busy).
+- Fixed during the gate: long naira figures overflowing stat tiles on phones, and grid cards that couldn't shrink below their content.

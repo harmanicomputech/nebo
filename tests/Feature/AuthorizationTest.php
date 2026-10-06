@@ -83,7 +83,8 @@ class AuthorizationTest extends TestCase
         $this->actingAs($viewer)->get('/app')
             ->assertDontSee(route('app.users.index'))
             ->assertDontSee(route('app.settings.edit'))
-            ->assertSee('Coming next');
+            ->assertSee(route('app.reports.index'))
+            ->assertDontSee('Coming next'); // every module is live
 
         $this->actingAs($this->superAdmin())->get('/app')
             ->assertSee(route('app.users.index'))

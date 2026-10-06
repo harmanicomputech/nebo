@@ -2,7 +2,7 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D63), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D65), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
@@ -28,6 +28,7 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D63), `docs/DATABASE.md` and `docs/R
 - **Maintenance** goes through `MaintenanceService` (report, schedule, start, complete, cancel), `MaintenanceScheduler` (schedules, opening jobs from them) and `InspectionService` (condition + photos + optional job). Use `MaintenanceRecord::scopeVisibleTo($user)` for job lists (technicians see their own). Condition reports are append-only (D50–D53).
 - **Logistics:** plan and progress trips through `TripService` (clash checks, manifest rules, asset status on departure/arrival); vehicles through `VehicleService`. Use `LogisticsTrip::scopeVisibleTo($user)` for trip lists (drivers see their own). Don't name a column `notes` on a model with `HasNotesAndDocuments` (D54–D58).
 - **Commercial:** quotations change only through `QuotationService` (it computes every total; never trust totals from the form), packages through `PackageService`, customer merges through `CustomerService` (D60–D63).
+- **Charts and reports:** use `x-chart.columns` / `x-chart.bars` (server-rendered, validated colours, table view built in) and add figures to `ReportService`; exports go through `ReportController::cell()` (D64–D65).
 - **Option lists** are read through `app(App\Support\Lookups::class)` (scoped, not static). Records store the lookup `key`. Add new groups to `Lookups::GROUPS`.
 - **Strict models:** lazy loading is disabled outside production, so eager-load relations that views use.
 - **Money** is stored as integer kobo. Times are stored in UTC and displayed with `App\Support\Format` (Africa/Lagos).

@@ -1,5 +1,5 @@
 @props(['title' => null, 'description' => null, 'padding' => true])
-<section {{ $attributes->merge(['class' => 'rounded-2xl border border-ink-100 bg-white shadow-card']) }}>
+<section {{ $attributes->merge(['class' => 'min-w-0 rounded-2xl border border-ink-100 bg-white shadow-card']) }}>
     @if ($title || isset($actions))
         <header class="flex flex-wrap items-start justify-between gap-3 border-b border-ink-100 px-5 py-4 sm:px-6">
             <div class="min-w-0">
