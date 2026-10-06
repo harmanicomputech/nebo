@@ -1,11 +1,5 @@
 @php use App\Support\Format; @endphp
 <x-layouts.app title="Dashboard">
-    @if (auth()->user()->can('system.manage') && App\Support\SampleData::exists())
-        <div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <span class="flex items-center gap-2"><x-ui.icon name="flask-conical" class="size-4 shrink-0" />Sample data is loaded for trying the system.</span>
-            <a href="{{ route('app.settings.system') }}" class="font-semibold underline">Clear it in Settings → System</a>
-        </div>
-    @endif
     {{-- Hero: what is happening right now --}}
     <section class="relative mb-5 overflow-hidden rounded-3xl bg-ink-950 px-5 py-6 text-white sm:mb-8 sm:px-10 sm:py-10">
         <div class="stage-grid absolute inset-0"></div>
