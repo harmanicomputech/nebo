@@ -25,7 +25,7 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - **Notifications:** database channel, bell with unread count, list, mark read/all read, channel resolver for future mail/SMS/WhatsApp.
 - **Reference generator:** `NEBO-REQ-{YYYY}-{SEQ:5}` style formats, concurrency-safe, yearly reset.
 - **Search:** global search box with grouped results, permission-aware providers (users and roles now; each module registers its own provider).
-- **UI:** design system components, sidebar (planned modules shown as "Planned"), top bar, breadcrumbs, mobile drawer, toasts, confirmation modals, empty states, skeletons; branded error pages (403/404/419/429/500/503).
+- **UI:** design system components, sidebar (planned modules listed under a collapsed "Coming next" group, never clickable), top bar, breadcrumbs, mobile drawer, toasts, confirmation modals, empty states, skeletons; branded error pages (403/404/419/429/500/503).
 - **PWA:** manifest, icons, service worker (static assets only), offline page, install prompt.
 
 ### Phase 1 gate (§62)
