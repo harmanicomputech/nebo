@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Support\Navigation;
-use Database\Seeders\DemoUsersSeeder;
 use Tests\TestCase;
 
 class MobileShellTest extends TestCase
@@ -22,8 +20,7 @@ class MobileShellTest extends TestCase
 
     public function test_tabs_follow_what_the_role_can_open(): void
     {
-        $this->seed(DemoUsersSeeder::class);
-        $crew = User::where('email', 'crew@nebostage.test')->firstOrFail();
+        $crew = $this->userWithRole('Crew');
         $this->actingAs($crew);
 
         $this->get(route('app.dashboard'));

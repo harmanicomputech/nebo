@@ -18,17 +18,17 @@ class AllocationDemoSeeder extends Seeder
     public function run(RequirementService $requirements, AllocationService $allocations, LoadListService $lists): void
     {
         // Guard on this seeder's own data (the history seeder creates allocations too).
-        if (EquipmentAllocation::whereHas('event', fn ($q) => $q->where('name', '[Demo] FirstCorp Town Hall'))->exists()) {
+        if (EquipmentAllocation::whereHas('event', fn ($q) => $q->where('name', 'Marina Trust Town Hall'))->exists()) {
             return;
         }
 
-        $admin = User::where('email', 'admin@nebostage.test')->firstOrFail();
+        $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
         auth()->login($admin);
         $item = fn (string $sku) => Equipment::where('sku', $sku)->firstOrFail();
 
         // Today's town hall: allocated and dispatched.
-        if ($today = Event::where('name', '[Demo] FirstCorp Town Hall')->first()) {
-            foreach ([['DEMO-ML-01', 4], ['DEMO-S4-03', 6], ['DEMO-CL-06', 1], ['DEMO-BLK-02', 20]] as [$sku, $qty]) {
+        if ($today = Event::where('name', 'Marina Trust Town Hall')->first()) {
+            foreach ([['NS-ML-01', 4], ['NS-S4-03', 6], ['NS-CL-06', 1], ['NS-BLK-02', 20]] as [$sku, $qty]) {
                 $requirements->set($today, $item($sku), $qty);
                 $item($sku)->isSerialized() ? $allocations->autoReserve($admin, $today, $item($sku), $qty) : $allocations->reserveBulk($admin, $today, $item($sku), $qty);
             }
@@ -38,8 +38,8 @@ class AllocationDemoSeeder extends Seeder
         }
 
         // Jazz weekend: partly allocated, load list being picked.
-        if ($jazz = Event::where('name', '[Demo] Lagos Jazz Weekend')->first()) {
-            foreach ([['DEMO-ML-01', 16, 12], ['DEMO-MW-02', 12, 12], ['DEMO-FS-04', 4, 4], ['DEMO-HST-10', 8, 8], ['DEMO-BLK-01', 40, 40], ['DEMO-GMA-05', 1, 0]] as [$sku, $need, $give]) {
+        if ($jazz = Event::where('name', 'Lagos Jazz Weekend')->first()) {
+            foreach ([['NS-ML-01', 16, 12], ['NS-MW-02', 12, 12], ['NS-FS-04', 4, 4], ['NS-HST-10', 8, 8], ['NS-BLK-01', 40, 40], ['NS-GMA-05', 1, 0]] as [$sku, $need, $give]) {
                 $requirements->set($jazz, $item($sku), $need);
                 if ($give) {
                     $item($sku)->isSerialized() ? $allocations->autoReserve($admin, $jazz, $item($sku), $give) : $allocations->reserveBulk($admin, $jazz, $item($sku), $give);
@@ -51,11 +51,11 @@ class AllocationDemoSeeder extends Seeder
 
         // Product launch: needs more moving lights than the fleet can serve.
         if ($launch = Event::where('name', 'like', '%Volt Phone X%')->first()) {
-            $requirements->set($launch, $item('DEMO-ML-01'), 24, 'Full rig per lighting plot');
-            $allocations->autoReserve($admin, $launch, $item('DEMO-ML-01'), 20);
-            $requirements->set($launch, $item('DEMO-GMA-05'), 1);
-            $allocations->autoReserve($admin, $launch, $item('DEMO-GMA-05'), 1);
-            $requirements->set($launch, $item('DEMO-BLK-03'), 60);
+            $requirements->set($launch, $item('NS-ML-01'), 24, 'Full rig per lighting plot');
+            $allocations->autoReserve($admin, $launch, $item('NS-ML-01'), 20);
+            $requirements->set($launch, $item('NS-GMA-05'), 1);
+            $allocations->autoReserve($admin, $launch, $item('NS-GMA-05'), 1);
+            $requirements->set($launch, $item('NS-BLK-03'), 60);
         }
 
         auth()->logout();

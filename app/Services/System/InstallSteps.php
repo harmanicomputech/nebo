@@ -5,6 +5,7 @@ namespace App\Services\System;
 use App\Models\User;
 use App\Support\Audit\Audit;
 use App\Support\Permissions\PermissionCatalog;
+use App\Support\SampleData;
 use App\Support\Settings;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\HistoryDemoSeeder;
@@ -15,11 +16,15 @@ use Illuminate\Support\Facades\DB;
 /**
  * The installer's work, split into steps short enough for one web request on
  * shared hosting (D69). Every step is safe to retry: migrations and reference
- * data are idempotent, the admin is matched by email and each demo seeder (or
+ * data are idempotent, the admin is matched by email and each sample seeder (or
  * history batch) skips itself when its data exists.
  */
 class InstallSteps
 {
+    private const LABELS = ['DemoUsersSeeder' => 'sign-in accounts', 'InventoryDemoSeeder' => 'equipment', 'BookingDemoSeeder' => 'enquiries',
+        'EventsDemoSeeder' => 'crew and events', 'AllocationDemoSeeder' => 'equipment bookings', 'MaintenanceDemoSeeder' => 'repairs and servicing',
+        'LogisticsDemoSeeder' => 'fleet and trips', 'CommercialDemoSeeder' => 'packages and quotations'];
+
     /**
      * @return list<array{key: string, label: string}>
      */
@@ -35,12 +40,12 @@ class InstallSteps
             foreach (DatabaseSeeder::DEMO as $seeder) {
                 if ($seeder === HistoryDemoSeeder::class) {
                     for ($batch = 0; $batch < HistoryDemoSeeder::batches(); $batch++) {
-                        $steps[] = ['key' => "history:{$batch}", 'label' => 'Adding a year of demo history (part '.($batch + 1).' of '.HistoryDemoSeeder::batches().')'];
+                        $steps[] = ['key' => "history:{$batch}", 'label' => 'Adding a year of sample history (part '.($batch + 1).' of '.HistoryDemoSeeder::batches().')'];
                     }
 
                     continue;
                 }
-                $steps[] = ['key' => 'demo:'.class_basename($seeder), 'label' => 'Adding demo data: '.str(class_basename($seeder))->beforeLast('Seeder')->headline()->lower()];
+                $steps[] = ['key' => 'demo:'.class_basename($seeder), 'label' => 'Adding sample data: '.(self::LABELS[class_basename($seeder)] ?? 'records')];
             }
         }
 
@@ -58,7 +63,7 @@ class InstallSteps
             $key === 'migrate' => $this->artisan('migrate', ['--force' => true]),
             $key === 'reference' => $this->artisan('db:seed', ['--class' => ReferenceDataSeeder::class, '--force' => true]),
             $key === 'admin' => $this->createAdmin($admin),
-            str_starts_with($key, 'history:') => DB::transaction(fn () => app(HistoryDemoSeeder::class)->runBatch((int) substr($key, 8))),
+            str_starts_with($key, 'history:') => DB::transaction(fn () => SampleData::record(fn () => app(HistoryDemoSeeder::class)->runBatch((int) substr($key, 8)))),
             str_starts_with($key, 'demo:') => $this->demo(substr($key, 5)),
             default => throw new \InvalidArgumentException("Unknown install step {$key}."),
         };
@@ -92,6 +97,6 @@ class InstallSteps
         $class = collect(DatabaseSeeder::DEMO)->first(fn (string $c) => class_basename($c) === $seeder)
             ?? throw new \InvalidArgumentException("Unknown demo seeder {$seeder}.");
 
-        DB::transaction(fn () => app($class)->setContainer(app())->__invoke());
+        DB::transaction(fn () => SampleData::record(fn () => app($class)->setContainer(app())->__invoke()));
     }
 }

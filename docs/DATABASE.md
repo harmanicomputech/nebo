@@ -58,6 +58,7 @@ erDiagram
 | `audit_logs` **(P1)** | user_id → users (set null), user_name, event, auditable_type, auditable_id, description, old_values json, new_values json, ip_address, user_agent, url, created_at | Append-only: the model refuses update/delete; no edit routes. Indexed on (auditable_type, auditable_id), user_id, event, created_at. |
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
+| `sample_records` | table_name, key_name, record_key; index(table_name, record_key) | Every row created by the sample-data loader, in creation order; `SampleData::clear()` deletes them newest first, then empties this table (D71). |
 | `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`, `vehicle_type`, `customer_type`. |
 | `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |

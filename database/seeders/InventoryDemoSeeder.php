@@ -17,13 +17,13 @@ use Illuminate\Database\Seeder;
 /**
  * Demo equipment for development (never production). Built through the
  * inventory services so every unit has real ledger history. All SKUs start
- * with DEMO- so the data is easy to identify and remove.
+ * with NS- so the data is easy to identify and remove.
  */
 class InventoryDemoSeeder extends Seeder
 {
     public function run(EquipmentService $equipment, AssetService $assets, StockService $stock): void
     {
-        if (Equipment::where('sku', 'like', 'DEMO-%')->exists()) {
+        if (Equipment::where('sku', 'NS-ML-01')->exists()) {
             return;
         }
 
@@ -32,7 +32,7 @@ class InventoryDemoSeeder extends Seeder
         $main = Location::where('code', 'MAIN')->first();
         $secondary = Location::where('code', 'SEC')->first();
         $maintenanceArea = Location::where('code', 'MAINT')->first();
-        $admin = User::where('email', 'admin@nebostage.test')->first() ?? User::first();
+        $admin = User::where('email', 'ada.okafor@nebostage.com')->first() ?? User::first();
 
         // name, category slug, manufacturer, model, prefix, units, value (naira)
         $serialized = [
@@ -51,17 +51,17 @@ class InventoryDemoSeeder extends Seeder
 
         foreach ($serialized as $i => [$name, $slug, $make, $model, $prefix, $units, $naira]) {
             $item = $equipment->create([
-                'category_id' => $cat($slug), 'name' => $name, 'sku' => sprintf('DEMO-%s-%02d', $prefix, $i + 1),
+                'category_id' => $cat($slug), 'name' => $name, 'sku' => sprintf('NS-%s-%02d', $prefix, $i + 1),
                 'manufacturer' => $make, 'model' => $model, 'tracking_mode' => 'serialized', 'unit' => 'unit',
                 'asset_prefix' => $prefix, 'replacement_value_kobo' => $naira * 100,
                 'low_stock_threshold' => max(1, intdiv($units, 4)),
-                'description' => "Demo data. {$make} {$model}.",
+                'description' => "{$make} {$model}.",
             ]);
 
             $assets->register($item, [
                 'location_id' => $main->id, 'condition' => 'good', 'purchase_date' => '2024-03-01',
-                'purchase_cost_kobo' => (int) ($naira * 0.85) * 100, 'supplier' => 'Demo Supplier Ltd',
-                'warranty_expires_on' => '2027-03-01', 'notes' => 'Demo data',
+                'purchase_cost_kobo' => (int) ($naira * 0.85) * 100, 'supplier' => 'Stagecraft Supplies Ltd',
+                'warranty_expires_on' => '2027-03-01', 'notes' => 'Checked and serviced on arrival.',
             ], $units);
         }
 
@@ -92,10 +92,10 @@ class InventoryDemoSeeder extends Seeder
 
         foreach ($bulk as $i => [$name, $slug, $make, $model, $unit, $stocks, $naira, $threshold]) {
             $item = $equipment->create([
-                'category_id' => $cat($slug), 'name' => $name, 'sku' => sprintf('DEMO-BLK-%02d', $i + 1),
+                'category_id' => $cat($slug), 'name' => $name, 'sku' => sprintf('NS-BLK-%02d', $i + 1),
                 'manufacturer' => $make, 'model' => $model, 'tracking_mode' => 'bulk', 'unit' => $unit,
                 'replacement_value_kobo' => $naira * 100, 'low_stock_threshold' => $threshold,
-                'description' => "Demo data. {$make} {$model}.",
+                'description' => "{$make} {$model}.",
             ]);
 
             foreach ($stocks as [$location, $qty]) {
@@ -103,9 +103,9 @@ class InventoryDemoSeeder extends Seeder
             }
         }
 
-        $dmx = Equipment::where('sku', 'DEMO-BLK-03')->first();
+        $dmx = Equipment::where('sku', 'NS-BLK-03')->first();
         $stock->moveBucket($dmx, $main, StockBucket::Available, StockBucket::Quarantine, 6, 'Demo: failed cable test');
-        $stock->transfer(Equipment::where('sku', 'DEMO-BLK-02')->first(), $main, $secondary, 40, 'Demo: rebalancing');
+        $stock->transfer(Equipment::where('sku', 'NS-BLK-02')->first(), $main, $secondary, 40, 'Moving cable to the Abuja store for upcoming jobs');
 
         auth()->logout();
     }

@@ -23,7 +23,7 @@ class MaintenanceDemoSeeder extends Seeder
             return;
         }
 
-        $admin = User::where('email', 'admin@nebostage.test')->firstOrFail();
+        $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
         auth()->login($admin);
         $tech = Staff::where('role', 'lighting_technician')->first();
         $asset = fn (string $tag) => EquipmentAsset::with(['status', 'equipment'])->where('asset_tag', $tag)->first();
@@ -54,9 +54,9 @@ class MaintenanceDemoSeeder extends Seeder
         }
 
         // Recurring schedules: every MegaPointe every 90 days, consoles twice a year.
-        $scheduler->createForEquipment($admin, Equipment::where('sku', 'DEMO-ML-01')->firstOrFail(), ['type' => 'preventive', 'interval_days' => 90, 'next_due_on' => $lagos->addDays(45)->toDateString(), 'notes' => 'Clean optics and fans, check belts, update firmware.']);
-        $scheduler->createForEquipment($admin, Equipment::where('sku', 'DEMO-GMA-05')->firstOrFail(), ['type' => 'firmware', 'interval_days' => 180, 'next_due_on' => $lagos->addDays(5)->toDateString()]);
-        $scheduler->createForEquipment($admin, Equipment::where('sku', 'DEMO-HST-10')->firstOrFail(), ['type' => 'safety_test', 'interval_days' => 365, 'next_due_on' => $lagos->addDays(20)->toDateString(), 'notes' => 'LOLER thorough examination.']);
+        $scheduler->createForEquipment($admin, Equipment::where('sku', 'NS-ML-01')->firstOrFail(), ['type' => 'preventive', 'interval_days' => 90, 'next_due_on' => $lagos->addDays(45)->toDateString(), 'notes' => 'Clean optics and fans, check belts, update firmware.']);
+        $scheduler->createForEquipment($admin, Equipment::where('sku', 'NS-GMA-05')->firstOrFail(), ['type' => 'firmware', 'interval_days' => 180, 'next_due_on' => $lagos->addDays(5)->toDateString()]);
+        $scheduler->createForEquipment($admin, Equipment::where('sku', 'NS-HST-10')->firstOrFail(), ['type' => 'safety_test', 'interval_days' => 365, 'next_due_on' => $lagos->addDays(20)->toDateString(), 'notes' => 'LOLER thorough examination.']);
 
         // A few MegaPointes are overdue.
         MaintenanceSchedule::whereHas('asset', fn ($q) => $q->whereIn('asset_tag', ['ML-003', 'ML-004']))->get()

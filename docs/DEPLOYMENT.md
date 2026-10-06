@@ -25,7 +25,7 @@ php artisan optimize
 php artisan nebo:check-production        # must end with "Ready for production."
 ```
 
-Never run `db:seed` without `--class` in production: the default seeder adds demo users and `DEMO-` equipment. `nebo:check-production` fails if it finds them.
+In production run only `db:seed --class=ReferenceDataSeeder`. Sample data (loaded by the default seeder outside production, or by the installer when ticked) is cleared from **Settings → System → Clear sample data**; `nebo:check-production` fails while it is loaded.
 
 ## Environment
 
@@ -54,7 +54,7 @@ The browser installer (`/install`, D69) checks PHP and folders, tests the databa
 
 To update: back up the database, extract the new zip over the old files (`.env`, uploads and the lock are kept), then **Settings → System → Apply update**, which runs migrations and the reference seeder and clears compiled caches.
 
-Tested end to end on Apache 2.4 + mod_php 8.3 + MariaDB 10.11 with a DirectAdmin-style layout, including the demo data (18 steps, 73 s).
+Tested end to end on Apache 2.4 + mod_php 8.3 + MariaDB 10.11 with a DirectAdmin-style layout, including the sample data (20 steps, about 70 s).
 
 ## Scheduler and queue (one cron line)
 

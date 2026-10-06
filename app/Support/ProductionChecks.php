@@ -42,8 +42,8 @@ class ProductionChecks
             $add($missing->isEmpty() ? 'ok' : 'fail', 'Permissions and reference data seeded', $missing->isEmpty() ? '' : 'php artisan db:seed --class=ReferenceDataSeeder --force');
             $admins = User::query()->active()->role(PermissionCatalog::SUPER_ADMIN)->count();
             $add($admins > 0 ? 'ok' : 'fail', 'An active super administrator exists', $admins ? '' : 'php artisan nebo:create-admin');
-            $demo = User::where('email', 'like', '%@nebostage.test')->exists() || DB::table('equipment')->where('sku', 'like', 'DEMO-%')->exists();
-            $add($demo ? 'fail' : 'ok', 'No demo accounts or demo data', $demo ? 'Demo users or DEMO- items found: reinstall without the demo seeders.' : '');
+            $sample = SampleData::exists();
+            $add($sample ? 'fail' : 'ok', 'No sample data', $sample ? 'Sample records are still loaded: Settings → System → Clear sample data.' : '');
         } catch (\Throwable $e) {
             $add('fail', 'Database connection', $e->getMessage());
         }

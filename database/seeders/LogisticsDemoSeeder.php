@@ -37,22 +37,22 @@ class LogisticsDemoSeeder extends Seeder
 
     public function run(TripService $trips): void
     {
-        if (LogisticsTrip::whereHas('event', fn ($q) => $q->where('name', '[Demo] FirstCorp Town Hall'))->exists()) {
+        if (LogisticsTrip::whereHas('event', fn ($q) => $q->where('name', 'Marina Trust Town Hall'))->exists()) {
             return;
         }
 
-        $admin = User::where('email', 'admin@nebostage.test')->firstOrFail();
+        $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
         auth()->login($admin);
         $main = Location::where('code', 'MAIN')->first();
         $driver = Staff::where('role', 'driver')->first();
-        $crewMember = Staff::where('user_id', User::where('email', 'crew@nebostage.test')->value('id'))->first();
+        $crewMember = Staff::where('user_id', User::where('email', 'bayo.ogun@nebostage.com')->value('id'))->first();
 
         [$truck, $van] = array_values(self::fleet($driver, $main));
 
         $base = trim(($main?->name ?? 'Main Warehouse').($main?->address ? ', '.$main->address : ''));
 
         // Today's town hall: delivered this morning, return booked for breakdown.
-        if ($hall = Event::where('name', '[Demo] FirstCorp Town Hall')->first()) {
+        if ($hall = Event::where('name', 'Marina Trust Town Hall')->first()) {
             $out = $trips->plan($admin, $hall, ['direction' => 'outbound', 'vehicle_id' => $truck->id, 'driver_id' => $driver?->id, 'origin' => $base, 'destination' => $hall->venue,
                 'departs_at' => $hall->setup_starts_at->copy()->subHours(2), 'arrives_at' => $hall->setup_starts_at, 'crew' => array_filter([$crewMember?->id]),
                 'items' => $trips->manifestCandidates($hall, TripDirection::Outbound)->modelKeys(), 'instructions' => 'Use the loading bay on the east side. Ask for Mr. Adebayo at security.']);
@@ -65,7 +65,7 @@ class LogisticsDemoSeeder extends Seeder
         }
 
         // Jazz weekend: planned, no driver yet.
-        if ($jazz = Event::where('name', '[Demo] Lagos Jazz Weekend')->first()) {
+        if ($jazz = Event::where('name', 'Lagos Jazz Weekend')->first()) {
             $trips->plan($admin, $jazz, ['direction' => 'outbound', 'vehicle_id' => $van->id, 'origin' => $base, 'destination' => $jazz->venue,
                 'departs_at' => $jazz->setup_starts_at->copy()->subHours(3), 'arrives_at' => $jazz->setup_starts_at,
                 'items' => $trips->manifestCandidates($jazz, TripDirection::Outbound)->modelKeys()]);

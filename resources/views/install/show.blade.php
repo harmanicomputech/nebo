@@ -1,6 +1,6 @@
 <x-layouts.auth title="Install">
     <h1 class="mt-10 text-2xl font-semibold text-ink-900 lg:mt-0">Install Nebo Stage</h1>
-    <p class="mt-2 text-sm text-ink-500">This sets up the database and your administrator account. It takes a minute, or a few minutes with demo data.</p>
+    <p class="mt-2 text-sm text-ink-500">This sets up the database and your administrator account. It takes a minute, or a few minutes with sample data.</p>
 
     <section class="mt-8" aria-labelledby="req-title">
         <h2 id="req-title" class="text-sm font-semibold text-ink-900">Server check</h2>
@@ -77,8 +77,8 @@
             <label class="flex items-start gap-3 rounded-lg border border-ink-200 p-4 text-sm text-ink-700">
                 <input type="hidden" name="demo" value="0">
                 <input type="checkbox" name="demo" value="1" @checked(old('demo')) class="mt-0.5 size-4 rounded border-ink-300 text-brand-600 focus:ring-brand-600">
-                <span><span class="block font-semibold text-ink-900">Load demo data for testing</span>
-                    A year of sample productions, equipment, quotes, trips and repairs, plus a demo account for every role (password <code>password</code>). Install a clean copy before going live.</span>
+                <span><span class="block font-semibold text-ink-900">Load sample data to try the system</span>
+                    A year of realistic productions, equipment, customers, quotes, trips and repairs, plus a sign-in account for every role. Clear it with one button in Settings → System when you are ready to go live.</span>
             </label>
 
             <x-ui.button type="submit" size="lg" class="w-full" icon-right="arrow-right">Install</x-ui.button>

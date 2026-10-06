@@ -120,6 +120,7 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::middleware('can:system.manage')->group(function () {
         Route::get('/settings/system', [SystemController::class, 'show'])->name('settings.system');
         Route::post('/settings/system/update', [SystemController::class, 'update'])->name('settings.system.update');
+        Route::delete('/settings/system/sample-data', [SystemController::class, 'clearSample'])->name('settings.system.sample.clear');
     });
     Route::get('/settings', [SettingsController::class, 'edit'])->middleware('can:settings.view')->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->middleware('can:settings.manage')->name('settings.update');

@@ -16,7 +16,40 @@
             </ul>
         </x-ui.card>
 
-        <div class="space-y-6">
+        <div class="space-y-6 max-lg:order-first">
+            @if ($sample)
+                @php
+                    $c = $sample['counts'];
+                    $parts = collect(['events' => 'events', 'event_requests' => 'requests', 'customers' => 'customers', 'quotations' => 'quotations', 'equipment' => 'equipment items', 'assets' => 'units', 'logistics_trips' => 'trips', 'maintenance_records' => 'repair jobs', 'users' => 'sign-in accounts'])
+                        ->filter(fn ($label, $table) => ($c[$table] ?? 0) > 0)->map(fn ($label, $table) => number_format($c[$table]).' '.$label);
+                @endphp
+                <x-ui.card title="Sample data">
+                    <p class="text-sm text-ink-600">The system holds sample records for trying it out: {{ $parts->join(', ', ' and ') }}. Clearing removes all of them and everything they created; records you added yourself stay.</p>
+                    <details class="mt-3 text-sm">
+                        <summary class="cursor-pointer font-semibold text-ink-800">Sample sign-in accounts</summary>
+                        <p class="mt-2 text-xs text-ink-500">Password for all: <code class="rounded bg-ink-100 px-1.5 py-0.5 font-mono text-ink-800">{{ $sample['password'] }}</code></p>
+                        <ul class="mt-2 space-y-1.5">
+                            @foreach ($sample['accounts'] as $account)
+                                <li class="min-w-0"><span class="block truncate font-medium text-ink-900">{{ $account->email }}</span><span class="block text-xs text-ink-500">{{ $account->roles->pluck('name')->join(', ') }}</span></li>
+                            @endforeach
+                        </ul>
+                    </details>
+                    @if ($sample['blockers'])
+                        <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
+                            <p class="font-semibold">Some records you added use sample data</p>
+                            <p class="mt-1">{{ App\Support\SampleData::describe($sample['blockers']) }}. Switch them to your own customers, equipment and events first, or remove them together with the sample data.</p>
+                        </div>
+                        <x-ui.confirm class="mt-4 w-full" :action="route('app.settings.system.sample.clear')" method="DELETE" :fields="['include_mine' => 1]" title="Clear sample data and these records?"
+                            :message="'Every sample record is deleted for good, together with these records of yours that use it: '.App\Support\SampleData::describe($sample['blockers']).'. Back up the database first if you might need them.'"
+                            confirm="Clear everything listed" icon="trash-2">Clear sample data and these records</x-ui.confirm>
+                    @else
+                        <x-ui.confirm class="mt-4 w-full" :action="route('app.settings.system.sample.clear')" method="DELETE" title="Clear all sample data?"
+                            message="Every sample event, request, customer, quote, item, trip, repair and sample account is deleted for good. Records you added yourself stay. Back up the database first if you might want it again."
+                            confirm="Clear sample data" icon="trash-2">Clear sample data</x-ui.confirm>
+                    @endif
+                </x-ui.card>
+            @endif
+
             <x-ui.card title="Apply an update">
                 <p class="text-sm text-ink-600">After uploading a new version of the files, run the update. It applies database changes and refreshes roles, permissions and reference data. Your data is kept.</p>
                 <p class="mt-3 text-sm font-semibold {{ $pending ? 'text-brand-700' : 'text-ink-700' }}">{{ $pending ? $pending.' database '.str('change')->plural($pending).' waiting' : 'The database is up to date.' }}</p>

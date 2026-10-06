@@ -177,7 +177,7 @@ All ten phases of the brief are now delivered.
 
 ## After phase 10: demo data and no-terminal hosting
 
-- **Demo data:** `HistoryDemoSeeder` adds a year of business through the real services (24 completed productions with quotes, load lists, trips, check-ins, damage and repairs; lost deals; a live pipeline), so every report and screen has data. It runs in batches so the web installer can load it.
+- **Sample data (D71):** a year of realistic business built through the real services (24 completed productions with quotes, load lists, trips, check-ins, damage and repairs; lost deals; a live pipeline), with no "demo" labels. Every sample row is tracked, and Settings → System clears it all in one step (about 1 s on SQLite, 4 s on MariaDB for ~22,800 rows).
 - **DirectAdmin / cPanel package (D69):** upload zip, browser installer, Settings → System for health checks and updates, background jobs without cron (`nebo:tick`, `NEBO_WEB_CRON`).
 - **MySQL verified:** full migrate, seed, rollback and the whole test suite run on MariaDB 10.11. This found an index name longer than MySQL's 64-character limit (now named explicitly) and a test that assumed auto-increment ids restart.
 - **Phone app shell (D70):** mobile-first layout below 1024px with a bottom tab bar (four tabs chosen by role, plus More), a dark top bar with back navigation, full-screen search, card-style table rows, collapsible filters and bottom-sheet dialogs; desktop unchanged. Crawled 84 admin pages and the crew, technician, finance and viewer views at 390px (no horizontal scroll, no script errors); fixed an equipment link shown to roles without inventory access.

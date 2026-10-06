@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Internal;
 use App\Http\Controllers\Controller;
 use App\Services\System\SystemUpdater;
 use App\Support\ProductionChecks;
+use App\Support\SampleData;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -24,7 +26,29 @@ class SystemController extends Controller
             'database' => DB::connection()->getDriverName().' '.DB::connection()->getServerVersion(),
             'queued' => DB::table('jobs')->count(),
             'failed' => DB::table('failed_jobs')->count(),
+            'sample' => SampleData::exists() ? ['counts' => SampleData::counts(), 'accounts' => SampleData::accounts(), 'password' => SampleData::PASSWORD, 'blockers' => SampleData::blockers()] : null,
         ]);
+    }
+
+    /** Removes every sample record (D71); signs out a sample account that did it. */
+    public function clearSample(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $wasSample = SampleData::accounts()->contains('id', $user->id);
+        $result = SampleData::clear($user, $request->boolean('include_mine'));
+
+        if (! $result['ok']) {
+            return back()->with('error', $result['message']);
+        }
+        if ($wasSample) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('status', $result['message'].' The sample account you used was removed too; sign in with your own account.');
+        }
+
+        return back()->with('success', $result['message']);
     }
 
     public function update(SystemUpdater $updater): RedirectResponse

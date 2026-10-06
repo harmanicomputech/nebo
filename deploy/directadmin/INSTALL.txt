@@ -33,16 +33,17 @@ certificate (https) for the domain.
      and the email settings (an email account you created in DirectAdmin →
      E-mail Manager works: server mail.YOURDOMAIN.COM, port 587 or 465,
      the full email address and its password).
-   - Tick "Load demo data for testing" to try the system with a year of
-     sample productions. Leave it unticked for the real, live install.
+   - Tick "Load sample data" to try the system with a year of realistic
+     productions, customers, equipment, quotes and trips. You can clear it
+     all later with one button (see "Sample data" below).
    Keep the page open while it works (1–5 minutes). It ends at the
    sign-in page.
 
 5. SIGN IN
    Use the administrator email and password you entered.
-   With demo data, every role also has a demo account, password "password":
-     admin@nebostage.test, operations@, inventory@, production@,
-     finance@, technician@, crew@, viewer@nebostage.test
+   With sample data, every role also has a sample account (for example
+   ada.okafor@nebostage.com, Super Administrator). Settings → System lists
+   them all with their password.
    Then open Settings → General and enter the real company details.
    Settings → System shows a readiness check.
 
@@ -62,7 +63,13 @@ UPDATING TO A NEW VERSION
    3. Sign in and open Settings → System → Apply update.
 
 
-REINSTALLING (e.g. live install after testing with demo data)
+SAMPLE DATA
+   Settings → System → Clear sample data removes every sample record and
+   sample account in one go; anything you entered yourself stays. Sample
+   people and customers never receive emails.
+
+
+REINSTALLING (starting again with an empty database)
    1. Empty the database (phpMyAdmin → select all tables → Drop), or create
       a new one.
    2. Delete  nebo/storage/app/installed.lock  and  nebo/.env

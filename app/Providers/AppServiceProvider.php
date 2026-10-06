@@ -5,16 +5,21 @@ namespace App\Providers;
 use App\Models\User;
 use App\Support\Lookups;
 use App\Support\Navigation;
+use App\Support\SampleData;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,6 +50,21 @@ class AppServiceProvider extends ServiceProvider
             : Password::min(8));
 
         Paginator::defaultView('components.ui.pagination');
+
+        // Sample data (D71): note what the sample loader creates, and never
+        // email a sample person or customer (their addresses look real).
+        Event::listen('eloquent.created: *', fn (string $event, array $payload) => SampleData::capture($payload[0]));
+        Event::listen(MessageSending::class, function (MessageSending $event) {
+            $sample = SampleData::emails();
+            if (! $sample || ! $event->message instanceof Email) {
+                return null;
+            }
+            $keep = fn (array $list) => array_values(array_filter($list, fn (Address $a) => ! isset($sample[mb_strtolower($a->getAddress())])));
+            $message = $event->message;
+            $message->to(...$keep($message->getTo()))->cc(...$keep($message->getCc()))->bcc(...$keep($message->getBcc()));
+
+            return $message->getTo() || $message->getCc() || $message->getBcc() ? null : false;
+        });
 
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(config('nebo.auth.max_login_attempts'))
             ->by(mb_strtolower((string) $request->input('email')).'|'.$request->ip()));

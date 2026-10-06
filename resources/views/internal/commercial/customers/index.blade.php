@@ -37,7 +37,7 @@
                             <span class="block truncate font-semibold">{{ $c->company ?: $c->name }}@if ($c->needs_review) <x-ui.badge tone="warning" class="ml-1">Check</x-ui.badge>@endif</span>
                             <span class="block truncate text-xs text-ink-500">{{ collect([$c->company ? $c->name : null, $c->typeLabel(), $c->city, $c->email, $c->phone])->filter()->implode(' · ') }}</span>
                         </span>
-                        <span class="text-xs text-ink-500">{{ $c->requests_count }} req · {{ $c->events_count }} events · {{ $c->quotations_count }} quotes</span>
+                        <span class="text-xs text-ink-500">{{ $c->requests_count }} {{ Str::plural('request', $c->requests_count) }} · {{ $c->events_count }} {{ Str::plural('event', $c->events_count) }} · {{ $c->quotations_count }} {{ Str::plural('quote', $c->quotations_count) }}</span>
                         @if ($seesMoney && $c->won_kobo)<span class="text-sm font-semibold tabular-nums">{{ Format::naira((int) $c->won_kobo) }}</span>@endif
                     </a></li>
                 @endforeach
