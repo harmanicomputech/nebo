@@ -271,13 +271,20 @@ document.querySelectorAll('form[data-filters]').forEach((form) => {
  */
 const progress = (() => {
     let bar;
+    let pill;
     let timer;
     const el = () => {
         if (!bar) {
             bar = document.createElement('div');
             bar.className = 'nav-progress';
             bar.setAttribute('aria-hidden', 'true');
-            document.body.appendChild(bar);
+            // Phones: a "Loading…" pill under the top bar, so a tap visibly did something (D72).
+            pill = document.createElement('div');
+            pill.className = 'nav-loading';
+            pill.setAttribute('role', 'status');
+            pill.innerHTML = '<span class="busy-spinner" aria-hidden="true"></span>';
+            pill.append(document.createTextNode('Loading…'));
+            document.body.append(bar, pill);
         }
         return bar;
     };
@@ -287,9 +294,11 @@ const progress = (() => {
             b.dataset.state = '';
             void b.offsetWidth; // restart the transition
             b.dataset.state = 'running';
+            pill.dataset.state = 'running';
         },
         done() {
             if (bar) bar.dataset.state = 'done';
+            if (pill) pill.dataset.state = 'done';
         },
         safety(ms = 15000) {
             clearTimeout(timer);
@@ -367,6 +376,43 @@ document.addEventListener('click', (e) => {
     markBusy(link);
     progress.start();
     progress.safety();
+});
+
+/*
+ | Instant press feedback on touch screens (D72). The pressed look is set on
+ | pointerdown, before the browser even decides it is a tap, and an empty
+ | touchstart listener makes iOS Safari apply :active styles at all.
+ */
+document.addEventListener('touchstart', () => {}, { passive: true });
+const pressable = 'a[href], button, summary, label, [role="button"], [data-tab]';
+let pressed = null;
+const release = () => {
+    pressed?.classList.remove('is-pressed');
+    pressed = null;
+};
+document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' || !(e.target instanceof Element)) return;
+    const el = e.target.closest(pressable);
+    if (!el || el.matches(':disabled')) return;
+    release();
+    pressed = el;
+    el.classList.add('is-pressed');
+}, { passive: true });
+['pointerup', 'pointercancel'].forEach((type) => document.addEventListener(type, () => setTimeout(release, 120), { passive: true }));
+document.addEventListener('scroll', release, { passive: true, capture: true });
+
+// Bottom tabs: the tapped tab lights up at once, before the next page arrives.
+const currentTab = document.querySelector('[data-tab][aria-current="page"]');
+window.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return; // back/forward cache: show this page's own tab again
+    document.querySelectorAll('[data-tab]').forEach((t) => t.toggleAttribute('aria-current', false));
+    currentTab?.setAttribute('aria-current', 'page');
+});
+document.addEventListener('click', (e) => {
+    const tab = e.target instanceof Element ? e.target.closest('a[data-tab]') : null;
+    if (!tab || e.defaultPrevented) return;
+    tab.closest('nav')?.querySelectorAll('[data-tab]').forEach((t) => t.removeAttribute('aria-current'));
+    tab.setAttribute('aria-current', 'page');
 });
 
 // Back/forward cache restores the page as it was: clear any busy state.

@@ -139,7 +139,8 @@
 @layer components {
     .nav-progress {
         position: fixed;
-        inset: 0 auto auto 0;
+        /* Below the status bar when installed (black-translucent status bar overlays the page). */
+        inset: env(safe-area-inset-top) auto auto 0;
         z-index: 100;
         height: 3px;
         width: 0;
@@ -375,5 +376,68 @@
         line-height: 1.25rem;
         font-weight: 700;
         color: #fff;
+    }
+}
+
+/*
+ | Tap feedback on phones (D72): the pressed look appears on touch-down, and
+ | page loads show a "Loading…" pill under the top bar.
+ */
+@layer base {
+    html {
+        touch-action: manipulation; /* no double-tap-to-zoom wait anywhere */
+    }
+}
+
+@media all {
+    .is-pressed {
+        opacity: 0.6;
+        transition: opacity 0s;
+    }
+    button.is-pressed, a[data-btn].is-pressed, [role='button'].is-pressed {
+        transform: scale(0.97);
+    }
+
+    .nav-loading {
+        position: fixed;
+        top: calc(env(safe-area-inset-top) + 4rem);
+        left: 50%;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 9999px;
+        background: var(--color-ink-950);
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #fff;
+        box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+        transform: translateX(-50%);
+        pointer-events: none;
+    }
+    @media (max-width: 1023px) {
+        .nav-loading[data-state='running'] {
+            display: inline-flex;
+            animation: nav-loading-in 0.15s ease-out;
+        }
+    }
+    @keyframes nav-loading-in {
+        from { opacity: 0; transform: translate(-50%, -6px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* Bottom tabs are styled by aria-current so a tap can switch them at once. */
+    [data-tab] {
+        color: var(--color-ink-500);
+    }
+    [data-tab][aria-current='page'] {
+        color: var(--color-brand-700);
+    }
+    [data-tab][aria-current='page'] .tab-pill {
+        background: var(--color-brand-50);
+    }
+    a.is-busy[data-tab] {
+        opacity: 1; /* the lit-up tab is the feedback; don't fade it */
     }
 }

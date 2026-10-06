@@ -7,8 +7,8 @@
         @foreach ($mobile['tabs'] as $tab)
             <li>
                 <a href="{{ route($tab['route']) }}" @if ($tab['active']) aria-current="page" @endif data-tab
-                   class="flex h-full flex-col items-center justify-center gap-1 text-[11px] font-semibold {{ $tab['active'] ? 'text-brand-700' : 'text-ink-500' }}">
-                    <span class="grid h-7 w-14 place-items-center rounded-full transition {{ $tab['active'] ? 'bg-brand-50' : '' }}">
+                   class="flex h-full flex-col items-center justify-center gap-1 text-[11px] font-semibold">
+                    <span class="tab-pill grid h-7 w-14 place-items-center rounded-full">
                         <x-ui.icon :name="$tab['icon']" class="size-[22px]" />
                     </span>
                     {{ $tab['label'] }}
@@ -16,9 +16,9 @@
             </li>
         @endforeach
         <li class="{{ ['', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5'][count($mobile['tabs'])] }}">
-            <button type="button" x-on:click="more = true" :aria-expanded="more" aria-haspopup="dialog"
-                    class="flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-semibold {{ $mobile['moreActive'] ? 'text-brand-700' : 'text-ink-500' }}">
-                <span class="relative grid h-7 w-14 place-items-center rounded-full {{ $mobile['moreActive'] ? 'bg-brand-50' : '' }}">
+            <button type="button" x-on:click="more = true" :aria-expanded="more" aria-haspopup="dialog" data-tab @if ($mobile['moreActive']) aria-current="page" @endif
+                    class="flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-semibold">
+                <span class="tab-pill relative grid h-7 w-14 place-items-center rounded-full">
                     <x-ui.icon name="layout-grid" class="size-[22px]" />
                 </span>
                 More
