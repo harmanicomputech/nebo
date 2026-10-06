@@ -52,8 +52,10 @@ class AppServiceProvider extends ServiceProvider
         // Data for the internal shell: sidebar, notification bell.
         View::composer('components.layouts.app', function ($view) {
             $user = auth()->user();
+            $navigation = Navigation::for($user);
             $view->with([
-                'navigation' => Navigation::for($user),
+                'navigation' => $navigation,
+                'mobile' => Navigation::mobile($navigation),
                 'unreadCount' => $user->unreadNotifications()->count(),
                 'recentNotifications' => $user->notifications()->latest()->limit(6)->get(),
             ]);

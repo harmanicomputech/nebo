@@ -14,7 +14,7 @@
                    @class(['-mb-px shrink-0 border-b-2 px-3 py-3 text-sm font-semibold', 'border-brand-600 text-ink-900' => $when === $key, 'border-transparent text-ink-500 hover:text-ink-900' => $when !== $key])>{{ $label }}</a>
             @endforeach
         </nav>
-        <form method="GET" class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-5 lg:items-end">
+        <form method="GET" data-filters class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-5 lg:items-end">
             <input type="hidden" name="when" value="{{ $when }}">
             <div class="relative sm:col-span-2">
                 <label for="q" class="sr-only">Search events</label>
@@ -44,8 +44,9 @@
                             <span class="block truncate font-semibold text-ink-900">{{ $event->name }}</span>
                             <span class="block truncate text-xs text-ink-500">{{ $event->reference }} · {{ $event->customer?->company ?: $event->customer?->name }} · {{ $event->venue }}</span>
                             <span class="mt-1 block text-xs text-ink-500">Setup {{ Format::datetime($event->setup_starts_at, 'j M, g:ia') }} → breakdown {{ Format::datetime($event->breakdown_ends_at, 'j M, g:ia') }} · {{ $event->team_count }} crew</span>
+                            <x-ui.badge :tone="$event->status->tone()" class="mt-1.5 sm:hidden">{{ $event->status->label() }}</x-ui.badge>
                         </span>
-                        <x-ui.badge :tone="$event->status->tone()">{{ $event->status->label() }}</x-ui.badge>
+                        <x-ui.badge :tone="$event->status->tone()" class="max-sm:hidden">{{ $event->status->label() }}</x-ui.badge>
                     </a></li>
                 @endforeach
             </ul>

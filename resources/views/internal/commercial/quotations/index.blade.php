@@ -23,7 +23,7 @@
                    @class(['-mb-px shrink-0 border-b-2 px-3 py-3 text-sm font-semibold', 'border-brand-600 text-ink-900' => $view === $key, 'border-transparent text-ink-500 hover:text-ink-900' => $view !== $key])>{{ $label }}</a>
             @endforeach
         </nav>
-        <form method="GET" class="flex flex-col gap-3 border-b border-ink-100 p-4 sm:flex-row sm:px-6">
+        <form method="GET" data-filters class="flex flex-col gap-3 border-b border-ink-100 p-4 sm:flex-row sm:px-6">
             <input type="hidden" name="view" value="{{ $view }}">
             <div class="relative flex-1">
                 <label for="q" class="sr-only">Search quotations</label>

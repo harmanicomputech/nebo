@@ -5,18 +5,13 @@
     @include('partials.head', ['title' => $title])
     <meta name="robots" content="noindex, nofollow">
 </head>
-<body class="h-full" x-data="{ nav: false }" x-on:keydown.escape.window="nav = false">
+<body class="has-tabbar h-full" x-data="{ more: false, search: false }" x-on:keydown.escape.window="more = false; search = false">
 <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">Skip to content</a>
 
-{{-- Mobile backdrop --}}
-<div x-cloak x-show="nav" x-transition.opacity class="fixed inset-0 z-40 bg-ink-950/60 lg:hidden" x-on:click="nav = false"></div>
-
-{{-- Sidebar --}}
-<aside class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-ink-950 text-ink-300 transition-transform duration-200 lg:translate-x-0"
-       :class="nav ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" aria-label="Main navigation">
-    <div class="flex h-16 items-center justify-between border-b border-white/5 px-5">
+{{-- Sidebar (desktop; phones use the bottom tab bar, D70) --}}
+<aside class="fixed inset-y-0 left-0 z-50 hidden w-72 flex-col bg-ink-950 text-ink-300 lg:flex" aria-label="Main navigation">
+    <div class="flex h-16 items-center border-b border-white/5 px-5">
         <a href="{{ route('app.dashboard') }}"><x-ui.logo dark /></a>
-        <button type="button" class="rounded-md p-1.5 text-ink-400 hover:bg-white/5 hover:text-white lg:hidden" x-on:click="nav = false" aria-label="Close menu"><x-ui.icon name="x" /></button>
     </div>
     <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5">
         @foreach ($navigation['sections'] as $section)
@@ -68,10 +63,11 @@
 </aside>
 
 <div class="lg:pl-72">
-    {{-- Top bar --}}
-    <header class="sticky top-0 z-30 border-b border-ink-100 bg-white/85 backdrop-blur-md">
+    @include('partials.mobile-top-bar')
+
+    {{-- Top bar (desktop) --}}
+    <header class="sticky top-0 z-30 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block">
         <div class="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
-            <button type="button" class="-ml-1 rounded-lg p-2 text-ink-600 hover:bg-ink-100 lg:hidden" x-on:click="nav = true" aria-label="Open menu"><x-ui.icon name="menu" /></button>
 
             <form action="{{ route('app.search') }}" method="GET" role="search" class="relative max-w-xl flex-1"
                   x-data="globalSearch('{{ route('app.search') }}')" x-on:click.outside="open = false" x-on:keydown.escape="open = false">
@@ -158,13 +154,14 @@
         </div>
     </header>
 
-    <main id="main" class="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <main id="main" class="px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 lg:px-8 lg:py-8">
         <div class="mx-auto max-w-7xl">
             {{ $slot }}
         </div>
     </main>
 </div>
 
+@include('partials.mobile-tab-bar')
 @include('partials.toasts')
 </body>
 </html>

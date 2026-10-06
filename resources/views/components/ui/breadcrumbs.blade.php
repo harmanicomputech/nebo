@@ -1,5 +1,5 @@
 @props(['items' => []]) {{-- [label => url|null] --}}
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" {{ $attributes }}>
     <ol class="flex flex-wrap items-center gap-1 text-xs font-medium text-ink-500">
         @foreach ($items as $label => $url)
             <li class="flex items-center gap-1">

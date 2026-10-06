@@ -3,7 +3,7 @@
         <x-slot:actions>@can('create', App\Models\Staff::class)<x-ui.button icon="user-plus" :href="route('app.staff.create')">Add person</x-ui.button>@endcan</x-slot:actions>
     </x-ui.page-header>
     <x-ui.card :padding="false">
-        <form method="GET" class="flex flex-col gap-3 border-b border-ink-100 p-4 sm:flex-row sm:items-end sm:px-6">
+        <form method="GET" data-filters class="flex flex-col gap-3 border-b border-ink-100 p-4 sm:flex-row sm:items-end sm:px-6">
             <div class="relative flex-1">
                 <label for="q" class="sr-only">Search</label>
                 <x-ui.icon name="search" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-400" />

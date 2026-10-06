@@ -4,8 +4,8 @@
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
         <x-ui.card title="Filter" class="lg:order-2">
-            <form method="GET" class="space-y-4">
-                <x-ui.input name="q" type="search" label="Search" :value="$filters['q'] ?? ''" placeholder="Equipment, SKU, tag or note" />
+            <form method="GET" data-filters class="space-y-4">
+                <x-ui.input name="q" type="search" label="Search" :value="$filters['q'] ?? ''" placeholder="Equipment, SKU, tag or note" class="filters-keep" />
                 <x-ui.select name="type" label="Movement" :options="$types" :value="$filters['type'] ?? ''" placeholder="Any" />
                 <x-ui.select name="location" label="Location" :options="$locations" :value="$filters['location'] ?? ''" placeholder="Any" />
                 <x-ui.input name="from" type="date" label="From" :value="$filters['from'] ?? ''" />

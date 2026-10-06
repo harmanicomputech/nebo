@@ -1,14 +1,14 @@
 @php use App\Support\Format; @endphp
 <x-layouts.app title="Dashboard">
     {{-- Hero: what is happening right now --}}
-    <section class="relative mb-8 overflow-hidden rounded-3xl bg-ink-950 px-6 py-8 text-white sm:px-10 sm:py-10">
+    <section class="relative mb-5 overflow-hidden rounded-3xl bg-ink-950 px-5 py-6 text-white sm:mb-8 sm:px-10 sm:py-10">
         <div class="stage-grid absolute inset-0"></div>
         <div class="stage-beam absolute inset-0 opacity-80"></div>
-        <div class="relative flex flex-wrap items-end justify-between gap-6">
+        <div class="relative flex flex-wrap items-end justify-between gap-4 sm:gap-6">
             <div>
                 <p class="text-xs font-semibold tracking-[0.25em] text-brand-400 uppercase">{{ Format::datetime(now(), 'l, j F Y') }}</p>
-                <h1 class="mt-3 text-3xl font-semibold sm:text-4xl">Good {{ now(config('nebo.display_timezone'))->hour < 12 ? 'morning' : (now(config('nebo.display_timezone'))->hour < 17 ? 'afternoon' : 'evening') }}, {{ \Illuminate\Support\Str::before($user->name, ' ') }}.</h1>
-                <p class="mt-2 max-w-xl text-sm text-ink-300">What is happening at Nebo Stage right now: today’s events, new requests, inventory and anything that needs attention.</p>
+                <h1 class="mt-2 text-2xl font-semibold sm:mt-3 sm:text-4xl">Good {{ now(config('nebo.display_timezone'))->hour < 12 ? 'morning' : (now(config('nebo.display_timezone'))->hour < 17 ? 'afternoon' : 'evening') }}, {{ \Illuminate\Support\Str::before($user->name, ' ') }}.</h1>
+                <p class="mt-2 hidden max-w-xl text-sm text-ink-300 sm:block">What is happening at Nebo Stage right now: today’s events, new requests, inventory and anything that needs attention.</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 @foreach ($user->getRoleNames() as $role)
@@ -18,7 +18,7 @@
         </div>
     </section>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <x-ui.stat label="Unread notifications" :value="$stats['unread']" icon="bell" tone="brand" :href="route('app.notifications.index', ['filter' => 'unread'])" />
         @if ($stats['activeUsers'] !== null)
             <x-ui.stat label="Active users" :value="$stats['activeUsers']" icon="users" :href="route('app.users.index', ['status' => 'active'])" />

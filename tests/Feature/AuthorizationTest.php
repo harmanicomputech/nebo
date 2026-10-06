@@ -97,8 +97,11 @@ class AuthorizationTest extends TestCase
     {
         $html = $this->actingAs($this->superAdmin())->get('/app/users')->getContent();
 
-        // One active sidebar link (the breadcrumb's aria-current is a span, not a link).
-        $this->assertSame(1, preg_match_all('#<a [^>]*aria-current="page"#', $html));
+        // One active link in the sidebar, and one in the phone menu (the breadcrumb's aria-current is a span, not a link).
+        $sidebar = str($html)->between('<aside', '</aside>')->toString();
+        $this->assertSame(1, preg_match_all('#<a [^>]*aria-current="page"#', $sidebar));
+        $phoneMenu = str($html)->after('aria-label="All modules"')->toString();
+        $this->assertSame(1, preg_match_all('#<a [^>]*aria-current="page"#', $phoneMenu));
         $this->assertMatchesRegularExpression('#href="'.preg_quote(route('app.users.index'), '#').'"\s+aria-current="page"#', $html);
     }
 

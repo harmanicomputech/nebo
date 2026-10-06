@@ -208,3 +208,172 @@
         box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
     }
 }
+
+/*
+ | Phone app shell (D70). Below lg the internal app is laid out like a native
+ | app: dark top bar, bottom tab bar, sheets instead of dialogs. Desktop
+ | (lg and up) is unchanged.
+ */
+@layer base {
+    /* iOS zooms into any field under 16px; phones get 16px text in fields. */
+    @media (max-width: 639px) {
+        input:not([type=checkbox]):not([type=radio]), select, textarea {
+            font-size: 16px;
+        }
+    }
+
+    /* Swipeable tab strips and chip rows: no scrollbar on touch screens. */
+    @media (hover: none) {
+        .overflow-x-auto {
+            scrollbar-width: none;
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+/* Unlayered on purpose: these must win over utility classes on the same elements. */
+@media all {
+    @media (max-width: 639px) {
+        /* Toasts sit above the bottom tab bar. */
+        .has-tabbar .toast-stack {
+            bottom: calc(4.25rem + env(safe-area-inset-bottom));
+        }
+
+        /* Tables become a list of labelled cards ([data-stack], see app.js). */
+        [data-stack] {
+            overflow-x: visible;
+        }
+        [data-stack] .table-nebo,
+        [data-stack] .table-nebo tbody,
+        [data-stack] .table-nebo tr,
+        [data-stack] .table-nebo td {
+            display: block;
+            width: 100%;
+        }
+        [data-stack] .table-nebo thead {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+        }
+        [data-stack] .table-nebo tbody tr {
+            position: relative;
+            border-top: 1px solid var(--color-ink-100);
+            padding: 0.875rem 1rem;
+        }
+        [data-stack] .table-nebo tbody tr:first-child {
+            border-top: 0;
+        }
+        [data-stack] .table-nebo tbody td {
+            display: flow-root;
+            border: 0;
+            padding: 0.3rem 0;
+            text-align: right;
+            min-width: 0;
+        }
+        [data-stack] .table-nebo tbody td > * {
+            margin-left: auto;
+        }
+        [data-stack] .table-nebo tbody td:not(:first-child) > :is(.flex, .inline-flex) {
+            justify-content: flex-end;
+        }
+        [data-stack] .table-nebo tbody td::before {
+            content: attr(data-label);
+            float: left;
+            margin-right: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            line-height: 1.5rem;
+            font-weight: 500;
+            color: var(--color-ink-500);
+        }
+        [data-stack] .table-nebo tbody td:not([data-label])::before {
+            content: none;
+        }
+        /* The first column is the card's title. */
+        [data-stack] .table-nebo tbody td:first-child {
+            display: block;
+            padding-bottom: 0.375rem;
+            text-align: left;
+            font-size: 0.9375rem;
+        }
+        [data-stack] .table-nebo tbody td:first-child::before {
+            content: none;
+        }
+        [data-stack] .table-nebo tbody td:empty {
+            display: none;
+        }
+        [data-stack] .table-nebo tbody td[colspan] {
+            display: block;
+            text-align: center;
+        }
+
+        /* Filter forms: the search box and a Filters button; the rest on tap. */
+        form.filters-collapsible:not(.filters-open) {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        form.filters-collapsible:not(.filters-open) > :not(.filters-keep):not(.filters-toggle) {
+            display: none;
+        }
+        form.filters-collapsible > .filters-keep {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
+    .filters-toggle {
+        display: none;
+    }
+    @media (max-width: 639px) {
+        .filters-toggle {
+            position: relative;
+            display: inline-flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            min-height: 2.75rem;
+            min-width: 2.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-ink-200);
+            background: #fff;
+            padding: 0 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-ink-800);
+        }
+        .filters-toggle:empty, .filters-toggle > span:empty {
+            display: none;
+        }
+        .filters-toggle[aria-expanded='true'] {
+            border-color: var(--color-ink-900);
+            background: var(--color-ink-900);
+            color: #fff;
+        }
+        form.filters-collapsible:not(:has(.filters-keep)) > .filters-toggle {
+            width: 100%;
+        }
+        form.filters-open > .filters-toggle {
+            justify-self: end;
+        }
+    }
+    .filters-count {
+        display: inline-grid;
+        min-width: 1.25rem;
+        place-items: center;
+        border-radius: 9999px;
+        background: var(--color-brand-600);
+        padding: 0 0.3rem;
+        font-size: 0.6875rem;
+        line-height: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+    }
+}

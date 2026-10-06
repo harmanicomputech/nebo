@@ -3,7 +3,7 @@
     <x-ui.page-header title="Equipment availability" description="Free units per item for the next two weeks, after every booking. Pick a date, category or item." :breadcrumbs="['Operations' => null, 'Availability' => null]" />
 
     <x-ui.card :padding="false">
-        <form method="GET" class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-5 lg:items-end">
+        <form method="GET" data-filters class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-5 lg:items-end">
             <x-ui.input label="From" name="date" type="date" :value="$from->toDateString()" />
             <x-ui.select label="Category" name="category" :options="$categories" :value="$filters['category'] ?? ''" placeholder="All categories" />
             <x-ui.select label="Item" name="equipment" :options="$equipmentOptions" :value="$filters['equipment'] ?? ''" placeholder="All items" />

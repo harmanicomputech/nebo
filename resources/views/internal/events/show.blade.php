@@ -83,7 +83,7 @@
                         <li class="px-5 py-4 sm:px-6" x-data="{ open: {{ $row['shortage'] || $row['status'] === 'attention' ? 'true' : 'false' }} }">
                             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
                                 <div class="min-w-48 flex-1">
-                                    <a href="{{ route('app.inventory.equipment.show', $row['equipment']) }}" class="font-semibold hover:text-brand-700">{{ $row['equipment']->name }}</a>
+                                    @can('inventory.view')<a href="{{ route('app.inventory.equipment.show', $row['equipment']) }}" class="font-semibold hover:text-brand-700">{{ $row['equipment']->name }}</a>@else<span class="font-semibold">{{ $row['equipment']->name }}</span>@endcan
                                     <p class="text-xs text-ink-500">{{ $row['equipment']->category?->name }} · {{ $row['equipment']->tracking_mode->label() }}@if ($req->notes) · {{ $req->notes }}@endif</p>
                                 </div>
                                 <dl class="grid grid-cols-3 gap-4 text-center text-sm">

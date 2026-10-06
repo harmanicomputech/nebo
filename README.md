@@ -87,6 +87,7 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Commercial: customer profiles with duplicate merging, production packages, and quotations with approval, server-computed totals, a printable copy and online acceptance by the customer.
 - Reports with charts and CSV export: utilisation, events and pipeline, maintenance, logistics, inventory and commercial; dashboard trends.
 - Hardening: strict security headers and CSP, an automated access audit of every route, WCAG AA colour contrast, tuned queries and a production readiness check.
+- On phones it works like an installed app: bottom tab bar with role-aware tabs, a More menu, full-screen search, list rows as cards, bottom-sheet dialogs. The desktop layout is unchanged.
 - Every tap shows feedback and can't be submitted twice.
 - Installs on shared hosting with no terminal: an upload zip, a browser installer with optional demo data, updates from Settings → System, and background jobs without cron.
 

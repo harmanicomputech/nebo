@@ -12,17 +12,27 @@
     <x-ui.card :padding="false">
         <form method="GET" class="border-b border-ink-100 p-4 sm:px-6" x-data="{ more: {{ collect($filters)->except(['q', 'category', 'view', 'sort'])->filter()->isNotEmpty() ? 'true' : 'false' }} }">
             <input type="hidden" name="view" value="{{ $view }}">
+            @php $appliedFilters = collect($filters)->except(['q', 'view', 'sort'])->filter()->count(); @endphp
             <div class="flex flex-col gap-3 lg:flex-row lg:items-end">
-                <div class="relative flex-1">
-                    <label for="q" class="sr-only">Search equipment</label>
-                    <x-ui.icon name="search" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-400" />
-                    <input id="q" name="q" type="search" value="{{ $filters['q'] ?? '' }}" placeholder="Name, SKU, make, model, asset tag or serial" class="field pl-9">
+                <div class="flex flex-1 gap-2">
+                    <div class="relative flex-1">
+                        <label for="q" class="sr-only">Search equipment</label>
+                        <x-ui.icon name="search" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-400" />
+                        <input id="q" name="q" type="search" value="{{ $filters['q'] ?? '' }}" placeholder="Name, SKU, make, model, asset tag or serial" class="field pl-9">
+                    </div>
+                    {{-- Phones: one Filters button reveals everything else (D70). --}}
+                    <button type="button" class="filters-toggle" x-on:click="more = !more" :aria-expanded="more" aria-label="Filters">
+                        <x-ui.icon name="sliders-horizontal" class="size-4" />
+                        @if ($appliedFilters)<span class="filters-count">{{ $appliedFilters }}</span>@endif
+                    </button>
                 </div>
-                <x-ui.select name="category" :options="$categories" :value="$filters['category'] ?? ''" placeholder="All categories" class="lg:w-56" aria-label="Category" />
-                <x-ui.select name="sort" :options="['name' => 'Sort: Name', 'sku' => 'Sort: SKU', 'available' => 'Sort: Most available', 'updated' => 'Sort: Recently updated']" :value="$filters['sort'] ?? 'name'" class="lg:w-52" aria-label="Sort" />
-                <div class="flex gap-2">
-                    <x-ui.button variant="secondary" icon="sliders-horizontal" x-on:click="more = !more" ::aria-expanded="more">Filters</x-ui.button>
-                    <x-ui.button type="submit" variant="dark">Apply</x-ui.button>
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-end" :class="more ? '' : 'max-sm:hidden'">
+                    <x-ui.select name="category" :options="$categories" :value="$filters['category'] ?? ''" placeholder="All categories" class="lg:w-56" aria-label="Category" />
+                    <x-ui.select name="sort" :options="['name' => 'Sort: Name', 'sku' => 'Sort: SKU', 'available' => 'Sort: Most available', 'updated' => 'Sort: Recently updated']" :value="$filters['sort'] ?? 'name'" class="lg:w-52" aria-label="Sort" />
+                    <div class="flex gap-2">
+                        <x-ui.button variant="secondary" icon="sliders-horizontal" x-on:click="more = !more" ::aria-expanded="more" class="max-sm:hidden">Filters</x-ui.button>
+                        <x-ui.button type="submit" variant="dark" class="max-sm:flex-1">Apply</x-ui.button>
+                    </div>
                 </div>
             </div>
             <div x-cloak x-show="more" class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">

@@ -41,9 +41,9 @@
             <x-ui.card title="Lines" :padding="false">
                 @if ($packages && $s === QuotationStatus::Draft)
                     <x-slot:actions>
-                        <form method="POST" action="{{ route('app.quotations.package', $quote) }}" class="flex gap-2">
+                        <form method="POST" action="{{ route('app.quotations.package', $quote) }}" class="flex w-full min-w-0 gap-2 sm:w-auto">
                             @csrf
-                            <x-ui.select name="package_id" :options="$packages" placeholder="Add a package…" aria-label="Package" />
+                            <x-ui.select name="package_id" :options="$packages" placeholder="Add a package…" aria-label="Package" class="min-w-0 flex-1" />
                             <x-ui.button type="submit" size="sm" variant="secondary">Add</x-ui.button>
                         </form>
                     </x-slot:actions>

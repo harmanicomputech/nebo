@@ -6,7 +6,7 @@
                 @if ($title)<h2 class="text-base font-semibold text-ink-900">{{ $title }}</h2>@endif
                 @if ($description)<p class="mt-0.5 text-sm text-ink-500">{{ $description }}</p>@endif
             </div>
-            @isset($actions)<div class="flex shrink-0 items-center gap-2">{{ $actions }}</div>@endisset
+            @isset($actions)<div class="flex min-w-0 shrink-0 items-center gap-2 max-sm:w-full">{{ $actions }}</div>@endisset
         </header>
     @endif
     <div @class(['px-5 py-5 sm:px-6' => $padding])>

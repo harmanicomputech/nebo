@@ -188,6 +188,78 @@ document.addEventListener('click', (e) => {
 })();
 
 /*
+ | Phone app shell (D70).
+ |
+ | - The top bar's back arrow returns to the previous screen when there is
+ |   one in this app; otherwise it follows its link (the section's list).
+ | - Table rows ([data-stack] tables) become labelled cards on phones: each
+ |   cell gets its column heading as data-label for the CSS to show.
+ | - Filter forms ([data-filters]) collapse to the search box and a
+ |   "Filters" button on phones; the button shows how many are applied.
+ */
+document.addEventListener('click', (e) => {
+    const back = e.target instanceof Element ? e.target.closest('a[data-back]') : null;
+    if (!back || e.defaultPrevented) return;
+    let fromHere = false;
+    try {
+        fromHere = document.referrer !== '' && new URL(document.referrer).origin === location.origin && new URL(document.referrer).pathname !== location.pathname;
+    } catch { /* no usable referrer */ }
+    if (fromHere && history.length > 1) {
+        e.preventDefault();
+        history.back();
+    }
+});
+
+document.querySelectorAll('[data-stack] table').forEach((table) => {
+    const labels = [...table.querySelectorAll('thead th')].map((th) => {
+        const text = th.textContent.trim();
+        const hidden = th.querySelector('.sr-only');
+        return hidden && hidden.textContent.trim() === text ? '' : text;
+    });
+    table.querySelectorAll('tbody tr').forEach((tr) => {
+        let col = 0;
+        [...tr.children].forEach((td) => {
+            const span = Number(td.getAttribute('colspan') || 1);
+            if (span === 1 && labels[col] && !td.hasAttribute('data-label')) td.dataset.label = labels[col];
+            col += span;
+        });
+    });
+});
+
+document.querySelectorAll('form[data-filters]').forEach((form) => {
+    const fields = [...form.children].filter((el) => !(el instanceof HTMLInputElement && el.type === 'hidden'));
+    const keep = fields.find((el) => el.querySelector?.('input[type=search]') || (el instanceof HTMLInputElement && el.type === 'search'));
+    keep?.classList.add('filters-keep');
+    const applied = [...form.querySelectorAll('select, input:not([type=hidden]):not([type=search]):not([type=submit])')]
+        .filter((el) => {
+            if (el instanceof HTMLSelectElement) return el.selectedIndex > 0; // the first option is "any" or the default sort
+            return el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value !== '';
+        }).length;
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'filters-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="size-4"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>';
+    const label = document.createElement('span');
+    label.textContent = keep ? '' : 'Filters';
+    toggle.append(label);
+    toggle.setAttribute('aria-label', 'Filters');
+    if (applied) {
+        const badge = document.createElement('span');
+        badge.className = 'filters-count';
+        badge.textContent = String(applied);
+        toggle.append(badge);
+    }
+    toggle.addEventListener('click', () => {
+        const open = form.classList.toggle('filters-open');
+        toggle.setAttribute('aria-expanded', String(open));
+    });
+    form.classList.add('filters-collapsible');
+    if (keep) keep.after(toggle); else form.prepend(toggle);
+});
+
+/*
  | Tap feedback and double-submit protection (D59).
  |
  | - Any form submit marks the tapped button busy (spinner, no more taps)

@@ -6,7 +6,7 @@
     ])->when($errors->any() && ! ($hideErrorToast ?? false), fn ($c) => $c->push(['type' => 'error', 'message' => $errors->count() > 1 ? 'Please fix the highlighted fields.' : $errors->first()]))
       ->filter(fn ($t) => filled($t['message']))->values();
 @endphp
-<div x-data="toasts(@js($initialToasts))" class="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 p-4 sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:items-end" aria-live="polite" role="status">
+<div x-data="toasts(@js($initialToasts))" class="toast-stack pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 p-4 sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:items-end" aria-live="polite" role="status">
     <template x-for="t in items" :key="t.id">
         <div x-transition class="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border bg-white p-4 shadow-lift"
              :class="{ 'border-emerald-200': t.type === 'success', 'border-brand-200': t.type === 'error', 'border-ink-200': t.type === 'info' }">

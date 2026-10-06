@@ -4,7 +4,7 @@
         :breadcrumbs="['Administration' => null, 'Audit log' => null]" />
 
     <x-ui.card :padding="false">
-        <form method="GET" class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-6 lg:items-end">
+        <form method="GET" data-filters class="grid gap-3 border-b border-ink-100 p-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-6 lg:items-end">
             <x-ui.input name="q" type="search" label="Search" :value="$filters['q'] ?? ''" placeholder="Description or record ID" class="lg:col-span-2" />
             <x-ui.select name="event" label="Action" :options="$events->combine($events)->all()" :value="$filters['event'] ?? ''" placeholder="Any action" />
             <x-ui.select name="type" label="Record type" :options="$types->combine($types)->all()" :value="$filters['type'] ?? ''" placeholder="Any type" />

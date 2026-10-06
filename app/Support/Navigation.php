@@ -85,6 +85,46 @@ class Navigation
         ];
     }
 
+    /** Bottom-bar tabs on phones, most important first; the first four the user can open are shown (D70). */
+    private const TAB_PRIORITY = [
+        'app.dashboard' => 'Home',
+        'app.events.index' => 'Events',
+        'app.requests.index' => 'Requests',
+        'app.inventory.equipment.index' => 'Equipment',
+        'app.logistics.index' => 'Trips',
+        'app.maintenance.index' => 'Repairs',
+        'app.calendar' => 'Calendar',
+        'app.quotations.index' => 'Quotes',
+    ];
+
+    /**
+     * The phone shell (D70): four bottom tabs plus "More", whether the page is
+     * a top-level screen (logo) or a detail screen (back arrow), and where
+     * the back arrow goes when there is no history to return to.
+     *
+     * @param  array{sections: list<array{label: string, items: list<array<string, mixed>>}>, planned: list<array<string, mixed>>}  $navigation
+     * @return array{tabs: list<array{label: string, icon: string, route: string, active: bool}>, moreActive: bool, isRoot: bool, back: string}
+     */
+    public static function mobile(array $navigation): array
+    {
+        $items = collect($navigation['sections'])->flatMap(fn (array $section) => $section['items'])
+            ->map(fn (array $item) => $item + ['isActive' => request()->routeIs($item['route'], ...(array) $item['active'])]);
+
+        $tabs = collect(self::TAB_PRIORITY)
+            ->map(fn (string $short, string $route) => ($item = $items->firstWhere('route', $route)) ? ['label' => $short, 'icon' => $item['icon'], 'route' => $route, 'active' => $item['isActive']] : null)
+            ->filter()->take(4)->values();
+
+        $current = $items->firstWhere('isActive', true);
+        $tabRoutes = $tabs->pluck('route')->all();
+
+        return [
+            'tabs' => $tabs->all(),
+            'moreActive' => $current !== null && ! in_array($current['route'], $tabRoutes, true) || request()->routeIs('app.profile.*', 'app.notifications.*'),
+            'isRoot' => request()->routeIs('app.dashboard', ...$items->pluck('route')->all()),
+            'back' => route($current['route'] ?? 'app.dashboard'),
+        ];
+    }
+
     /**
      * @return array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}
      */
