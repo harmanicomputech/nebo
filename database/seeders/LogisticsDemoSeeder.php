@@ -6,6 +6,7 @@ use App\Enums\TripDirection;
 use App\Enums\TripStatus;
 use App\Models\Event;
 use App\Models\Location;
+use App\Models\LogisticsTrip;
 use App\Models\Staff;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -16,9 +17,27 @@ use Illuminate\Database\Seeder;
 /** Demo fleet and trips (never production). */
 class LogisticsDemoSeeder extends Seeder
 {
+    /**
+     * The demo fleet, created once (the history seeder uses it first).
+     *
+     * @return array<string, Vehicle> truck, van
+     */
+    public static function fleet(?Staff $driver, ?Location $main): array
+    {
+        $today = CarbonImmutable::now(config('nebo.display_timezone'));
+        $truck = Vehicle::withTrashed()->firstOrCreate(['registration' => 'LSD 482 XA'], ['name' => 'Truck 1 (10 t)', 'type' => 'truck', 'capacity' => '10 t · 40 m³', 'payload_kg' => 10000,
+            'status' => 'active', 'default_driver_id' => $driver?->id, 'base_location_id' => $main?->id, 'insurance_expires_on' => $today->addMonths(8)->toDateString(), 'roadworthiness_expires_on' => $today->addDays(18)->toDateString()]);
+        $van = Vehicle::withTrashed()->firstOrCreate(['registration' => 'KJA 115 GH'], ['name' => 'Box Van 2', 'type' => 'box_van', 'capacity' => '3.5 t · 18 m³', 'payload_kg' => 3500,
+            'status' => 'active', 'base_location_id' => $main?->id, 'insurance_expires_on' => $today->addMonths(3)->toDateString(), 'roadworthiness_expires_on' => $today->addMonths(5)->toDateString()]);
+        Vehicle::withTrashed()->firstOrCreate(['registration' => 'AAA 903 KL'], ['name' => 'Crew Bus', 'type' => 'bus', 'capacity' => '18 seats', 'status' => 'active', 'base_location_id' => $main?->id]);
+        Vehicle::withTrashed()->firstOrCreate(['registration' => 'EKY 220 BD'], ['name' => 'Truck 2 (5 t)', 'type' => 'truck', 'capacity' => '5 t', 'status' => 'out_of_service', 'remarks' => 'Gearbox rebuild at the dealer.']);
+
+        return ['truck' => $truck, 'van' => $van];
+    }
+
     public function run(TripService $trips): void
     {
-        if (Vehicle::withTrashed()->exists()) {
+        if (LogisticsTrip::whereHas('event', fn ($q) => $q->where('name', '[Demo] FirstCorp Town Hall'))->exists()) {
             return;
         }
 
@@ -27,14 +46,8 @@ class LogisticsDemoSeeder extends Seeder
         $main = Location::where('code', 'MAIN')->first();
         $driver = Staff::where('role', 'driver')->first();
         $crewMember = Staff::where('user_id', User::where('email', 'crew@nebostage.test')->value('id'))->first();
-        $today = CarbonImmutable::now(config('nebo.display_timezone'));
 
-        $truck = Vehicle::create(['name' => 'Truck 1 (10 t)', 'registration' => 'LSD 482 XA', 'type' => 'truck', 'capacity' => '10 t · 40 m³', 'payload_kg' => 10000,
-            'status' => 'active', 'default_driver_id' => $driver?->id, 'base_location_id' => $main?->id, 'insurance_expires_on' => $today->addMonths(8)->toDateString(), 'roadworthiness_expires_on' => $today->addDays(18)->toDateString()]);
-        $van = Vehicle::create(['name' => 'Box Van 2', 'registration' => 'KJA 115 GH', 'type' => 'box_van', 'capacity' => '3.5 t · 18 m³', 'payload_kg' => 3500,
-            'status' => 'active', 'base_location_id' => $main?->id, 'insurance_expires_on' => $today->addMonths(3)->toDateString(), 'roadworthiness_expires_on' => $today->addMonths(5)->toDateString()]);
-        Vehicle::create(['name' => 'Crew Bus', 'registration' => 'AAA 903 KL', 'type' => 'bus', 'capacity' => '18 seats', 'status' => 'active', 'base_location_id' => $main?->id]);
-        Vehicle::create(['name' => 'Truck 2 (5 t)', 'registration' => 'EKY 220 BD', 'type' => 'truck', 'capacity' => '5 t', 'status' => 'out_of_service', 'remarks' => 'Gearbox rebuild at the dealer.']);
+        [$truck, $van] = array_values(self::fleet($driver, $main));
 
         $base = trim(($main?->name ?? 'Main Warehouse').($main?->address ? ', '.$main->address : ''));
 

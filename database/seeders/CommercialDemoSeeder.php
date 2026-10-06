@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Equipment;
 use App\Models\Event;
 use App\Models\EventRequest;
+use App\Models\ProductionPackage;
 use App\Models\Quotation;
 use App\Models\Service;
 use App\Models\User;
@@ -18,7 +19,7 @@ class CommercialDemoSeeder extends Seeder
 {
     public function run(PackageService $packages, QuotationService $quotes): void
     {
-        if (Quotation::withTrashed()->exists()) {
+        if (ProductionPackage::withTrashed()->where('name', 'Conference AV — up to 500 guests')->exists()) {
             return;
         }
 

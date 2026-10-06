@@ -40,6 +40,8 @@ Open <http://localhost:8000> for the public site and <http://localhost:8000/app>
 | Crew | crew@nebostage.test |
 | Viewer | viewer@nebostage.test |
 
+The demo data (all marked `[Demo]` or with `DEMO-` SKUs) covers a full year of business so every screen and report has something to show: about 40 production requests from 14 customers, 29 events (24 completed with load lists, trips, check-ins, damage and repairs), quotations in every state (accepted, declined, expired, sent, draft), upcoming bookings with reserved equipment, open maintenance jobs and a fleet. It is built through the real services, so the ledger, timelines and audit history are consistent. Seeding takes under a minute.
+
 ## Production setup
 
 Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short:

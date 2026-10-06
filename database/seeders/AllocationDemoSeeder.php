@@ -17,7 +17,8 @@ class AllocationDemoSeeder extends Seeder
 {
     public function run(RequirementService $requirements, AllocationService $allocations, LoadListService $lists): void
     {
-        if (EquipmentAllocation::exists()) {
+        // Guard on this seeder's own data (the history seeder creates allocations too).
+        if (EquipmentAllocation::whereHas('event', fn ($q) => $q->where('name', '[Demo] FirstCorp Town Hall'))->exists()) {
             return;
         }
 

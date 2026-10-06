@@ -19,7 +19,7 @@ class MaintenanceDemoSeeder extends Seeder
 {
     public function run(MaintenanceService $jobs, MaintenanceScheduler $scheduler, InspectionService $inspections): void
     {
-        if (MaintenanceRecord::exists()) {
+        if (MaintenanceRecord::where('issue', 'Pan motor grinding at speed')->exists()) {
             return;
         }
 

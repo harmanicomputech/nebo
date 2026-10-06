@@ -51,7 +51,7 @@ class TeamService
 
         Audit::record('team_assigned', "{$staff->name} added to {$event->reference} as {$member->roleLabel()}".($conflicts->isNotEmpty() ? " despite overlapping with {$conflicts->pluck('reference')->implode(', ')}: {$overrideReason}" : ''), $event);
 
-        if ($staff->user && $staff->user->is_active) {
+        if ($staff->loadMissing('user')->user && $staff->user->is_active) {
             $staff->user->notify(new AssignedToEvent($event, $member->roleLabel()));
         }
 
