@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Event;
 use App\Models\EventRequest;
+use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
+use App\Models\Vehicle;
 use App\Services\Documents\DocumentStore;
 use App\Services\Documents\UploadRules;
 use App\Support\Lookups;
@@ -29,6 +31,8 @@ class DocumentController extends Controller
         'request' => EventRequest::class,
         'event' => Event::class,
         'maintenance' => MaintenanceRecord::class,
+        'trip' => LogisticsTrip::class,
+        'vehicle' => Vehicle::class,
     ];
 
     public function download(Document $document): StreamedResponse

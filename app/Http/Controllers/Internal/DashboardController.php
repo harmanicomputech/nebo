@@ -10,6 +10,7 @@ use App\Models\EquipmentAsset;
 use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\LoadList;
+use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
 use App\Models\Role;
 use App\Models\User;
@@ -45,6 +46,11 @@ class DashboardController extends Controller
                 'overdue' => EquipmentAllocation::where('state', 'checked_out')->where('hold_ends_at', '<', now())->with('event')->get()->groupBy('event_id'),
                 'inTransit' => EquipmentAsset::whereHas('status', fn ($q) => $q->where('code', 'in_transit'))->count(),
             ] : null,
+            'trips' => $user->can('viewAny', LogisticsTrip::class)
+                ? LogisticsTrip::query()->visibleTo($user)->active()
+                    ->where('departs_at', '<', now(config('nebo.display_timezone'))->addDay()->endOfDay()->utc())
+                    ->with(['vehicle', 'driver', 'event'])->withCount(['items', 'crew'])->orderBy('departs_at')->limit(8)->get()
+                : null,
             'requests' => $user->can('requests.view') ? [
                 'new' => EventRequest::where('status', RequestStatus::New)->count(),
                 'open' => EventRequest::query()->open()->count(),
@@ -61,8 +67,8 @@ class DashboardController extends Controller
                 'openJobs' => $user->can('viewAny', MaintenanceRecord::class) ? MaintenanceRecord::query()->visibleTo($user)->open()->count() : null,
             ] : null,
             'roadmap' => [
-                ['phase' => 7, 'name' => 'Logistics & fleet', 'icon' => 'truck', 'text' => 'Vehicles, trips, dispatch, delivery and returns.'],
                 ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],
+                ['phase' => 9, 'name' => 'Reports', 'icon' => 'chart-column', 'text' => 'Utilisation, events, maintenance and commercial reports.'],
             ],
         ]);
     }

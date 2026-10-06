@@ -221,6 +221,24 @@
                 @endif
             </x-ui.card>
         </div>
+    @elseif ($tab === 'logistics')
+        <x-ui.card title="Trips" description="Moving equipment and crew to the venue and back." :padding="false">
+            @can('create', App\Models\LogisticsTrip::class)
+                @if ($event->status->holdsResources())
+                    <x-slot:actions>
+                        <x-ui.button size="sm" icon="truck" :href="route('app.logistics.trips.create', ['event' => $event->id, 'direction' => 'outbound'])">Trip to venue</x-ui.button>
+                        <x-ui.button size="sm" variant="secondary" icon="undo-2" :href="route('app.logistics.trips.create', ['event' => $event->id, 'direction' => 'return'])">Return trip</x-ui.button>
+                    </x-slot:actions>
+                @endif
+            @endcan
+            @if ($trips->isEmpty())
+                <x-ui.empty-state icon="truck" title="No trips planned" description="Plan the trip to the venue once equipment is allocated; add the return trip for breakdown." />
+            @else
+                <ul class="divide-y divide-ink-100">
+                    @foreach ($trips as $t)@include('internal.logistics.trips._row', ['t' => $t, 'showEvent' => false])@endforeach
+                </ul>
+            @endif
+        </x-ui.card>
     @elseif ($tab === 'team')
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <x-ui.card title="Team" :padding="false" class="lg:col-span-2">

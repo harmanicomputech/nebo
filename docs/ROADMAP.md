@@ -11,8 +11,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | **Done** (see below) |
 | 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | **Done** (see below) |
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | **Done** (see below) |
-| 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Next |
-| 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Planned |
+| 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | **Done** (see below) |
+| 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Next |
 | 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Planned |
 | 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Planned |
 
@@ -70,7 +70,7 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 ## Phase 4 deliverables
 
 - **Events:** create directly or convert a won request (D38). Reference `NEBO-EVT-YYYY-NNNNN`. Schedule (setup → show → breakdown, Lagos time), type, venue, services, requirements, project and production managers, and budget (needs `financial.view`). Status workflow with history (D37); archive and restore.
-- **Event workspace:** Overview, Production requirements, Team, Documents, Timeline, Notes and Financial tabs work. Equipment and Allocation followed in Phase 5; Logistics is shown as planned (Phase 7).
+- **Event workspace:** Overview, Production requirements, Team, Documents, Timeline, Notes and Financial tabs work. Equipment and Allocation followed in Phase 5, and Logistics in Phase 7.
 - **Staff & crew:** profiles with role, contacts and an optional login link; upcoming and past assignments; crew double-booking guard with audited override (D39); in-app notification when a linked user is added to a team.
 - **Production calendar:** month, week and day views with Setup / Show / Breakdown per day (D41).
 - **Access:** Crew and Technicians see only their assigned events, in lists, calendar, search and dashboard (D40).
@@ -111,3 +111,18 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 185 tests / 1,051 assertions pass (12 new maintenance tests).
 - Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Technician; an inspection with a photo and follow-up job, and completing a job, were run in Chromium.
 - Fixed during the gate: a lazy load when updating a schedule (caught by strict mode), and stale "coming in Phase 5/6" copy on the event and calendar pages.
+
+## Phase 7 deliverables
+
+- **Fleet** (`/app/logistics/vehicles`): vehicles with type, capacity, payload, regular driver, base, insurance and roadworthiness dates (flagged 30 days ahead), status, documents and notes; archive and restore.
+- **Trips** (`/app/logistics`, `NEBO-TRP-YYYY-NNNNN`): plan from an event's Logistics tab (to the venue or back to base, with route, times and manifest prefilled) or as a transfer; vehicle, driver, crew, manifest and instructions; Upcoming / Today / On the road / Past views with filters and counts.
+- **Rules** (D54–D56): vehicle clashes and out-of-service vehicles refused, driver and crew double-booking only with an audited reason, manifest limited to the event's own kit and to one trip per direction, departure only with a vehicle, a driver and dispatched kit.
+- **Tracking:** Loading → In Transit → Arrived with times and who received it; units move to In Transit and then On Site or Deployed, with ledger entries; delivery notes and photos on the trip; timeline and notes.
+- **Drivers** (D57): Crew see and update only the trips they drive or crew, on the logistics page, the dashboard ("Your trips"), the calendar and search; they're notified when added to a trip.
+- **Elsewhere:** trips on the production calendar, trips today and tomorrow on the dashboard, trips and vehicles in global search, Logistics and Fleet in the navigation.
+
+### Phase 7 gate (§62)
+
+- 195 tests / 1,140 assertions pass (10 new logistics tests; two earlier tests updated for the now-live Logistics tab and Crew's new permission).
+- Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Crew; editing a trip, a refused departure (kit not dispatched) and planning a trip were run in Chromium.
+- Fixed during the gate: `notes` columns on trips and vehicles shadowed the notes relation (renamed, D58), and breadcrumbs that dropped their first item.

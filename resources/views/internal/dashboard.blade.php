@@ -104,6 +104,23 @@
         </section>
     @endif
 
+    @if ($trips !== null && ($trips->isNotEmpty() || auth()->user()->can('logistics.view')))
+        <section class="mt-8" aria-labelledby="trips-heading">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div><h2 id="trips-heading" class="text-lg font-semibold">{{ auth()->user()->can('logistics.view') ? 'Trips today and tomorrow' : 'Your trips' }}</h2>
+                    <p class="text-sm text-ink-500">Planned, loading and on the road.</p></div>
+                <x-ui.button variant="ghost" size="sm" icon-right="arrow-right" :href="route('app.logistics.index')">Logistics</x-ui.button>
+            </div>
+            <x-ui.card :padding="false">
+                @if ($trips->isEmpty())
+                    <x-ui.empty-state icon="truck" title="No trips today or tomorrow" />
+                @else
+                    <ul class="divide-y divide-ink-100">@foreach ($trips as $t)@include('internal.logistics.trips._row', ['t' => $t])@endforeach</ul>
+                @endif
+            </x-ui.card>
+        </section>
+    @endif
+
     @if ($requests)
         <section class="mt-8" aria-labelledby="req-heading">
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">

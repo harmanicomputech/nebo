@@ -1,6 +1,6 @@
 @php
-    $phaseStyle = ['setup' => 'border-l-amber-500 bg-amber-50 text-amber-900', 'show' => 'border-l-brand-600 bg-brand-50 text-brand-900', 'breakdown' => 'border-l-ink-500 bg-ink-100 text-ink-800', 'maintenance' => 'border-l-sky-600 bg-sky-50 text-sky-900'];
-    $phaseLabel = ['setup' => 'Setup', 'show' => 'Show', 'breakdown' => 'Breakdown', 'maintenance' => 'Maintenance'];
+    $phaseStyle = ['setup' => 'border-l-amber-500 bg-amber-50 text-amber-900', 'show' => 'border-l-brand-600 bg-brand-50 text-brand-900', 'breakdown' => 'border-l-ink-500 bg-ink-100 text-ink-800', 'maintenance' => 'border-l-sky-600 bg-sky-50 text-sky-900', 'trip' => 'border-l-emerald-600 bg-emerald-50 text-emerald-900'];
+    $phaseLabel = ['setup' => 'Setup', 'show' => 'Show', 'breakdown' => 'Breakdown', 'maintenance' => 'Maintenance', 'trip' => 'Trip'];
     $q = fn ($v, $d) => route('app.calendar', ['view' => $v, 'date' => $d]);
 @endphp
 <x-layouts.app title="Calendar">
@@ -40,7 +40,7 @@
                         @if ($day['entries'])
                             <a href="{{ $q('day', $day['date']->toDateString()) }}" class="block sm:hidden" aria-label="{{ count($day['entries']) }} scheduled on {{ $day['date']->format('j F') }}">
                                 <span class="block text-[10px] font-bold text-ink-700">{{ count($day['entries']) }}</span>
-                                <span class="mt-0.5 flex flex-col gap-0.5">@foreach (array_slice($day['entries'], 0, 3) as $e)<span class="block h-1 w-full rounded-full {{ ['setup' => 'bg-amber-500', 'show' => 'bg-brand-600', 'breakdown' => 'bg-ink-500', 'maintenance' => 'bg-sky-600'][$e['phase']] }}"></span>@endforeach</span>
+                                <span class="mt-0.5 flex flex-col gap-0.5">@foreach (array_slice($day['entries'], 0, 3) as $e)<span class="block h-1 w-full rounded-full {{ ['setup' => 'bg-amber-500', 'show' => 'bg-brand-600', 'breakdown' => 'bg-ink-500', 'maintenance' => 'bg-sky-600', 'trip' => 'bg-emerald-600'][$e['phase']] }}"></span>@endforeach</span>
                             </a>
                         @endif
                         <ul class="hidden space-y-0.5 sm:block">

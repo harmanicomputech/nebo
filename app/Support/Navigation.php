@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Event;
+use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
 use App\Models\User;
 use Closure;
@@ -35,7 +36,8 @@ class Navigation
                 self::item('Events', 'calendar-range', 'app.events.index', $seesEvents),
                 self::item('Availability', 'layers', 'app.availability', 'allocation.view'),
                 self::item('Load lists', 'clipboard-check', 'app.load-lists.index', fn (User $u) => $u->can('allocation.view') || $u->can('loadlists.manage')),
-                self::planned('Logistics', 'truck', 'logistics.view', 7),
+                self::item('Logistics', 'truck', 'app.logistics.index', fn (User $u) => $u->can('viewAny', LogisticsTrip::class), ['app.logistics.index', 'app.logistics.trips.*']),
+                self::item('Fleet', 'car-front', 'app.logistics.vehicles.index', 'logistics.view', 'app.logistics.vehicles.*'),
             ]],
             ['label' => 'Inventory', 'items' => [
                 self::item('Equipment', 'boxes', 'app.inventory.equipment.index', 'inventory.view', 'app.inventory.equipment.*'),

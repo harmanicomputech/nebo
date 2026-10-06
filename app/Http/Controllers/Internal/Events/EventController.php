@@ -30,7 +30,7 @@ class EventController extends Controller
         'requirements' => ['Production requirements', null],
         'equipment' => ['Equipment', null],
         'allocation' => ['Allocation', null],
-        'logistics' => ['Logistics', 7],
+        'logistics' => ['Logistics', null],
         'team' => ['Team', null],
         'documents' => ['Documents', null],
         'timeline' => ['Timeline', null],
@@ -116,6 +116,9 @@ class EventController extends Controller
                 'allocations' => $event->allocations()->with(['asset.status', 'equipment', 'location', 'loadListItem'])->orderByDesc('id')->get()->groupBy(fn ($a) => $a->state->value),
                 'loadList' => $event->loadList()->withCount('items')->first(),
                 'outstanding' => $event->allocations()->where('state', 'checked_out')->count(),
+            ],
+            'logistics' => [
+                'trips' => $event->trips()->visibleTo($request->user())->with(['vehicle', 'driver'])->withCount(['items', 'crew'])->orderBy('departs_at')->get(),
             ],
             default => [],
         };

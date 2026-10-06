@@ -26,6 +26,7 @@ class Lookups
         'document_category' => 'Document categories',
         'staff_role' => 'Staff roles',
         'maintenance_type' => 'Maintenance types',
+        'vehicle_type' => 'Vehicle types',
     ];
 
     /** @var array<string, Collection<int, Lookup>> */

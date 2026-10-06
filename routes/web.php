@@ -22,6 +22,8 @@ use App\Http\Controllers\Internal\Inventory\LocationController;
 use App\Http\Controllers\Internal\Inventory\MovementController;
 use App\Http\Controllers\Internal\Inventory\ScanController;
 use App\Http\Controllers\Internal\Inventory\StockController;
+use App\Http\Controllers\Internal\Logistics\TripController;
+use App\Http\Controllers\Internal\Logistics\VehicleController;
 use App\Http\Controllers\Internal\LookupController;
 use App\Http\Controllers\Internal\Maintenance\MaintenanceController;
 use App\Http\Controllers\Internal\Maintenance\ScheduleController;
@@ -144,6 +146,26 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::post('/events/{event}/returns', [ReturnController::class, 'store'])->name('events.returns.store');
     Route::get('/load-lists', [LoadListController::class, 'index'])->name('load-lists.index');
     Route::get('/availability', AvailabilityController::class)->name('availability');
+
+    Route::prefix('logistics')->name('logistics.')->group(function () {
+        Route::get('/', [TripController::class, 'index'])->name('index');
+        Route::get('/trips/create', [TripController::class, 'create'])->name('trips.create');
+        Route::post('/trips', [TripController::class, 'store'])->name('trips.store');
+        Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
+        Route::get('/trips/{trip}/edit', [TripController::class, 'edit'])->name('trips.edit');
+        Route::put('/trips/{trip}', [TripController::class, 'update'])->name('trips.update');
+        Route::post('/trips/{trip}/status', [TripController::class, 'transition'])->name('trips.status');
+        Route::post('/trips/{trip}/notes', [TripController::class, 'note'])->name('trips.notes');
+        Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
+        Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
+        Route::post('/vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
+        Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show'])->withTrashed()->name('vehicles.show');
+        Route::get('/vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
+        Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update'])->name('vehicles.update');
+        Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
+        Route::post('/vehicles/{id}/restore', [VehicleController::class, 'restore'])->whereNumber('id')->name('vehicles.restore');
+        Route::post('/vehicles/{vehicle}/notes', [VehicleController::class, 'note'])->name('vehicles.notes');
+    });
 
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::get('/maintenance/create', [MaintenanceController::class, 'create'])->name('maintenance.create');

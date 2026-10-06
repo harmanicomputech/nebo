@@ -19,6 +19,8 @@ class GlobalSearch
             EquipmentSearch::class,
             AssetSearch::class,
             MaintenanceSearch::class,
+            TripSearch::class,
+            VehicleSearch::class,
             StaffSearch::class,
             UserSearch::class,
             RoleSearch::class,

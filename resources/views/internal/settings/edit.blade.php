@@ -24,6 +24,7 @@
                     <x-ui.input label="Quotations" name="references_quotation" :value="$values['references.quotation']" required />
                     <x-ui.input label="Load lists" name="references_load_list" :value="$values['references.load_list']" required />
                     <x-ui.input label="Maintenance jobs" name="references_maintenance" :value="$values['references.maintenance']" required />
+                    <x-ui.input label="Trips" name="references_trip" :value="$values['references.trip']" required />
                 </div>
             </x-ui.card>
 

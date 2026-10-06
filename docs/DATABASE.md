@@ -58,7 +58,7 @@ erDiagram
 | `audit_logs` **(P1)** | user_id → users (set null), user_name, event, auditable_type, auditable_id, description, old_values json, new_values json, ip_address, user_agent, url, created_at | Append-only: the model refuses update/delete; no edit routes. Indexed on (auditable_type, auditable_id), user_id, event, created_at. |
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
-| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`; later vehicle types. |
+| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`, `vehicle_type`. |
 | `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
 
@@ -107,13 +107,19 @@ erDiagram
 | `maintenance_schedules` **(P6)** | asset_id (cascade), type (lookup), interval_days, next_due_on, last_done_on, last_reminded_on, notes, is_active, created_by; unique(asset_id, type) | Asset's `next_maintenance_due_on` mirrors the earliest active schedule (D52). |
 | `condition_reports` **(P6)** | asset_id, from_condition, to_condition, source (inspection/return/maintenance), note, event_id, maintenance_record_id, user_id + user_name, created_at | Append-only (the model refuses update/delete). Photos are `documents` on the report. |
 
-## Logistics, commercial
+## Logistics
+
+| Table | Key columns | Notes |
+| --- | --- | --- |
+| `vehicles` **(P7)** | name, registration (unique), type (lookup `vehicle_type`), capacity, payload_kg, status (active/out_of_service/retired), default_driver_id → staff, base_location_id, insurance_expires_on, roadworthiness_expires_on, remarks, soft deletes | Notes and documents are polymorphic. |
+| `logistics_trips` **(P7)** | reference (unique), event_id (nullable for transfers), direction (outbound/return/transfer), vehicle_id, driver_id → staff, origin, destination, departs_at, arrives_at, status (planned/loading/in_transit/arrived/cancelled), departed_at, arrived_at, received_by, instructions, created_by | Indexed on (vehicle_id, status, window) and (status, departs_at). Status history, notes and documents (delivery notes) are polymorphic. |
+| `logistics_trip_crew` **(P7)** | trip_id (cascade), staff_id; unique(trip_id, staff_id) | |
+| `logistics_trip_items` **(P7)** | trip_id (cascade), allocation_id → equipment_allocations; unique(trip_id, allocation_id) | The manifest (D54). |
+
+## Commercial
 
 | Table | Key columns |
 | --- | --- |
-| `vehicles` | name, registration (unique), type (lookup), capacity, default_driver_id → staff, status, location_id, soft deletes |
-| `logistics_trips` | event_id, vehicle_id, driver_id, direction (outbound/return), pickup_location, delivery_location, scheduled_at, loading_status, dispatch_status, delivery_status, notes |
-| `logistics_trip_crew` | trip_id, staff_id |
 | `quotations` | reference, customer_id, event_id / event_request_id, status, issued_on, valid_until, subtotal_kobo, discount_kobo, tax_kobo, total_kobo, notes, terms, prepared_by, sent_at, viewed_at, accepted_at |
 | `quotation_items` | quotation_id, section (services/equipment/labour/transport/logistics/other), description, equipment_id / service_id (nullable), quantity, days, unit_price_kobo, line_total_kobo, sort_order |
 | `production_packages`, `package_items` | name, description, is_active / package_id, item type, references, quantity, unit_price_kobo |

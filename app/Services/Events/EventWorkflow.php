@@ -20,12 +20,15 @@ class EventWorkflow
 {
     public function __construct(private AllocationService $allocations, private InventoryLedger $ledger) {}
 
-    /** Checked-out units become Deployed when the event goes live. */
+    /** Checked-out units at the venue (or not on a trip) become Deployed when the event goes live. */
     private function markDeployed(Event $event): void
     {
         $deployed = AssetStatus::byCode('deployed');
 
-        $event->allocations()->where('state', AllocationState::CheckedOut)->whereNotNull('asset_id')->with(['asset', 'equipment'])->get()
+        // Units still on the road become Deployed when their trip arrives (D56).
+        $event->allocations()->where('state', AllocationState::CheckedOut)->whereNotNull('asset_id')
+            ->whereHas('asset.status', fn ($q) => $q->where('code', '!=', 'in_transit'))
+            ->with(['asset', 'equipment'])->get()
             ->each(function ($allocation) use ($deployed, $event) {
                 $from = $allocation->asset->status_id;
                 $allocation->asset->forceFill(['status_id' => $deployed->id])->save();

@@ -61,7 +61,7 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 | `php scripts/generate-icons.php` | Regenerate the PWA icons from the logo geometry |
 | `php artisan nebo:maintenance-reminders` | Send the maintenance-due digest. Run it once a day from cron (or run `php artisan schedule:run` from cron at least hourly; it is scheduled for 07:00 Lagos) |
 
-## What works today (Phases 1–6)
+## What works today (Phases 1–7)
 
 - Sign-in and sign-out, password reset by email, login throttling, deactivated accounts blocked immediately.
 - Users and roles with granular permissions. Nobody can grant access they do not hold themselves, and the last super administrator is protected.
@@ -73,5 +73,6 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Inventory: equipment catalogue (table/grid, filters), serialized assets with QR labels and full history, quantity stock per location with quarantine, write-offs and stock counts, a stock movements ledger, and setup for categories, locations, statuses and option lists.
 - Equipment for events: requirements with shortages, clashes and alternatives, date-aware availability (with an availability grid), race-safe allocation, load lists with a printable load sheet and dispatch, and check-in with missing/damage handling.
 - Maintenance: fault reports and planned servicing with scheduled windows that block allocation, recurring schedules with reminders, inspections and damage reports with photos, and condition history.
+- Logistics: a fleet register with paperwork dates, trips to venues and back with manifests, vehicle and driver clash checks, departure and delivery tracking that updates where each unit is, and a driver view.
 
 The sidebar lists every module still to come under **Coming next**. Those modules are not active yet; see the roadmap.

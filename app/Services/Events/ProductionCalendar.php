@@ -3,6 +3,7 @@
 namespace App\Services\Events;
 
 use App\Models\Event;
+use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
 use App\Models\User;
 use App\Services\Allocation\RequirementAnalyzer;
@@ -36,6 +37,12 @@ class ProductionCalendar
                 ->with('asset')->orderBy('scheduled_starts_at')->get()
             : collect();
 
+        $trips = $user->can('viewAny', LogisticsTrip::class)
+            ? LogisticsTrip::query()->visibleTo($user)->where('status', '!=', 'cancelled')
+                ->where('departs_at', '<', $to->setTimezone('UTC'))->where('arrives_at', '>', $from->setTimezone('UTC'))
+                ->with('vehicle')->orderBy('departs_at')->get()
+            : collect();
+
         $days = [];
         for ($day = $from; $day->lt($to); $day = $day->addDay()) {
             $entries = [];
@@ -64,6 +71,20 @@ class ProductionCalendar
                         'time' => $start->isSameDay($day) ? $start->format('g:ia') : null,
                         'shortage' => false,
                         'subtitle' => $job->issue.' · '.$job->status->label(),
+                    ];
+                }
+            }
+            foreach ($trips as $trip) {
+                $leaves = $trip->departs_at->setTimezone($tz);
+                if ($leaves->lt($day->addDay()) && $trip->arrives_at->setTimezone($tz)->gt($day)) {
+                    $entries[] = [
+                        'type' => 'trip',
+                        'phase' => 'trip',
+                        'title' => $trip->origin.' → '.$trip->destination,
+                        'url' => route('app.logistics.trips.show', $trip),
+                        'time' => $leaves->isSameDay($day) ? $leaves->format('g:ia') : null,
+                        'shortage' => false,
+                        'subtitle' => $trip->reference.' · '.($trip->vehicle?->name ?? 'No vehicle').' · '.$trip->status->label(),
                     ];
                 }
             }

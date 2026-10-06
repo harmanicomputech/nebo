@@ -77,6 +77,7 @@ class PermissionCatalog
             ]],
             'logistics' => ['label' => 'Logistics & fleet', 'permissions' => [
                 'logistics.view' => 'View logistics and vehicles',
+                'logistics.view_assigned' => 'View and update only trips the user drives or crews',
                 'logistics.manage' => 'Plan trips, dispatch and deliveries',
                 'vehicles.manage' => 'Manage vehicles',
             ]],
@@ -204,7 +205,7 @@ class PermissionCatalog
             ],
             'Crew' => [
                 'description' => 'Assigned events and operational tasks.',
-                'permissions' => ['dashboard.view', 'events.view_assigned', 'loadlists.manage', 'documents.view'],
+                'permissions' => ['dashboard.view', 'events.view_assigned', 'loadlists.manage', 'logistics.view_assigned', 'documents.view'],
             ],
             'Viewer' => [
                 'description' => 'Read-only access to operational information.',

@@ -102,6 +102,7 @@ class AuditLogTest extends TestCase
             'references_load_list' => 'NEBO-LL-{YYYY}-{SEQ:5}',
             'availability_buffer_hours' => 0,
             'references_maintenance' => 'NEBO-MNT-{YYYY}-{SEQ:5}',
+            'references_trip' => 'NEBO-TRP-{YYYY}-{SEQ:5}',
             'maintenance_reminder_days' => 7,
         ], $overrides);
     }

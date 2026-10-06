@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\EventStatus;
 use App\Enums\RequestStatus;
+use App\Http\Controllers\Internal\Events\EventController;
 use App\Models\Event;
 use App\Models\EventRequest;
 use App\Notifications\AssignedToEvent;
@@ -174,12 +175,14 @@ class EventTest extends TestCase
         $this->assertNotSoftDeleted($event);
     }
 
-    public function test_planned_workspace_tabs_are_not_links(): void
+    public function test_every_workspace_tab_opens(): void
     {
         $event = $this->event();
+        $admin = $this->superAdmin();
 
-        $this->actingAs($this->superAdmin())->get("/app/events/{$event->id}?tab=logistics")->assertOk()
-            ->assertSee('Planned')->assertDontSee(route('app.events.show', [$event, 'tab' => 'logistics']));
+        foreach (array_keys(EventController::TABS) as $tab) {
+            $this->actingAs($admin)->get("/app/events/{$event->id}?tab={$tab}")->assertOk()->assertDontSee('· Planned');
+        }
     }
 
     public function test_staff_profiles(): void

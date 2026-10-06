@@ -18,6 +18,8 @@ enum InventoryTransactionType: string
     case Deallocated = 'deallocated';         // released from an event before dispatch
     case CheckedOut = 'checked_out';          // dispatched to an event
     case Deployed = 'deployed';               // event went live
+    case InTransit = 'in_transit';            // left on a trip
+    case Delivered = 'delivered';             // trip arrived at the venue
     case Returned = 'returned';               // checked back in
     case Damaged = 'damaged';                 // came back damaged
     case Lost = 'lost';                       // missing after an event
@@ -41,7 +43,7 @@ enum InventoryTransactionType: string
             self::Quarantined, self::WrittenOff => 'triangle-alert',
             self::Retired, self::Archived => 'archive',
             self::Reserved, self::Allocated, self::Deallocated => 'layers',
-            self::CheckedOut, self::Deployed => 'truck',
+            self::CheckedOut, self::Deployed, self::InTransit, self::Delivered => 'truck',
             self::Returned => 'package-check',
             self::Damaged, self::Lost => 'circle-x',
             default => 'history',

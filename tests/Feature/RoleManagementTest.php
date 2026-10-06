@@ -65,7 +65,7 @@ class RoleManagementTest extends TestCase
 
         $log = AuditLog::where('event', 'permissions_changed')->latest('id')->firstOrFail();
         $this->assertSame(['inventory.view'], $log->new_values['added']);
-        $this->assertSame(['loadlists.manage'], $log->old_values['removed']);
+        $this->assertSame(['loadlists.manage', 'logistics.view_assigned'], $log->old_values['removed']);
     }
 
     public function test_system_roles_cannot_be_renamed_or_deleted(): void

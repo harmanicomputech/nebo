@@ -82,6 +82,12 @@ class Event extends Model
         return $this->hasMany(EquipmentRequirement::class);
     }
 
+    /** @return HasMany<LogisticsTrip, $this> */
+    public function trips(): HasMany
+    {
+        return $this->hasMany(LogisticsTrip::class);
+    }
+
     /** @return HasMany<EquipmentAllocation, $this> */
     public function allocations(): HasMany
     {
