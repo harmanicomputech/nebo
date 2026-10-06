@@ -24,6 +24,7 @@ class Lookups
         'event_type' => 'Event types',
         'budget_range' => 'Budget ranges',
         'document_category' => 'Document categories',
+        'staff_role' => 'Staff roles',
     ];
 
     /** @var array<string, Collection<int, Lookup>> */

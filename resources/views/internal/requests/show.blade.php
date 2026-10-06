@@ -8,6 +8,11 @@
     <x-ui.page-header :title="$request->event_name" :breadcrumbs="['Operations' => null, 'Requests' => route('app.requests.index'), $request->reference => null]">
         <x-slot:actions>
             <x-ui.badge :tone="$request->status->tone()" class="!text-sm">{{ $request->status->label() }}</x-ui.badge>
+            @if ($request->converted_event_id)
+                <x-ui.button variant="secondary" icon="calendar-range" :href="route('app.events.show', $request->converted_event_id)">Open event</x-ui.button>
+            @elseif ($request->status->isWon())
+                @can('create', App\Models\Event::class)<x-ui.button variant="dark" icon="calendar-range" :href="route('app.requests.event.create', $request)">Create event</x-ui.button>@endcan
+            @endif
             @if ($canStatus && $transitions)<x-ui.button icon="history" x-data x-on:click="$dispatch('open-modal', 'request-status')">Change status</x-ui.button>@endif
         </x-slot:actions>
     </x-ui.page-header>

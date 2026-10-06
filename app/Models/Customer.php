@@ -26,6 +26,12 @@ class Customer extends Model
         return $this->hasMany(EventRequest::class);
     }
 
+    /** @return HasMany<Event, $this> */
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
     public function displayName(): string
     {
         return $this->company ? "{$this->company} ({$this->name})" : $this->name;

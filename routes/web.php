@@ -5,6 +5,10 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Internal\AuditLogController;
 use App\Http\Controllers\Internal\DashboardController;
 use App\Http\Controllers\Internal\DocumentController;
+use App\Http\Controllers\Internal\Events\CalendarController;
+use App\Http\Controllers\Internal\Events\EventController;
+use App\Http\Controllers\Internal\Events\StaffController;
+use App\Http\Controllers\Internal\Events\TeamController;
 use App\Http\Controllers\Internal\Inventory\AssetController;
 use App\Http\Controllers\Internal\Inventory\AssetStatusController;
 use App\Http\Controllers\Internal\Inventory\CategoryController;
@@ -102,6 +106,30 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::post('/requests/{request}/status', [InternalRequestController::class, 'status'])->name('requests.status');
     Route::post('/requests/{request}/assign', [InternalRequestController::class, 'assign'])->name('requests.assign');
     Route::post('/requests/{request}/notes', [InternalRequestController::class, 'note'])->name('requests.notes');
+
+    Route::get('/requests/{request}/event', [EventController::class, 'fromRequest'])->name('requests.event.create');
+    Route::post('/requests/{request}/event', [EventController::class, 'convert'])->name('requests.event.store');
+
+    Route::get('/calendar', CalendarController::class)->name('calendar');
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}', [EventController::class, 'show'])->withTrashed()->name('events.show');
+    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::post('/events/{event}/status', [EventController::class, 'status'])->name('events.status');
+    Route::post('/events/{event}/notes', [EventController::class, 'note'])->name('events.notes');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::post('/events/{id}/restore', [EventController::class, 'restore'])->whereNumber('id')->name('events.restore');
+    Route::post('/events/{event}/team', [TeamController::class, 'store'])->name('events.team.store');
+    Route::delete('/events/{event}/team/{member}', [TeamController::class, 'destroy'])->name('events.team.destroy');
+
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/{staff}', [StaffController::class, 'show'])->name('staff.show');
+    Route::get('/staff/{staff}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
 
     Route::get('/documents/{document}', [DocumentController::class, 'download'])->name('documents.download');
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');

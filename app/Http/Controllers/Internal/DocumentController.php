@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Internal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
+use App\Models\Event;
 use App\Models\EventRequest;
 use App\Services\Documents\DocumentStore;
 use App\Services\Documents\UploadRules;
@@ -25,6 +26,7 @@ class DocumentController extends Controller
     /** Route key => model class allowed to own documents. */
     public const OWNERS = [
         'request' => EventRequest::class,
+        'event' => Event::class,
     ];
 
     public function download(Document $document): StreamedResponse

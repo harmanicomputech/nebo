@@ -57,6 +57,12 @@ class EventRequest extends Model
         return $this->belongsToMany(Service::class)->orderBy('sort_order');
     }
 
+    /** @return BelongsTo<Event, $this> */
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'converted_event_id')->withTrashed();
+    }
+
     public function eventTypeLabel(): string
     {
         return $this->event_type === 'other' && $this->event_type_other

@@ -8,8 +8,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 1 — Foundation | Auth (login, logout, throttling, password reset, deactivated users), RBAC (permission catalog, editable roles, users), settings, audit log, in-app notifications, reference generator, global search framework, design system, internal + public layouts, error pages, security headers, PWA | **Done** (see below) |
 | 2 — Inventory | Categories (+sub), locations, asset statuses, lookups, equipment catalogue, serialized assets, bulk stock, ledger, equipment profile, table/grid views, filters, QR-ready identifiers | **Done** (see below) |
 | 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | **Done** (see below) |
-| 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | Next |
-| 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | Planned |
+| 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | **Done** (see below) |
+| 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | Next |
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Planned |
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Planned |
 | 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Planned |
@@ -66,3 +66,18 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 138 tests / 757 assertions pass (23 new).
 - A real Chromium submission at 390px worked end to end: request, file, services, and 09:00 Lagos stored as 08:00 UTC. Every new page has no horizontal scroll at 390px and no console errors.
 - Fixed during the gate: MIME checks now sniff the bytes with finfo instead of trusting the framework's guess, which a renamed PHP file could pass. Also fixed: the timezone of datetime inputs, the old-input redisplay of converted datetimes, settings tabs shown to people without access, and a navigation path for Finance to reach Services.
+
+## Phase 4 deliverables
+
+- **Events:** create directly or convert a won request (D38). Reference `NEBO-EVT-YYYY-NNNNN`. Schedule (setup → show → breakdown, Lagos time), type, venue, services, requirements, project and production managers, and budget (needs `financial.view`). Status workflow with history (D37); archive and restore.
+- **Event workspace:** Overview, Production requirements, Team, Documents, Timeline, Notes and Financial tabs work. Equipment, Allocation and Logistics are shown as planned (Phases 5 and 7).
+- **Staff & crew:** profiles with role, contacts and an optional login link; upcoming and past assignments; crew double-booking guard with audited override (D39); in-app notification when a linked user is added to a team.
+- **Production calendar:** month, week and day views with Setup / Show / Breakdown per day (D41).
+- **Access:** Crew and Technicians see only their assigned events, in lists, calendar, search and dashboard (D40).
+- **Dashboard and search:** today's events with their phase, upcoming events, counts for the week and month; global search covers events and staff.
+
+### Phase 4 gate (§62)
+
+- 150 tests / 849 assertions pass (12 new event tests).
+- Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Crew.
+- Fixed during the gate: request conversion passed `services` into the event's attributes (caught by strict mass-assignment protection), a stray extra week in the month view, unreadable month cells on phones, a Blade slot inside `@can`, and stale dashboard copy.

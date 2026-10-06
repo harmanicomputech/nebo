@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -44,6 +45,12 @@ class User extends Authenticatable
     protected function email(): Attribute
     {
         return Attribute::set(fn (string $value) => mb_strtolower(trim($value)));
+    }
+
+    /** @return HasOne<Staff, $this> */
+    public function staffProfile(): HasOne
+    {
+        return $this->hasOne(Staff::class);
     }
 
     public function isSuperAdmin(): bool

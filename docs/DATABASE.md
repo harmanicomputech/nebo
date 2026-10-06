@@ -83,10 +83,10 @@ erDiagram
 | `event_requests` **(P3)** | reference (unique), public_token (unique), customer_id, event_name, event_type (lookup), event_type_other, event_date, venue, venue_meta json, phone, email, contact_person, company, duration_days, starts_at, ends_at, setup_at, has_existing_design, budget_range (lookup), requirements, additional_info, services_other, status, assigned_to → users, submitted_ip, converted_event_id | Status enum + `status_changes`. |
 | `event_request_service` **(P3)** | event_request_id, service_id | Pivot. |
 | `notes` **(P3)** | notable morph, body, user_id, user_name | Internal notes on any record; never public. |
-| `events` | reference (unique), event_request_id, customer_id, name, event_type, venue, venue_meta, starts_at, ends_at, setup_starts_at, breakdown_ends_at, status, project_manager_id, production_manager_id (→ staff), budget_kobo, notes, soft deletes | Hold window = setup_starts_at → breakdown_ends_at (+ buffer). |
-| `event_services` | event_id, service_id, notes | |
-| `staff` | user_id (nullable, unique), name, phone, email, role (lookup), is_active, soft deletes | |
-| `event_staff` | event_id, staff_id, role, starts_at, ends_at; unique(event_id, staff_id) | Staff double-booking check uses the same overlap logic. |
+| `events` **(P4)** | reference (unique), event_request_id (unique), customer_id, name, event_type, venue, venue_meta, setup_starts_at, starts_at, ends_at, breakdown_ends_at, status, project_manager_id (→ users), production_manager_id (→ staff), budget_kobo, production_requirements, soft deletes | Hold window = setup_starts_at → breakdown_ends_at; indexed. Notes, documents and status history are polymorphic. |
+| `event_service` **(P4)** | event_id, service_id | Pivot. |
+| `staff` **(P4)** | user_id (nullable, unique), name, phone, email, role (lookup), is_active, soft deletes | |
+| `event_staff` **(P4)** | event_id, staff_id, role (lookup), notes; unique(event_id, staff_id) | Double-booking is checked against the event's hold window (D39). |
 
 ## Availability, allocation, load-out, returns
 

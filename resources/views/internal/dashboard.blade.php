@@ -8,7 +8,7 @@
             <div>
                 <p class="text-xs font-semibold tracking-[0.25em] text-brand-500 uppercase">{{ Format::datetime(now(), 'l, j F Y') }}</p>
                 <h1 class="mt-3 text-3xl font-semibold sm:text-4xl">Good {{ now(config('nebo.display_timezone'))->hour < 12 ? 'morning' : (now(config('nebo.display_timezone'))->hour < 17 ? 'afternoon' : 'evening') }}, {{ \Illuminate\Support\Str::before($user->name, ' ') }}.</h1>
-                <p class="mt-2 max-w-xl text-sm text-ink-300">Nebo Stage operations at a glance. Live event, inventory and maintenance panels appear here as each module goes live.</p>
+                <p class="mt-2 max-w-xl text-sm text-ink-300">What is happening at Nebo Stage right now: today’s events, new requests, inventory and anything that needs attention.</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 @foreach ($user->getRoleNames() as $role)
@@ -30,6 +30,45 @@
             <x-ui.stat label="Audited actions today" :value="$stats['auditToday']" icon="scroll-text" :href="route('app.audit.index', ['from' => today(config('nebo.display_timezone'))->toDateString()])" />
         @endif
     </div>
+
+    @if ($events)
+        <section class="mt-8" aria-labelledby="ev-heading">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <h2 id="ev-heading" class="text-lg font-semibold">Events</h2>
+                    <p class="text-sm text-ink-500">{{ $events['week'] }} this week · {{ $events['month'] }} this month · {{ $events['confirmed'] }} confirmed · {{ $events['completed'] }} completed</p>
+                </div>
+                <div class="flex gap-1">
+                    <x-ui.button variant="ghost" size="sm" icon="calendar-days" :href="route('app.calendar')">Calendar</x-ui.button>
+                    <x-ui.button variant="ghost" size="sm" icon-right="arrow-right" :href="route('app.events.index')">All events</x-ui.button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                <x-ui.card title="Today" :padding="false">
+                    @forelse ($events['today'] as $e)
+                        @php $phase = $e->phaseOn(now()); @endphp
+                        <a href="{{ route('app.events.show', $e) }}" class="flex items-center gap-3 border-b border-ink-100 px-5 py-3 last:border-0 hover:bg-ink-50">
+                            <x-ui.badge :tone="['setup' => 'warning', 'show' => 'brand', 'breakdown' => 'neutral'][$phase] ?? 'neutral'">{{ ucfirst($phase ?? '') }}</x-ui.badge>
+                            <span class="min-w-0 flex-1"><span class="block truncate font-semibold">{{ $e->name }}</span><span class="block truncate text-xs text-ink-500">{{ $e->venue }}</span></span>
+                        </a>
+                    @empty
+                        <x-ui.empty-state icon="calendar-days" title="Nothing on today" />
+                    @endforelse
+                </x-ui.card>
+                <x-ui.card title="Coming up" :padding="false">
+                    @forelse ($events['upcoming'] as $e)
+                        <a href="{{ route('app.events.show', $e) }}" class="flex items-center gap-3 border-b border-ink-100 px-5 py-3 last:border-0 hover:bg-ink-50">
+                            <span class="w-16 shrink-0 text-xs font-semibold text-ink-500">{{ \App\Support\Format::datetime($e->setup_starts_at, 'D j M') }}</span>
+                            <span class="min-w-0 flex-1"><span class="block truncate font-semibold">{{ $e->name }}</span><span class="block truncate text-xs text-ink-500">{{ $e->customer?->company ?: $e->customer?->name }}</span></span>
+                            <x-ui.badge :tone="$e->status->tone()">{{ $e->status->label() }}</x-ui.badge>
+                        </a>
+                    @empty
+                        <x-ui.empty-state icon="calendar-range" title="No upcoming events" />
+                    @endforelse
+                </x-ui.card>
+            </div>
+        </section>
+    @endif
 
     @if ($requests)
         <section class="mt-8" aria-labelledby="req-heading">

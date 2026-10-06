@@ -16,6 +16,7 @@ class ReferenceDataSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             InventoryReferenceSeeder::class,
             BookingReferenceSeeder::class,
+            EventsReferenceSeeder::class,
         ]);
     }
 }

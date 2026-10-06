@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Internal;
 use App\Enums\RequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\Role;
 use App\Models\User;
@@ -33,6 +34,7 @@ class DashboardController extends Controller
             ],
             'activity' => $user->can('audit.view') ? AuditLog::latest('id')->limit(8)->get() : collect(),
             'notifications' => $user->unreadNotifications()->latest()->limit(5)->get(),
+            'events' => $user->can('viewAny', Event::class) ? $this->events($user) : null,
             'requests' => $user->can('requests.view') ? [
                 'new' => EventRequest::where('status', RequestStatus::New)->count(),
                 'open' => EventRequest::query()->open()->count(),
@@ -48,11 +50,30 @@ class DashboardController extends Controller
                 'maintenanceDue' => $inventory->maintenanceDue(),
             ] : null,
             'roadmap' => [
-                ['phase' => 4, 'name' => 'Events & production', 'icon' => 'calendar-range', 'text' => 'Event workspace, team assignment and the production calendar.'],
                 ['phase' => 5, 'name' => 'Availability & allocation', 'icon' => 'layers', 'text' => 'Conflict detection, allocation, load lists, check-out and returns.'],
                 ['phase' => 6, 'name' => 'Maintenance & condition', 'icon' => 'wrench', 'text' => 'Maintenance records and schedules, inspections and damage reports.'],
+                ['phase' => 7, 'name' => 'Logistics & fleet', 'icon' => 'truck', 'text' => 'Vehicles, trips, dispatch, delivery and returns.'],
                 ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],
             ],
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function events(User $user): array
+    {
+        $tz = config('nebo.display_timezone');
+        $now = now($tz);
+        $base = fn () => Event::query()->visibleTo($user)->active();
+
+        return [
+            'today' => $base()->overlapping($now->copy()->startOfDay()->utc(), $now->copy()->endOfDay()->utc())->with('customer')->orderBy('setup_starts_at')->get(),
+            'week' => $base()->overlapping($now->copy()->startOfWeek()->utc(), $now->copy()->endOfWeek()->utc())->count(),
+            'month' => $base()->overlapping($now->copy()->startOfMonth()->utc(), $now->copy()->endOfMonth()->utc())->count(),
+            'upcoming' => $base()->where('setup_starts_at', '>', $now->copy()->endOfDay()->utc())->with('customer')->orderBy('setup_starts_at')->limit(5)->get(),
+            'confirmed' => $base()->where('status', 'confirmed')->count(),
+            'completed' => Event::query()->visibleTo($user)->where('status', 'completed')->count(),
+        ];
     }
 }

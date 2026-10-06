@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Models\Event;
 use App\Models\User;
+use Closure;
 
 /**
  * The internal sidebar. Items without a route are modules from later phases:
@@ -19,14 +21,17 @@ class Navigation
      */
     public static function for(User $user): array
     {
+        // Crew and technicians see their assigned events (events.view_assigned).
+        $seesEvents = fn (User $u) => $u->can('viewAny', Event::class);
+
         $sections = [
             ['label' => 'Overview', 'items' => [
                 self::item('Dashboard', 'layout-dashboard', 'app.dashboard', 'dashboard.view'),
-                self::planned('Calendar', 'calendar-days', 'events.view', 4),
+                self::item('Calendar', 'calendar-days', 'app.calendar', $seesEvents),
             ]],
             ['label' => 'Operations', 'items' => [
                 self::item('Requests', 'inbox', 'app.requests.index', 'requests.view'),
-                self::planned('Events', 'calendar-range', 'events.view', 4),
+                self::item('Events', 'calendar-range', 'app.events.index', $seesEvents),
                 self::planned('Availability', 'layers', 'allocation.view', 5),
                 self::planned('Load lists', 'clipboard-check', 'allocation.view', 5),
                 self::planned('Logistics', 'truck', 'logistics.view', 7),
@@ -45,6 +50,7 @@ class Navigation
                 self::planned('Reports', 'chart-column', 'reports.view', 9),
             ]],
             ['label' => 'Administration', 'items' => [
+                self::item('Staff & crew', 'contact', 'app.staff.index', 'staff.view'),
                 self::item('Users', 'users', 'app.users.index', 'users.view'),
                 self::item('Roles & permissions', 'shield-check', 'app.roles.index', 'roles.view'),
                 self::item('Audit log', 'scroll-text', 'app.audit.index', 'audit.view'),
@@ -52,7 +58,11 @@ class Navigation
             ]],
         ];
 
-        $visible = fn (array $item) => $item['permission'] === null || $user->can($item['permission']);
+        $visible = fn (array $item) => match (true) {
+            $item['permission'] === null => true,
+            $item['permission'] instanceof Closure => ($item['permission'])($user),
+            default => $user->can($item['permission']),
+        };
         $live = [];
         $planned = [];
 
@@ -73,7 +83,7 @@ class Navigation
     /**
      * @return array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}
      */
-    private static function item(string $label, string $icon, string $route, ?string $permission, string|array|null $active = null): array
+    private static function item(string $label, string $icon, string $route, string|Closure|null $permission, string|array|null $active = null): array
     {
         // A resource index (app.users.index) is active on all of app.users.*; anything else only on itself.
         $active ??= str_ends_with($route, '.index') ? substr($route, 0, -strlen('index')).'*' : $route;
