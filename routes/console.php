@@ -22,3 +22,7 @@ Artisan::command('nebo:expire-quotations', function (QuotationService $quotes) {
 })->purpose('Mark sent quotations past their validity date as expired');
 
 Schedule::command('nebo:expire-quotations')->dailyAt('00:15')->timezone('Africa/Lagos');
+
+// Shared hosting can't keep a queue worker running: the scheduler drains the
+// queue (customer emails, notifications) every minute instead (D67).
+Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')->everyMinute()->withoutOverlapping()->runInBackground();

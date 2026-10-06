@@ -74,6 +74,11 @@ class MaintenanceTest extends TestCase
         $this->assertSame(1, $availability->blocked);
         $this->assertSame([$other->id], $availability->assetIds);
 
+        // The day-by-day grid sees the window too (batched blocker windows).
+        $day = CarbonImmutable::parse($from)->addHours(2)->setTimezone('Africa/Lagos')->startOfDay();
+        $grid = app(AvailabilityService::class)->timeline(collect([$lights]), $day, 1);
+        $this->assertSame(1, $grid[$lights->id][0]['available']);
+
         $this->expectException(ValidationException::class);
         app(AllocationService::class)->reserveAssets($admin, $event, $lights, [$unit->id]);
     }

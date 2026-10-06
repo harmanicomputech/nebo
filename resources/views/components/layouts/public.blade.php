@@ -27,11 +27,11 @@
 
 <main>{{ $slot }}</main>
 
-<footer class="bg-ink-950 text-ink-400">
+<footer class="bg-ink-950 text-white/60">
     <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <x-ui.logo dark />
         <p class="text-sm">&copy; {{ date('Y') }} {{ config('nebo.brand.name') }}. Event production &amp; technical services — nationwide.</p>
-        <a href="{{ route('login') }}" class="text-xs text-ink-500 hover:text-white">Staff sign in</a>
+        <a href="{{ route('login') }}" class="text-xs text-white/60 hover:text-white">Staff sign in</a>
     </div>
 </footer>
 @include('partials.toasts')

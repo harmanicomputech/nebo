@@ -37,7 +37,7 @@
                     @php $start = $event->starts_at->copy()->setTimezone(config('nebo.display_timezone')); @endphp
                     <li><a href="{{ route('app.events.show', $event) }}" class="flex items-center gap-4 px-4 py-4 hover:bg-ink-50 sm:px-6">
                         <span class="grid w-14 shrink-0 place-items-center rounded-xl bg-ink-950 py-2 text-white">
-                            <span class="text-[10px] font-semibold tracking-widest text-brand-500 uppercase">{{ $start->format('M') }}</span>
+                            <span class="text-[10px] font-semibold tracking-widest text-brand-400 uppercase">{{ $start->format('M') }}</span>
                             <span class="font-display text-xl leading-none font-bold">{{ $start->format('j') }}</span>
                         </span>
                         <span class="min-w-0 flex-1">

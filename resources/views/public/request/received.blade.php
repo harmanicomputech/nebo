@@ -11,7 +11,7 @@
                 <p class="text-xs font-semibold tracking-[0.2em] text-ink-400 uppercase">Your reference</p>
                 <p class="mt-1 font-mono text-2xl font-bold tracking-wide" x-data>{{ $request->reference }}</p>
                 <p class="mt-4 text-sm text-ink-300">Keep this reference. You can follow your request at any time with this private link:</p>
-                <a href="{{ route('requests.track', $request->public_token) }}" class="mt-2 block truncate text-sm font-semibold text-brand-500 hover:underline">{{ route('requests.track', $request->public_token) }}</a>
+                <a href="{{ route('requests.track', $request->public_token) }}" class="mt-2 block truncate text-sm font-semibold text-brand-400 hover:underline">{{ route('requests.track', $request->public_token) }}</a>
             </div>
 
             <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">

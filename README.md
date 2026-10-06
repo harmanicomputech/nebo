@@ -42,6 +42,8 @@ Open <http://localhost:8000> for the public site and <http://localhost:8000/app>
 
 ## Production setup
 
+Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short:
+
 ```bash
 php artisan migrate --force
 php artisan db:seed --class=ReferenceDataSeeder --force   # roles, permissions and all reference data; safe on every deploy
@@ -60,9 +62,10 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 | `php artisan db:seed --class=ReferenceDataSeeder` | Sync permissions and add missing roles, statuses, services and option lists |
 | `php scripts/generate-icons.php` | Regenerate the PWA icons from the logo geometry |
 | `php artisan nebo:maintenance-reminders` | Send the maintenance-due digest. Run it once a day from cron (or run `php artisan schedule:run` from cron at least hourly; it is scheduled for 07:00 Lagos) |
+| `php artisan nebo:check-production` | Pre-flight check for a live server; exits non-zero if anything unsafe or missing |
 | `php artisan nebo:expire-quotations` | Mark sent quotations past their validity date as expired (scheduled daily at 00:15 Lagos) |
 
-## What works today (Phases 1–9)
+## What works today (all phases)
 
 - Sign-in and sign-out, password reset by email, login throttling, deactivated accounts blocked immediately.
 - Users and roles with granular permissions. Nobody can grant access they do not hold themselves, and the last super administrator is protected.
@@ -77,6 +80,7 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Logistics: a fleet register with paperwork dates, trips to venues and back with manifests, vehicle and driver clash checks, departure and delivery tracking that updates where each unit is, and a driver view.
 - Commercial: customer profiles with duplicate merging, production packages, and quotations with approval, server-computed totals, a printable copy and online acceptance by the customer.
 - Reports with charts and CSV export: utilisation, events and pipeline, maintenance, logistics, inventory and commercial; dashboard trends.
+- Hardening: strict security headers and CSP, an automated access audit of every route, WCAG AA colour contrast, tuned queries and a production readiness check.
 - Every tap shows feedback and can't be submitted twice.
 
 The sidebar lists every module still to come under **Coming next**. Those modules are not active yet; see the roadmap.

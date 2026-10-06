@@ -54,7 +54,7 @@
                 <dl class="space-y-3 text-sm">
                     <div><dt class="text-ink-500">Project manager</dt><dd class="font-medium">{{ $event->projectManager?->name ?? 'Not set' }}</dd></div>
                     <div><dt class="text-ink-500">Production manager</dt><dd class="font-medium">{{ $event->productionManager?->name ?? 'Not set' }}</dd></div>
-                    <div><dt class="text-ink-500">Crew</dt><dd class="font-medium">{{ $event->team->count() }} assigned · <a class="text-brand-700 hover:underline" href="{{ route('app.events.show', [$event, 'tab' => 'team']) }}">View team</a></dd></div>
+                    <div><dt class="text-ink-500">Crew</dt><dd class="font-medium">{{ $event->team->count() }} assigned · <a class="text-brand-700 underline" href="{{ route('app.events.show', [$event, 'tab' => 'team']) }}">View team</a></dd></div>
                 </dl>
             </x-ui.card>
             <x-ui.card title="Services">

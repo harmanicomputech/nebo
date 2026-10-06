@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title>Asset labels · {{ config('nebo.brand.name') }}</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @page { size: A4; margin: 10mm; }
         @media print { .no-print { display: none !important; } body { background: #fff; } }
@@ -17,8 +17,8 @@
     <div class="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 bg-ink-950 px-6 py-3 text-white">
         <p class="text-sm"><strong>{{ $assets->count() }}</strong> {{ Str::plural('label', $assets->count()) }}{{ $equipment ? ' · '.$equipment->name : '' }}</p>
         <div class="flex gap-2">
-            <button type="button" onclick="history.length > 1 ? history.back() : window.close()" class="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold">Back</button>
-            <button type="button" onclick="window.print()" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold">Print labels</button>
+            <button type="button" data-action="back" class="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold">Back</button>
+            <button type="button" data-action="print" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold">Print labels</button>
         </div>
     </div>
 

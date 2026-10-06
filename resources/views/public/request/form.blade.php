@@ -10,7 +10,7 @@
         <div class="stage-grid absolute inset-0 -z-10"></div>
         <div class="stage-beam absolute inset-0 -z-10"></div>
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <p class="text-xs font-semibold tracking-[0.3em] text-brand-500 uppercase">Event Production Request</p>
+            <p class="text-xs font-semibold tracking-[0.3em] text-brand-400 uppercase">Event Production Request</p>
             <h1 class="mt-4 text-4xl leading-tight font-bold sm:text-6xl">LET’S PLAN YOUR EVENT</h1>
             <p class="mt-5 max-w-2xl text-lg text-ink-300">Tell us about your event and production requirements. Our team will review your request and contact you with a tailored production solution and quotation.</p>
         </div>

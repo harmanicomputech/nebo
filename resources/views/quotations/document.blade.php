@@ -28,7 +28,7 @@
 <body class="bg-ink-100 text-ink-900">
     <div class="no-print sticky top-0 z-10 flex items-center justify-between gap-3 bg-ink-950 px-4 py-3 text-white sm:px-6">
         <p class="min-w-0 truncate text-sm">Quotation {{ $quote->label() }}</p>
-        <button type="button" onclick="window.print()" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold active:scale-[0.97]">{{ $internal ? 'Print / save PDF' : 'Download PDF' }}</button>
+        <button type="button" data-action="print" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold active:scale-[0.97]">{{ $internal ? 'Print / save PDF' : 'Download PDF' }}</button>
     </div>
 
     @if (session('success'))

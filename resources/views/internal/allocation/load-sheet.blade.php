@@ -4,13 +4,13 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
     <title>Load sheet {{ $list->reference }} · {{ config('nebo.brand.name') }}</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>@page { size: A4; margin: 12mm; } @media print { .no-print { display: none !important; } body { background: #fff; } } tr { break-inside: avoid; }</style>
 </head>
 <body class="bg-ink-100 text-ink-900">
     <div class="no-print sticky top-0 flex items-center justify-between bg-ink-950 px-6 py-3 text-white">
         <p class="text-sm">Load sheet · {{ $list->reference }}</p>
-        <button type="button" onclick="window.print()" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold">Print</button>
+        <button type="button" data-action="print" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold">Print</button>
     </div>
     <main class="mx-auto max-w-[190mm] bg-white p-8 print:p-0">
         <header class="flex items-start justify-between border-b-4 border-brand-600 pb-4">

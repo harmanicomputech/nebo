@@ -4,7 +4,7 @@
         <div class="stage-grid absolute inset-0 -z-10"></div>
         <div class="stage-beam absolute inset-0 -z-10"></div>
         <div class="mx-auto max-w-3xl px-4 sm:px-6">
-            <p class="font-mono text-sm text-brand-500">{{ $request->reference }}</p>
+            <p class="font-mono text-sm text-brand-400">{{ $request->reference }}</p>
             <h1 class="mt-2 text-3xl font-bold sm:text-4xl">{{ $request->event_name }}</h1>
             <p class="mt-2 text-ink-300">{{ Format::date($request->event_date) }} · {{ $request->venue }}</p>
         </div>

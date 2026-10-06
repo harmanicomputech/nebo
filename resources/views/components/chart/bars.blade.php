@@ -21,7 +21,7 @@
                         @if (! empty($item['hint']))<span class="text-xs text-ink-400"> · {{ $item['hint'] }}</span>@endif
                     </span>
                     <span class="text-right font-semibold text-ink-900 tabular-nums sm:order-last">{{ Charts::full($item['value'], $format) }}</span>
-                    <span class="col-span-2 h-3 sm:col-span-1" tabindex="0" data-tip="{{ $item['label'] }}: {{ Charts::full($item['value'], $format) }}">
+                    <span class="col-span-2 h-3 sm:col-span-1" tabindex="0" role="img" aria-label="{{ $item['label'] }}: {{ Charts::full($item['value'], $format) }}" data-tip="{{ $item['label'] }}: {{ Charts::full($item['value'], $format) }}">
                         <span class="block h-full rounded-r-[4px] transition hover:brightness-110" style="width: {{ $pct }}%; min-width: {{ $item['value'] > 0 ? '2px' : '0' }}; background: {{ Charts::SERIES[0] }}"></span>
                     </span>
                 </li>

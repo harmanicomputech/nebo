@@ -13,7 +13,7 @@
         <div class="relative flex h-full flex-col justify-between p-12 text-white">
             <x-ui.logo dark />
             <div class="max-w-md">
-                <p class="text-xs font-semibold tracking-[0.25em] text-brand-500 uppercase">Operations platform</p>
+                <p class="text-xs font-semibold tracking-[0.25em] text-brand-400 uppercase">Operations platform</p>
                 <h2 class="mt-4 text-4xl leading-tight font-semibold">Every light, every cable, every show — under control.</h2>
                 <p class="mt-4 text-ink-300">Inventory, bookings, allocation, logistics and maintenance for Nebo Stage productions nationwide.</p>
             </div>

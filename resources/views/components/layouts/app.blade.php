@@ -21,7 +21,7 @@
     <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5">
         @foreach ($navigation['sections'] as $section)
             <div>
-                <p class="px-3 pb-2 text-[10.5px] font-semibold tracking-[0.16em] text-ink-500 uppercase">{{ $section['label'] }}</p>
+                <p class="px-3 pb-2 text-[10.5px] font-semibold tracking-[0.16em] text-white/50 uppercase">{{ $section['label'] }}</p>
                 <ul class="space-y-0.5">
                     @foreach ($section['items'] as $item)
                         @php $active = request()->routeIs($item['route'], ...(array) $item['active']); @endphp
@@ -41,7 +41,7 @@
         @if ($navigation['planned'])
             {{-- Modules from later phases: listed so people know what's coming, never clickable. --}}
             <div x-data="{ open: false }">
-                <button type="button" class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-[10.5px] font-semibold tracking-[0.16em] text-ink-500 uppercase hover:text-ink-300" x-on:click="open = !open" :aria-expanded="open">
+                <button type="button" class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-[10.5px] font-semibold tracking-[0.16em] text-white/50 uppercase hover:text-ink-300" x-on:click="open = !open" :aria-expanded="open">
                     Coming next <span class="flex items-center gap-1.5 normal-case tracking-normal">{{ count($navigation['planned']) }} modules <span class="transition" :class="open && 'rotate-180'"><x-ui.icon name="chevron-down" class="size-3.5" /></span></span>
                 </button>
                 <ul x-cloak x-show="open" x-transition class="mt-1 space-y-0.5">
@@ -61,7 +61,7 @@
             <x-ui.avatar :user="auth()->user()" class="ring-ink-950" />
             <span class="min-w-0">
                 <span class="block truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</span>
-                <span class="block truncate text-xs text-ink-500">{{ auth()->user()->getRoleNames()->first() ?? 'No role' }}</span>
+                <span class="block truncate text-xs text-white/50">{{ auth()->user()->getRoleNames()->first() ?? 'No role' }}</span>
             </span>
         </a>
     </div>

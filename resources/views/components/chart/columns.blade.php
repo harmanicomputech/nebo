@@ -20,9 +20,9 @@
             @endforeach
         </ul>
     @endif
-    <div class="relative h-52 pl-11" aria-hidden="true">
+    <div class="relative h-52 pl-11">
         @foreach ($scale['ticks'] as $tick)
-            <div class="absolute right-0 left-11 border-t" style="bottom: {{ $tick / $scale['max'] * 100 }}%; border-color: {{ Charts::GRID }}">
+            <div aria-hidden="true" class="absolute right-0 left-11 border-t" style="bottom: {{ $tick / $scale['max'] * 100 }}%; border-color: {{ Charts::GRID }}">
                 <span class="absolute -left-11 w-9 -translate-y-1/2 text-right text-[11px] text-ink-400 tabular-nums">{{ Charts::compact($tick, $format) }}</span>
             </div>
         @endforeach
@@ -33,7 +33,7 @@
                     $tip = $category.': '.$parts->map(fn ($p) => (count($series) > 1 ? $p['name'].' ' : '').Charts::full($p['value'], $format))->implode(' · ');
                     $visible = $parts->filter(fn ($p) => $p['value'] > 0)->values();
                 @endphp
-                <div class="group flex h-full min-w-0 flex-1 cursor-default flex-col items-center justify-end outline-none" tabindex="0" data-tip="{{ $tip }}">
+                <div class="group flex h-full min-w-0 flex-1 cursor-default flex-col items-center justify-end outline-none" tabindex="0" role="img" aria-label="{{ $tip }}" data-tip="{{ $tip }}">
                     <div class="flex w-full max-w-6 flex-col-reverse gap-[2px] transition group-hover:brightness-110 group-focus-visible:ring-2 group-focus-visible:ring-ink-900" style="height: {{ $totals[$i] / $scale['max'] * 100 }}%">
                         @foreach ($visible as $vi => $p)
                             <div @class(['w-full min-h-[2px]', 'rounded-t-[4px]' => $vi === $visible->count() - 1]) style="flex: {{ $p['value'] }} 1 0; background: {{ $p['color'] }}"></div>

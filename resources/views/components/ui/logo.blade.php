@@ -8,8 +8,8 @@
     </svg>
     @unless ($compact)
         <span class="leading-none">
-            <span class="font-display block text-[17px] font-bold tracking-tight {{ $dark ? 'text-white' : 'text-ink-900' }}">NEBO<span class="text-brand-600">STAGE</span></span>
-            <span class="mt-0.5 block text-[9.5px] font-semibold tracking-[0.22em] uppercase {{ $dark ? 'text-ink-400' : 'text-ink-500' }}">Production&nbsp;Systems</span>
+            <span class="font-display block text-[17px] font-bold tracking-tight {{ $dark ? 'text-white' : 'text-ink-900' }}">NEBO<span class="{{ $dark ? 'text-brand-400' : 'text-brand-600' }}">STAGE</span></span>
+            <span class="mt-0.5 block text-[9.5px] font-semibold tracking-[0.22em] uppercase {{ $dark ? 'text-white/50' : 'text-ink-500' }}">Production&nbsp;Systems</span>
         </span>
     @endunless
 </span>

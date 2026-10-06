@@ -127,18 +127,23 @@ class AvailabilityService
             ->get(['equipment_id', 'asset_id', 'quantity', 'hold_starts_at', 'hold_ends_at'])
             ->groupBy('equipment_id');
 
+        // Blocker windows and bulk stock for every item at once (not per day).
+        $windows = collect(self::BLOCKERS)->flatMap(fn ($b) => app($b)->windows($items->pluck('id')->all(), $from->utc(), $to->utc()))->groupBy('equipment_id');
+        $stock = StockLevel::query()->whereIn('equipment_id', $items->reject->isSerialized()->pluck('id'))->where('bucket', StockBucket::Available)
+            ->selectRaw('equipment_id, sum(quantity) as total')->groupBy('equipment_id')->pluck('total', 'equipment_id');
+
         $result = [];
         foreach ($items as $item) {
-            $total = $item->isSerialized()
-                ? $this->serviceableAssets($item)->count()
-                : (int) StockLevel::where('equipment_id', $item->id)->where('bucket', StockBucket::Available)->sum('quantity');
+            $total = $item->isSerialized() ? $this->serviceableAssets($item)->count() : (int) ($stock[$item->id] ?? 0);
 
             for ($i = 0; $i < $days; $i++) {
                 $dayStart = $from->addDays($i);
                 $dayEnd = $dayStart->addDay();
                 $dayHolds = ($holds[$item->id] ?? collect())->filter(fn ($h) => $h->hold_starts_at < $dayEnd && $h->hold_ends_at > $dayStart);
                 $held = $item->isSerialized() ? $dayHolds->pluck('asset_id')->unique()->count() : (int) $dayHolds->sum('quantity');
-                $blocked = $item->isSerialized() && self::BLOCKERS ? count($this->blockedAssetIds($item, $dayStart, $dayEnd)) : 0;
+                $blocked = $item->isSerialized()
+                    ? ($windows[$item->id] ?? collect())->filter(fn ($w) => $w['starts'] < $dayEnd && $w['ends'] > $dayStart)->pluck('asset_id')->unique()->count()
+                    : 0;
 
                 $result[$item->id][] = ['date' => $dayStart, 'total' => $total, 'held' => $held, 'available' => max(0, $total - $held - $blocked)];
             }

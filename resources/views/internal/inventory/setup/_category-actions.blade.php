@@ -18,7 +18,7 @@
                         <x-ui.button type="submit">Save</x-ui.button>
                     </div>
                 </form>
-                <form method="POST" action="{{ route('app.inventory.setup.categories.destroy', $category) }}" class="mt-4 border-t border-ink-100 pt-4" onsubmit="return confirm({{ \Illuminate\Support\Js::from('Archive '.$category->name.'? Existing equipment keeps it.') }})">
+                <form method="POST" action="{{ route('app.inventory.setup.categories.destroy', $category) }}" class="mt-4 border-t border-ink-100 pt-4" x-on:submit="if (! confirm({{ \Illuminate\Support\Js::from('Archive '.$category->name.'? Existing equipment keeps it.') }})) $event.preventDefault()">
                     @csrf @method('DELETE')
                     <button type="submit" class="text-sm font-semibold text-brand-700 hover:underline">Archive category</button>
                 </form>

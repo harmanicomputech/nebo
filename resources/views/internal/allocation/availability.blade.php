@@ -37,7 +37,7 @@
                                 <th scope="row" class="sticky left-0 z-10 bg-white px-4 py-2 text-left font-medium"><a href="{{ route('app.inventory.equipment.show', $item) }}" class="hover:text-brand-700">{{ Str::limit($item->name, 28) }}</a></th>
                                 @foreach ($timeline[$item->id] ?? [] as $cell)
                                     @php $tone = $cell['total'] === 0 ? 'bg-ink-50 text-ink-400' : ($cell['available'] === 0 ? 'bg-brand-100 text-brand-800' : ($cell['available'] < $cell['total'] ? 'bg-amber-100 text-amber-900' : 'bg-emerald-50 text-emerald-800')); @endphp
-                                    <td class="p-0.5"><span class="block rounded px-1 py-1.5 text-center font-semibold tabular-nums {{ $tone }}" title="{{ $cell['date']->format('D j M') }}: {{ $cell['available'] }} free of {{ $cell['total'] }}, {{ $cell['held'] }} booked">{{ $cell['available'] }}<span class="font-normal opacity-60">/{{ $cell['total'] }}</span></span></td>
+                                    <td class="p-0.5"><span class="block rounded px-1 py-1.5 text-center font-semibold tabular-nums {{ $tone }}" title="{{ $cell['date']->format('D j M') }}: {{ $cell['available'] }} free of {{ $cell['total'] }}, {{ $cell['held'] }} booked">{{ $cell['available'] }}<span class="font-normal">/{{ $cell['total'] }}</span></span></td>
                                 @endforeach
                             </tr>
                         @endforeach

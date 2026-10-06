@@ -14,7 +14,7 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | **Done** (see below) |
 | 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | **Done** (see below) |
 | 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | **Done** (see below) |
-| 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Next |
+| 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | **Done** (see below) |
 
 ## Phase 1 deliverables
 
@@ -158,3 +158,19 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 209 tests / 1,264 assertions pass (5 new: utilisation maths, report access, CSV export with formula neutralising, dashboard trends, chart scales; the sidebar test now expects no "Coming next").
 - Every report and the dashboard render at 1440px and 390px with no horizontal scroll and no console errors; a tooltip and a CSV download were exercised in Chromium (the export link doesn't stay busy).
 - Fixed during the gate: long naira figures overflowing stat tiles on phones, and grid cards that couldn't shrink below their content.
+
+## Phase 10 deliverables (hardening)
+
+- **Access audit** (`AccessAuditTest`): every `/app` route sends guests to sign-in, and a signed-in user with no module permissions gets 403 on every parameterless page except their own (dashboard, profile, notifications, search). All passed with no fixes needed.
+- **Content-Security-Policy** and inline-code ban (D66): the audit found three inline handlers (category archive confirm, equipment unit filters) that the policy would have blocked; they now use Alpine, and print/reload/back buttons use `data-action`.
+- **Accessibility:** axe-core (WCAG 2 A/AA) across 60 internal and 8 public pages: zero serious or critical issues after fixes. Fixed: low-contrast greys (the lightest text grey is now 4.5:1 on white and on light grey; dark surfaces use translucent white), red text on black (lighter red on dark), faded totals in the availability grid, chart columns that were focusable inside a hidden region (now labelled images), a link distinguished only by colour, and a malformed definition list.
+- **Performance:** query counts measured on 26 pages with the demo data. The availability grid went from 180 to 23 queries (blocker windows and bulk stock fetched once instead of per item per day); the rest stay under about 40 queries and 80 ms locally. New indexes for report, dashboard and notification-bell filters. Every migration rolls back cleanly (full reset and re-run).
+- **Production readiness** (D67): `nebo:check-production`, https link forcing, a scheduled queue drain for hosts without a worker, long-lived caching for hashed assets, denial of dotfiles, and `docs/DEPLOYMENT.md`.
+- **Mobile:** every page checked at 390px (signed in and public): no horizontal scroll, no console errors, no failed requests; tap feedback on every control (D59).
+
+### Phase 10 gate (§62)
+
+- 213 tests / 1,903 assertions pass on PHP 8.3 with SQLite (4 new: access audit ×2, CSP/inline-code scan, production check). MySQL 8 CI is configured but has not been run in this environment.
+- Crawled in Chromium at 1440px and 390px: all 68 pages load, no horizontal scroll, no JS errors, no serious or critical accessibility violations.
+
+All ten phases of the brief are now delivered.

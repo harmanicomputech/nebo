@@ -6,7 +6,7 @@
         <div class="stage-beam absolute inset-0 opacity-80"></div>
         <div class="relative flex flex-wrap items-end justify-between gap-6">
             <div>
-                <p class="text-xs font-semibold tracking-[0.25em] text-brand-500 uppercase">{{ Format::datetime(now(), 'l, j F Y') }}</p>
+                <p class="text-xs font-semibold tracking-[0.25em] text-brand-400 uppercase">{{ Format::datetime(now(), 'l, j F Y') }}</p>
                 <h1 class="mt-3 text-3xl font-semibold sm:text-4xl">Good {{ now(config('nebo.display_timezone'))->hour < 12 ? 'morning' : (now(config('nebo.display_timezone'))->hour < 17 ? 'afternoon' : 'evening') }}, {{ \Illuminate\Support\Str::before($user->name, ' ') }}.</h1>
                 <p class="mt-2 max-w-xl text-sm text-ink-300">What is happening at Nebo Stage right now: today’s events, new requests, inventory and anything that needs attention.</p>
             </div>

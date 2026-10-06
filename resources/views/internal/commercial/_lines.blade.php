@@ -61,8 +61,8 @@
                 <div class="flex justify-between" x-show="discountValue > 0"><dt class="text-ink-500">Discount</dt><dd class="tabular-nums" x-text="'−' + money(discountValue)"></dd></div>
                 <div class="flex justify-between"><dt class="text-ink-500">VAT <span x-text="tax + '%'"></span></dt><dd class="tabular-nums" x-text="money(taxValue)"></dd></div>
                 <div class="flex justify-between border-t border-ink-100 pt-2 text-base font-semibold"><dt>Total</dt><dd class="tabular-nums" x-text="money(total)"></dd></div>
-                <p class="text-xs text-ink-500">Totals are checked again when you save.</p>
             </dl>
+            <p class="text-xs text-ink-500 sm:col-start-2">Totals are checked again when you save.</p>
         </div>
     @endif
 </div>

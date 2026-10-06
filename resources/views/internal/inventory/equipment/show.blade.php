@@ -76,10 +76,10 @@
                     @if ($tab === 'units')
                         <x-ui.card :padding="false">
                             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ink-100 px-4 py-3 sm:px-6">
-                                <form method="GET" class="flex flex-wrap items-center gap-2">
+                                <form method="GET" class="flex flex-wrap items-center gap-2" x-data x-on:change="$el.requestSubmit()">
                                     <input type="hidden" name="tab" value="units">
-                                    <x-ui.select name="status" :options="$statuses->pluck('label', 'id')->all()" :value="request('status')" placeholder="All statuses" aria-label="Status" onchange="this.form.submit()" class="w-48" />
-                                    <label class="flex items-center gap-2 text-sm text-ink-600"><input type="checkbox" name="archived" value="1" @checked(request()->boolean('archived')) onchange="this.form.submit()" class="size-4 rounded border-ink-300 text-brand-600">Archived</label>
+                                    <x-ui.select name="status" :options="$statuses->pluck('label', 'id')->all()" :value="request('status')" placeholder="All statuses" aria-label="Status" class="w-48" />
+                                    <label class="flex items-center gap-2 text-sm text-ink-600"><input type="checkbox" name="archived" value="1" @checked(request()->boolean('archived')) class="size-4 rounded border-ink-300 text-brand-600">Archived</label>
                                     <noscript><x-ui.button type="submit" size="sm" variant="dark">Filter</x-ui.button></noscript>
                                 </form>
                                 @if ($assets->total())

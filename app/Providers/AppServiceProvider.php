@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -29,6 +30,12 @@ class AppServiceProvider extends ServiceProvider
         // added later. Policy methods (update, delete, …) still run for them, so
         // structural rules such as "system roles cannot be deleted" hold for everyone.
         Gate::before(fn (User $user, string $ability) => str_contains($ability, '.') && $user->isSuperAdmin() ? true : null);
+
+        // Behind a proxy or shared-hosting front end, generate https:// links
+        // whenever the configured URL is https (D67).
+        if ($this->app->isProduction() && str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());

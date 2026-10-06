@@ -35,7 +35,7 @@
     --color-ink-100: #e7e7e7;
     --color-ink-200: #d1d1d1;
     --color-ink-300: #b0b0b0;
-    --color-ink-400: #888888;
+    --color-ink-400: #707070; /* ≥ 4.5:1 on white and on ink-50: the lightest grey used for text (Phase 10) */
     --color-ink-500: #6d6d6d;
     --color-ink-600: #5d5d5d;
     --color-ink-700: #4f4f4f;

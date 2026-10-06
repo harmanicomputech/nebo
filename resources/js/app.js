@@ -136,6 +136,19 @@ Alpine.data('lineItems', (initial = [], catalogue = { equipment: [], services: [
 }));
 
 /*
+ | Small page actions without inline handlers (the CSP forbids them, D66):
+ | <button data-action="print|reload|back">.
+ */
+document.addEventListener('click', (e) => {
+    const el = e.target instanceof Element ? e.target.closest('[data-action]') : null;
+    if (!el) return;
+    const action = el.dataset.action;
+    if (action === 'print') window.print();
+    if (action === 'reload') location.reload();
+    if (action === 'back') (history.length > 1 ? history.back() : window.close());
+});
+
+/*
  | Chart tooltips (D64): any element with data-tip shows it on hover or
  | keyboard focus. Text only (textContent), never HTML.
  */

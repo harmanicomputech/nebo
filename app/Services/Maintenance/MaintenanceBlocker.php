@@ -20,4 +20,12 @@ class MaintenanceBlocker implements AvailabilityBlocker
             ->windowOverlapping($from, $to)
             ->pluck('asset_id')->unique()->values()->all();
     }
+
+    public function windows(array $equipmentIds, CarbonInterface $from, CarbonInterface $to): array
+    {
+        return MaintenanceRecord::query()->whereIn('equipment_id', $equipmentIds)->windowOverlapping($from, $to)
+            ->get(['equipment_id', 'asset_id', 'scheduled_starts_at', 'scheduled_ends_at'])
+            ->map(fn (MaintenanceRecord $r) => ['equipment_id' => $r->equipment_id, 'asset_id' => $r->asset_id, 'starts' => $r->scheduled_starts_at, 'ends' => $r->scheduled_ends_at])
+            ->all();
+    }
 }
