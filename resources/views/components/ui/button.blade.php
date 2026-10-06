@@ -7,7 +7,7 @@
     'type' => 'button',
 ])
 @php
-    $base = 'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap';
+    $base = 'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap';
     $sizes = ['sm' => 'px-3 py-1.5 text-xs', 'md' => 'px-4 py-2.5 text-sm', 'lg' => 'px-6 py-3.5 text-base'];
     $variants = [
         'primary' => 'bg-brand-600 text-white shadow-sm hover:bg-brand-700 focus-visible:outline-brand-600',
@@ -20,13 +20,13 @@
     $iconClass = $size === 'sm' ? 'size-3.5' : 'size-4';
 @endphp
 @if ($href)
-    <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
+    <a href="{{ $href }}" data-btn {{ $attributes->merge(['class' => $classes]) }}>
         @if ($icon)<x-ui.icon :name="$icon" :class="$iconClass" />@endif
         {{ $slot }}
         @if ($iconRight)<x-ui.icon :name="$iconRight" :class="$iconClass" />@endif
     </a>
 @else
-    <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}>
+    <button type="{{ $type }}" data-btn {{ $attributes->merge(['class' => $classes]) }}>
         @if ($icon)<x-ui.icon :name="$icon" :class="$iconClass" />@endif
         {{ $slot }}
         @if ($iconRight)<x-ui.icon :name="$iconRight" :class="$iconClass" />@endif

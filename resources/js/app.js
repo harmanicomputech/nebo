@@ -85,21 +85,118 @@ Alpine.data('installApp', () => ({
 }));
 
 /*
- | Prevent double submission: forms with data-once disable their submit
- | buttons after the first submit.
+ | Tap feedback and double-submit protection (D59).
+ |
+ | - Any form submit marks the tapped button busy (spinner, no more taps)
+ |   and blocks a second submission until the next page loads. Buttons are
+ |   disabled a tick later so the tapped button's name=value is still sent.
+ | - Same-site link taps mark the link busy and ignore repeat taps.
+ | - A progress bar runs while the next page loads.
+ | Opt out with data-no-busy (e.g. forms or links that download a file).
  */
+const progress = (() => {
+    let bar;
+    let timer;
+    const el = () => {
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.className = 'nav-progress';
+            bar.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(bar);
+        }
+        return bar;
+    };
+    return {
+        start() {
+            const b = el();
+            b.dataset.state = '';
+            void b.offsetWidth; // restart the transition
+            b.dataset.state = 'running';
+        },
+        done() {
+            if (bar) bar.dataset.state = 'done';
+        },
+        safety(ms = 15000) {
+            clearTimeout(timer);
+            timer = setTimeout(resetBusy, ms);
+        },
+    };
+})();
+
+function markBusy(el) {
+    if (!el || el.dataset.busy === '1') return;
+    el.dataset.busy = '1';
+    el.setAttribute('aria-busy', 'true');
+    el.classList.add('is-busy');
+    if (el.hasAttribute('data-btn')) {
+        const spinner = document.createElement('span');
+        spinner.className = 'busy-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        el.prepend(spinner);
+    }
+}
+
+function resetBusy() {
+    document.querySelectorAll('[data-busy="1"]').forEach((el) => {
+        delete el.dataset.busy;
+        el.removeAttribute('aria-busy');
+        el.classList.remove('is-busy');
+        el.querySelectorAll(':scope > .busy-spinner').forEach((s) => s.remove());
+        if (el.dataset.busyDisabled === '1') {
+            el.disabled = false;
+            delete el.dataset.busyDisabled;
+        }
+    });
+    document.querySelectorAll('form[data-submitted="1"]').forEach((f) => delete f.dataset.submitted);
+    progress.done();
+}
+
 document.addEventListener('submit', (e) => {
     const form = e.target;
-    if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-once')) return;
+    if (!(form instanceof HTMLFormElement) || form.hasAttribute('data-no-busy') || form.target === '_blank') return;
     if (form.dataset.submitted === '1') {
         e.preventDefault();
         return;
     }
+    if (e.defaultPrevented) return;
+
     form.dataset.submitted = '1';
-    form.querySelectorAll('button[type=submit]').forEach((b) => {
-        b.disabled = true;
-        b.classList.add('opacity-70', 'cursor-wait');
-    });
+    const submitter = e.submitter ?? form.querySelector('button[type=submit], button:not([type])');
+    markBusy(submitter);
+    progress.start();
+    progress.safety();
+
+    setTimeout(() => {
+        form.querySelectorAll('button[type=submit], button:not([type])').forEach((b) => {
+            if (b.disabled) return;
+            b.disabled = true;
+            b.dataset.busyDisabled = '1';
+            b.dataset.busy = '1';
+        });
+    }, 0);
+});
+
+document.addEventListener('click', (e) => {
+    const link = e.target instanceof Element ? e.target.closest('a[href]') : null;
+    if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (link.target === '_blank' || link.hasAttribute('download') || link.hasAttribute('data-no-busy')) return;
+
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || !/^https?:$/.test(url.protocol)) return;
+    if (url.pathname === location.pathname && url.search === location.search && url.hash) return;
+
+    if (link.dataset.busy === '1') {
+        e.preventDefault();
+        return;
+    }
+    markBusy(link);
+    progress.start();
+    progress.safety();
+});
+
+// Back/forward cache restores the page as it was: clear any busy state.
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) resetBusy();
 });
 
 Alpine.start();

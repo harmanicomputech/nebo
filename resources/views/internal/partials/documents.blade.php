@@ -6,7 +6,7 @@
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-ink-50 text-ink-500 ring-1 ring-ink-100"><x-ui.icon :name="$doc->icon()" class="size-4" /></span>
             <div class="min-w-0 flex-1">
                 @can('view', $doc)
-                    <a href="{{ route('app.documents.download', $doc) }}" class="block truncate text-sm font-medium text-ink-900 hover:text-brand-700">{{ $doc->original_name }}</a>
+                    <a href="{{ route('app.documents.download', $doc) }}" data-no-busy class="block truncate text-sm font-medium text-ink-900 hover:text-brand-700">{{ $doc->original_name }}</a>
                 @else
                     <span class="block truncate text-sm font-medium text-ink-900">{{ $doc->original_name }}</span>
                 @endcan

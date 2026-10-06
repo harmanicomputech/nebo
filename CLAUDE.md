@@ -2,7 +2,7 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D58), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D59), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
@@ -34,4 +34,4 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D58), `docs/DATABASE.md` and `docs/R
 - **Nothing fake.** A module that isn't built appears only under "Coming next" in `App\Support\Navigation` (pass `planned(...)`), never as a working link or button.
 - **UI:** use the Blade components in `resources/views/components/ui` (button, badge, card, stat, page-header, input, select, textarea, modal, confirm, drawer, table, empty-state, skeleton) and the layouts `x-layouts.app|auth|public|error`. Wrap tables in `<x-ui.table>`, which scrolls on phones. Check every page at 390px wide with no horizontal scroll.
 - **PWA:** `public/sw.js` caches only `/build`, icons and `/offline`. Never cache HTML or JSON. Bump `VERSION` when the caching logic changes.
-- **Destructive actions** use `<x-ui.confirm>`. Forms that should not double-submit use `data-once`.
+- **Destructive actions** use `<x-ui.confirm>`. Every form and same-site link gets tap feedback and double-submit protection automatically (D59); add `data-no-busy` to links or forms that download a file instead of loading a page.
