@@ -6,8 +6,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | --- | --- | --- |
 | 0 — Discovery & architecture | Repo inspection, decisions, schema, dependency map, risks | **Done** — [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md) |
 | 1 — Foundation | Auth (login, logout, throttling, password reset, deactivated users), RBAC (permission catalog, editable roles, users), settings, audit log, in-app notifications, reference generator, global search framework, design system, internal + public layouts, error pages, security headers, PWA | **Done** (see below) |
-| 2 — Inventory | Categories (+sub), locations, asset statuses, lookups, equipment catalogue, serialized assets, bulk stock, ledger, equipment profile, table/grid views, filters, QR-ready identifiers | Next |
-| 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | Planned |
+| 2 — Inventory | Categories (+sub), locations, asset statuses, lookups, equipment catalogue, serialized assets, bulk stock, ledger, equipment profile, table/grid views, filters, QR-ready identifiers | **Done** (see below) |
+| 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | Next |
 | 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | Planned |
 | 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | Planned |
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Planned |
@@ -33,3 +33,21 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 75 feature tests / 295 assertions pass on PHP 8.3 with SQLite. CI also runs PHP 8.4 and MySQL 8; the MySQL job had not run yet when Phase 1 was committed.
 - Checked in Chromium at 1440px and 390px: every internal page has no horizontal scroll, the mobile drawer works, there are no console errors, and the service worker registers.
 - Bugs found and fixed during the gate: setting defaults with dotted keys, super-admin bypass of policies (D21), audit context in tests, a table's hidden header overflowing the page on phones, the dashboard link showing as active on every page, and an empty contact email.
+
+## Phase 2 deliverables
+
+- **Catalogue:** equipment with category/subcategory, SKU, make, model, tracking mode (serialized or quantity), unit, asset prefix, image, replacement value, low-stock level. Table and grid views; search (including asset tag and serial); filters for category (with subcategories), tracking, availability (available / none / low), unit status, location, condition and manufacturer; sorting; pagination; archive and restore.
+- **Serialized assets:** add one unit or many with generated tags (`ML-001`), serial, barcode, purchase, cost, value, supplier, warranty and next-maintenance details. Asset profile with QR code, current state, identity and purchase details, full history; actions to record condition, change status and move, plus archive and restore. Assets list across the fleet with filters.
+- **Quantity stock:** receive, move between locations, quarantine and release, write off and stock count, all per location, never negative, each with a ledger entry.
+- **Ledger:** every change is recorded with who, when, from/to status, location, condition, bucket and a note. Shown on the equipment and asset pages and as the stock movements page.
+- **Setup:** categories and subcategories, locations (archive only when empty), statuses (rename any, add custom, system behaviour fixed), and option lists (conditions, location types, units) under Settings.
+- **QR:** printable A4 label sheet; `/app/scan/{token}` opens the asset (sign-in required).
+- **Dashboard and search:** fleet status by group, available-now count, low stock, maintenance due in 14 days, quarantined stock; global search covers equipment and assets.
+- **Data:** an idempotent, production-safe reference seeder (the 12 categories from the brief with subcategories, 14 statuses, conditions, location types, units, 4 locations) and a demo seeder (18 `DEMO-` items, 103 units, opening stock and realistic states) that never runs in production.
+
+### Phase 2 gate (§62)
+
+- 115 tests / 584 assertions pass (Phase 1 plus 40 new inventory tests covering every rule above).
+- Every new page renders in Chromium at 1440px and 390px with no horizontal scroll and no console errors. The stock drawer and asset modals were checked.
+- Bugs found and fixed during the gate: an N+1 query on the equipment history tab (caught by strict lazy-loading), editing a quantity item failing validation, a submitted "allocatable" flag overriding the rule for custom statuses, a nav highlight pattern that would have matched every inventory page, ledger wording for first entries, subcategory icons, and the phone layout of the catalogue.
+- Not yet verified: the MySQL CI job (no MySQL in the build sandbox).

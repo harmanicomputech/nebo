@@ -4,6 +4,16 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Internal\AuditLogController;
 use App\Http\Controllers\Internal\DashboardController;
+use App\Http\Controllers\Internal\Inventory\AssetController;
+use App\Http\Controllers\Internal\Inventory\AssetStatusController;
+use App\Http\Controllers\Internal\Inventory\CategoryController;
+use App\Http\Controllers\Internal\Inventory\EquipmentController;
+use App\Http\Controllers\Internal\Inventory\LabelController;
+use App\Http\Controllers\Internal\Inventory\LocationController;
+use App\Http\Controllers\Internal\Inventory\MovementController;
+use App\Http\Controllers\Internal\Inventory\ScanController;
+use App\Http\Controllers\Internal\Inventory\StockController;
+use App\Http\Controllers\Internal\LookupController;
 use App\Http\Controllers\Internal\NotificationController;
 use App\Http\Controllers\Internal\ProfileController;
 use App\Http\Controllers\Internal\RoleController;
@@ -69,4 +79,59 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
 
     Route::get('/settings', [SettingsController::class, 'edit'])->middleware('can:settings.view')->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->middleware('can:settings.manage')->name('settings.update');
+    Route::get('/settings/options/{group?}', [LookupController::class, 'index'])->middleware('can:settings.view')->name('settings.options');
+    Route::post('/settings/options/{group}', [LookupController::class, 'store'])->middleware('can:settings.manage')->name('settings.options.store');
+    Route::put('/settings/options/item/{lookup}', [LookupController::class, 'update'])->middleware('can:settings.manage')->name('settings.options.update');
+
+    /*
+    | Inventory. Record-level rules are in EquipmentPolicy / EquipmentAssetPolicy
+    | and the inventory services; setup screens need inventory.configure.
+    */
+    Route::get('/scan/{token}', ScanController::class)->where('token', '[0-9A-Za-z]{26}')->name('scan');
+
+    Route::prefix('inventory')->name('inventory.')->group(function () {
+        Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment.index');
+        Route::get('/equipment/create', [EquipmentController::class, 'create'])->name('equipment.create');
+        Route::post('/equipment', [EquipmentController::class, 'store'])->name('equipment.store');
+        Route::get('/equipment/{equipment}', [EquipmentController::class, 'show'])->withTrashed()->name('equipment.show');
+        Route::get('/equipment/{equipment}/image', [EquipmentController::class, 'image'])->withTrashed()->name('equipment.image');
+        Route::get('/equipment/{equipment}/edit', [EquipmentController::class, 'edit'])->name('equipment.edit');
+        Route::put('/equipment/{equipment}', [EquipmentController::class, 'update'])->name('equipment.update');
+        Route::delete('/equipment/{equipment}', [EquipmentController::class, 'destroy'])->name('equipment.destroy');
+        Route::post('/equipment/{id}/restore', [EquipmentController::class, 'restore'])->whereNumber('id')->name('equipment.restore');
+        Route::post('/equipment/{equipment}/stock', StockController::class)->name('equipment.stock');
+        Route::get('/equipment/{equipment}/assets/create', [AssetController::class, 'create'])->name('assets.create');
+        Route::post('/equipment/{equipment}/assets', [AssetController::class, 'store'])->name('assets.store');
+
+        Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
+        Route::get('/assets/{asset}', [AssetController::class, 'show'])->withTrashed()->name('assets.show');
+        Route::get('/assets/{asset}/edit', [AssetController::class, 'edit'])->name('assets.edit');
+        Route::put('/assets/{asset}', [AssetController::class, 'update'])->name('assets.update');
+        Route::post('/assets/{asset}/status', [AssetController::class, 'status'])->name('assets.status');
+        Route::post('/assets/{asset}/move', [AssetController::class, 'move'])->name('assets.move');
+        Route::post('/assets/{asset}/condition', [AssetController::class, 'condition'])->name('assets.condition');
+        Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])->name('assets.destroy');
+        Route::post('/assets/{id}/restore', [AssetController::class, 'restore'])->whereNumber('id')->name('assets.restore');
+
+        Route::get('/movements', MovementController::class)->name('movements');
+        Route::get('/labels', LabelController::class)->name('labels');
+
+        Route::middleware('can:inventory.configure')->prefix('setup')->name('setup.')->group(function () {
+            Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
+            Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+            Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+            Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+            Route::post('/categories/{id}/restore', [CategoryController::class, 'restore'])->whereNumber('id')->name('categories.restore');
+
+            Route::get('/locations', [LocationController::class, 'index'])->name('locations');
+            Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
+            Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
+            Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
+            Route::post('/locations/{id}/restore', [LocationController::class, 'restore'])->whereNumber('id')->name('locations.restore');
+
+            Route::get('/statuses', [AssetStatusController::class, 'index'])->name('statuses');
+            Route::post('/statuses', [AssetStatusController::class, 'store'])->name('statuses.store');
+            Route::put('/statuses/{status}', [AssetStatusController::class, 'update'])->name('statuses.update');
+        });
+    });
 });

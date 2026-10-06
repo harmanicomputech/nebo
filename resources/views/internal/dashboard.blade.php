@@ -31,6 +31,65 @@
         @endif
     </div>
 
+    @if ($inventory)
+        @php
+            $g = $inventory['groups'];
+            $fleet = array_sum($g) - $g['retired'] - $g['lost'];
+            $tiles = [
+                ['Available now', $inventory['allocatable'], 'circle-check', 'bg-emerald-500', ['group' => 'available']],
+                ['Reserved / allocated', $g['committed'], 'clipboard-check', 'bg-sky-500', ['group' => 'committed']],
+                ['Out on events', $g['out'], 'truck', 'bg-ink-800', ['group' => 'out']],
+                ['Inspection & maintenance', $g['attention'], 'wrench', 'bg-amber-500', ['group' => 'attention']],
+                ['Damaged', $g['damaged'], 'triangle-alert', 'bg-brand-600', ['group' => 'damaged']],
+                ['Lost / missing', $g['lost'], 'circle-x', 'bg-brand-800', ['group' => 'lost']],
+            ];
+        @endphp
+        <section class="mt-8" aria-labelledby="inv-heading">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <h2 id="inv-heading" class="text-lg font-semibold">Inventory</h2>
+                    <p class="text-sm text-ink-500">{{ number_format($fleet) }} serialized units in the fleet · {{ number_format($inventory['bulk']['available']) }} quantity items in stock</p>
+                </div>
+                <x-ui.button variant="ghost" size="sm" icon-right="arrow-right" :href="route('app.inventory.equipment.index')">Equipment</x-ui.button>
+            </div>
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+                <x-ui.card title="Fleet status" class="xl:col-span-2">
+                    <div class="flex h-3 overflow-hidden rounded-full bg-ink-100" role="img" aria-label="Fleet status breakdown">
+                        @foreach ($tiles as [$label, $count, $icon, $bar])
+                            @if ($count && array_sum($g))<div class="{{ $bar }}" style="width: {{ $count / array_sum($g) * 100 }}%" title="{{ $label }}: {{ $count }}"></div>@endif
+                        @endforeach
+                    </div>
+                    <ul class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        @foreach ($tiles as [$label, $count, $icon, $bar, $query])
+                            <li><a href="{{ route('app.inventory.assets.index', $query) }}" class="flex items-center gap-3 rounded-xl border border-ink-100 p-3 hover:border-ink-300">
+                                <span class="size-2.5 shrink-0 rounded-full {{ $bar }}" aria-hidden="true"></span>
+                                <span class="min-w-0"><span class="block text-xl font-semibold tabular-nums">{{ number_format($count) }}</span><span class="block truncate text-xs text-ink-500">{{ $label }}</span></span>
+                            </a></li>
+                        @endforeach
+                    </ul>
+                    <p class="mt-4 text-xs text-ink-500">“Available now” counts units whose status and condition allow allocation. Date-by-date availability for events arrives with allocation (Phase 5).</p>
+                </x-ui.card>
+                <x-ui.card title="Needs attention" :padding="false">
+                    <ul class="divide-y divide-ink-100 text-sm">
+                        <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="triangle-alert" class="size-4 text-brand-600" />Low-stock items</span><a href="{{ route('app.inventory.equipment.index', ['availability' => 'low']) }}" class="font-semibold tabular-nums hover:text-brand-700">{{ $inventory['lowStockCount'] }}</a></li>
+                        <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="wrench" class="size-4 text-amber-600" />Maintenance due (14 days)</span><span class="font-semibold tabular-nums">{{ $inventory['maintenanceDue'] }}</span></li>
+                        <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="package" class="size-4 text-ink-500" />Quarantined stock units</span><span class="font-semibold tabular-nums">{{ number_format($inventory['bulk']['quarantine']) }}</span></li>
+                    </ul>
+                    @if ($inventory['lowStock']->isNotEmpty())
+                        <div class="border-t border-ink-100 px-5 py-4">
+                            <p class="mb-2 text-xs font-semibold tracking-wider text-ink-500 uppercase">Lowest stock</p>
+                            <ul class="space-y-2">
+                                @foreach ($inventory['lowStock'] as $item)
+                                    <li class="flex items-center justify-between gap-3 text-sm"><a href="{{ route('app.inventory.equipment.show', $item) }}" class="truncate hover:text-brand-700">{{ $item->name }}</a><span class="shrink-0 text-xs"><span class="font-semibold text-brand-700">{{ $item->availableUnits() }}</span> / min {{ $item->low_stock_threshold }}</span></li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </x-ui.card>
+            </div>
+        </section>
+    @endif
+
     <div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <x-ui.card title="Module roadmap" description="What goes live next. Nothing below is active yet." class="xl:col-span-2">
             <ol class="grid gap-4 sm:grid-cols-2">

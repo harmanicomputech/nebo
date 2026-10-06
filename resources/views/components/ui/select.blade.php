@@ -1,6 +1,6 @@
-@props(['label' => null, 'name', 'options' => [], 'value' => null, 'placeholder' => null, 'hint' => null, 'required' => false])
+@props(['label' => null, 'name', 'options' => [], 'value' => null, 'placeholder' => null, 'hint' => null, 'required' => false, 'id' => null])
 @php
-    $id = 'f-'.str_replace(['[', ']', '.'], '-', $name);
+    $id ??= 'f-'.str_replace(['[', ']', '.'], '-', $name);
     $current = (string) old($name, $value);
     $hasError = $errors->has($name);
 @endphp

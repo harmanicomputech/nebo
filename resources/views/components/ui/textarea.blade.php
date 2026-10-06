@@ -1,6 +1,6 @@
-@props(['label' => null, 'name', 'value' => null, 'hint' => null, 'required' => false, 'rows' => 4])
+@props(['label' => null, 'name', 'value' => null, 'hint' => null, 'required' => false, 'rows' => 4, 'id' => null])
 @php
-    $id = 'f-'.str_replace(['[', ']', '.'], '-', $name);
+    $id ??= 'f-'.str_replace(['[', ']', '.'], '-', $name);
     $hasError = $errors->has($name);
 @endphp
 <div {{ $attributes->only('class') }}>

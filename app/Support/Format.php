@@ -19,8 +19,24 @@ class Format
         return self::datetime($value, 'j M Y');
     }
 
-    public static function naira(?int $kobo): string
+    public static function naira(?int $kobo, bool $decimals = false): string
     {
-        return $kobo === null ? '—' : '₦'.number_format($kobo / 100, 2);
+        return $kobo === null ? '—' : '₦'.number_format($kobo / 100, $decimals ? 2 : 0);
+    }
+
+    /** "1,250,000.50" (naira, as typed) → 125000050 kobo. Null for blank. */
+    public static function toKobo(mixed $naira): ?int
+    {
+        if ($naira === null || trim((string) $naira) === '') {
+            return null;
+        }
+
+        return (int) round(((float) str_replace([',', '₦', ' '], '', (string) $naira)) * 100);
+    }
+
+    /** Kobo → plain naira for form inputs. */
+    public static function nairaInput(?int $kobo): string
+    {
+        return $kobo === null ? '' : rtrim(rtrim(number_format($kobo / 100, 2, '.', ''), '0'), '.');
     }
 }

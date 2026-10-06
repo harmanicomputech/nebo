@@ -30,7 +30,23 @@ class ReferenceGenerator
         $at ??= now(config('nebo.display_timezone'));
         $period = $this->period($format, $at);
 
-        $number = DB::transaction(function () use ($key, $period) {
+        $number = $this->increment($key, $period);
+
+        return strtr($format, [
+            '{YYYY}' => $at->format('Y'),
+            '{YY}' => $at->format('y'),
+            '{MM}' => $at->format('m'),
+            $seq[0] => str_pad((string) $number, (int) $seq[1], '0', STR_PAD_LEFT),
+        ]);
+    }
+
+    /**
+     * Returns the next number for a counter and advances it. Row-locked, so
+     * concurrent callers never receive the same number.
+     */
+    public function increment(string $key, string $period = ''): int
+    {
+        return DB::transaction(function () use ($key, $period) {
             $row = DB::table('sequences')->where(['key' => $key, 'period' => $period])->lockForUpdate()->first();
 
             if (! $row) {
@@ -42,13 +58,6 @@ class ReferenceGenerator
 
             return (int) $row->next_value;
         });
-
-        return strtr($format, [
-            '{YYYY}' => $at->format('Y'),
-            '{YY}' => $at->format('y'),
-            '{MM}' => $at->format('m'),
-            $seq[0] => str_pad((string) $number, (int) $seq[1], '0', STR_PAD_LEFT),
-        ]);
     }
 
     public static function isValidFormat(string $format): bool

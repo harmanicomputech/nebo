@@ -2,6 +2,7 @@
 <x-layouts.app title="Settings">
     <x-ui.page-header title="Settings" description="Company details, reference number formats and notification recipients. Every change is audited."
         :breadcrumbs="['Administration' => null, 'Settings' => null]" />
+    @include('internal.settings._tabs')
 
     <form method="POST" action="{{ route('app.settings.update') }}" class="space-y-6" data-once>
         @csrf @method('PUT')

@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\User;
 use App\Support\Permissions\PermissionCatalog;
+use Database\Seeders\InventoryReferenceSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -17,7 +18,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->withoutVite();
-        $this->seed(RolesAndPermissionsSeeder::class);
+        $this->seed([RolesAndPermissionsSeeder::class, InventoryReferenceSeeder::class]);
     }
 
     protected function superAdmin(array $attributes = []): User

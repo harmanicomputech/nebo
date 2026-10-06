@@ -32,8 +32,10 @@ class Navigation
                 self::planned('Logistics', 'truck', 'logistics.view', 7),
             ]],
             ['label' => 'Inventory', 'items' => [
-                self::planned('Equipment', 'boxes', 'inventory.view', 2),
-                self::planned('Locations', 'warehouse', 'inventory.configure', 2),
+                self::item('Equipment', 'boxes', 'app.inventory.equipment.index', 'inventory.view', 'app.inventory.equipment.*'),
+                self::item('Assets', 'qr-code', 'app.inventory.assets.index', 'inventory.view'),
+                self::item('Stock movements', 'history', 'app.inventory.movements', 'inventory.view'),
+                self::item('Inventory setup', 'warehouse', 'app.inventory.setup.categories', 'inventory.configure', 'app.inventory.setup.*'),
                 self::planned('Maintenance', 'wrench', 'maintenance.view', 6),
             ]],
             ['label' => 'Commercial', 'items' => [
@@ -45,7 +47,7 @@ class Navigation
                 self::item('Users', 'users', 'app.users.index', 'users.view'),
                 self::item('Roles & permissions', 'shield-check', 'app.roles.index', 'roles.view'),
                 self::item('Audit log', 'scroll-text', 'app.audit.index', 'audit.view'),
-                self::item('Settings', 'settings', 'app.settings.edit', 'settings.view'),
+                self::item('Settings', 'settings', 'app.settings.edit', 'settings.view', 'app.settings.*'),
             ]],
         ];
 
@@ -70,10 +72,10 @@ class Navigation
     /**
      * @return array{label: string, icon: string, route: ?string, active: string, permission: ?string, phase: ?int}
      */
-    private static function item(string $label, string $icon, string $route, ?string $permission): array
+    private static function item(string $label, string $icon, string $route, ?string $permission, ?string $active = null): array
     {
-        // app.users.index is active on any app.users.* page; app.dashboard only on itself.
-        $active = substr_count($route, '.') >= 2 ? preg_replace('/\.[a-z-]+$/', '.*', $route) : $route;
+        // A resource index (app.users.index) is active on all of app.users.*; anything else only on itself.
+        $active ??= str_ends_with($route, '.index') ? substr($route, 0, -strlen('index')).'*' : $route;
 
         return ['label' => $label, 'icon' => $icon, 'route' => $route, 'active' => $active, 'permission' => $permission, 'phase' => null];
     }

@@ -58,7 +58,7 @@ erDiagram
 | `audit_logs` **(P1)** | user_id → users (set null), user_name, event, auditable_type, auditable_id, description, old_values json, new_values json, ip_address, user_agent, url, created_at | Append-only: the model refuses update/delete; no edit routes. Indexed on (auditable_type, auditable_id), user_id, event, created_at. |
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
-| `lookups` | group, key, label, sort_order, is_active, meta json; unique(group, key) | Event types, budget ranges, condition grades, maintenance types, staff roles, vehicle types. |
+| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Later: event types, budget ranges, maintenance types, staff roles, vehicle types. |
 | `status_changes` | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
 
@@ -66,13 +66,13 @@ erDiagram
 
 | Table | Key columns | Notes |
 | --- | --- | --- |
-| `equipment_categories` | parent_id (self), name, slug (unique), description, icon, sort_order, is_active, soft deletes | Subcategories via `parent_id`. |
-| `locations` | parent_id (self), name, code (unique), type (warehouse/site/transit/maintenance/other), address, is_active, soft deletes | Future `branch_id`. |
-| `asset_statuses` | code (unique), label, color, is_allocatable, is_in_service, is_terminal, is_system, sort_order | Seeded: available, reserved, allocated, checked_out, deployed, in_transit, on_site, under_inspection, maintenance_required, under_maintenance, damaged, lost, retired, unavailable. |
-| `equipment` | category_id, name, sku (unique), manufacturer, model, tracking_mode (`serialized`/`bulk`), unit, description, image_path, replacement_value_kobo, low_stock_threshold, is_active, soft deletes | Catalogue item. |
-| `equipment_assets` | equipment_id, asset_tag (unique), serial_number (unique per equipment, nullable), barcode (unique, nullable), qr_token (unique, ULID), status_id, condition (lookup key), location_id, purchase_date, purchase_cost_kobo, current_value_kobo, supplier, warranty_expires_on, last_inspected_at, next_maintenance_due_on, usage_count, notes, soft deletes | Physical unit; `qr_token` drives the future scan URL `/app/scan/{qr_token}`. |
-| `stock_levels` | equipment_id, location_id, bucket (`available`/`quarantine`), quantity (unsigned); unique(equipment_id, location_id, bucket) | Bulk items. Quantity can never go negative (unsigned + service check). |
-| `inventory_transactions` | type (purchased/added/reserved/allocated/checked_out/deployed/transferred/returned/damaged/lost/repaired/retired/adjusted), equipment_id, asset_id (nullable), quantity, from_location_id, to_location_id, from_status_id, to_status_id, event_id (nullable), reference_type/id, user_id, note, occurred_at | Immutable ledger. |
+| `equipment_categories` **(P2)** | parent_id (self), name, slug (unique), description, icon, sort_order, is_active, soft deletes | Subcategories via `parent_id`. |
+| `locations` **(P2)** | parent_id (self), name, code (unique), type (warehouse/site/transit/maintenance/other), address, is_active, soft deletes | Future `branch_id`. |
+| `asset_statuses` **(P2)** | code (unique), label, description, group, tone, is_allocatable, is_manual, is_system, is_active, sort_order | Seeded: available, reserved, allocated, checked_out, in_transit, deployed, on_site, under_inspection, maintenance_required, under_maintenance, damaged, lost, retired, unavailable. Behaviour: ARCHITECTURE D23/D24. |
+| `equipment` **(P2)** | category_id, name, sku (unique), manufacturer, model, tracking_mode (`serialized`/`bulk`), unit, description, image_path, replacement_value_kobo, low_stock_threshold, is_active, soft deletes | Catalogue item. |
+| `equipment_assets` **(P2)** | equipment_id, asset_tag (unique), serial_number (unique per equipment, nullable), barcode (unique, nullable), qr_token (unique, ULID), status_id, condition (lookup key), location_id, purchase_date, purchase_cost_kobo, current_value_kobo, supplier, warranty_expires_on, last_inspected_at, next_maintenance_due_on, usage_count, notes, soft deletes | Physical unit; `qr_token` drives the future scan URL `/app/scan/{qr_token}`. |
+| `stock_levels` **(P2)** | equipment_id, location_id, bucket (`available`/`quarantine`), quantity (unsigned); unique(equipment_id, location_id, bucket) | Bulk items. Quantity can never go negative (unsigned + service check). |
+| `inventory_transactions` **(P2)** | type (`App\Enums\InventoryTransactionType`), equipment_id, asset_id (nullable), quantity (signed for adjustments/write-offs), from/to location, from/to status, from/to condition, from/to bucket, event_id (FK added in Phase 4), user_id + user_name, note, occurred_at | Immutable ledger: the model refuses update/delete. |
 
 ## Requests, customers, events
 

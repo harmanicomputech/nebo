@@ -37,7 +37,7 @@ Each decision is recorded with its reason so it can be revisited deliberately.
 | D4 | Business logic lives in **services** (`app/Services`), validation in **Form Requests**, authorization in **Policies**. Controllers orchestrate only. | Same logic is reused by the web UI, future `/api/v1` (Sanctum), console commands and jobs. |
 | D5 | **Users ≠ staff.** `users` are login accounts. `staff` (Phase 4) are people who work events and may or may not log in (`staff.user_id` nullable). | Crew and drivers need to be scheduled without being given accounts. |
 | D6 | **Two inventory tracking modes on one catalogue.** `equipment` is the catalogue item (e.g. "Robe MegaPointe"). `tracking_mode = serialized` items have rows in `equipment_assets` (one per physical unit); `tracking_mode = bulk` items have quantities in `stock_levels` per location. | Satisfies both "ML-001 is at the client site" and "we have 1,200 m of 16 A cable" without forcing one model onto the other. |
-| D7 | **Asset statuses are a database table with behaviour flags** (`is_allocatable`, `is_in_service`, `is_terminal`, …) and a stable `code`. Engine logic keys off flags and system codes, never off labels. System statuses cannot be deleted. | Admins can add statuses and rename labels without breaking the availability engine. |
+| D7 | **Asset statuses are a database table with behaviour flags** (`group`, `is_allocatable`, `is_manual`; see D23) and a stable `code`. Engine logic keys off flags and system codes, never off labels. System statuses cannot be deleted. | Admins can add statuses and rename labels without breaking the availability engine. |
 | D8 | **Availability is computed from time-windowed holds**, not from a stock counter. Each event has a *hold window* = setup start → breakdown end (+ configurable turnaround buffer). Available(item, window) = in-service units − overlapping holds − maintenance windows − units in non-allocatable status. | The brief requires conflict detection across overlapping dates; a single quantity column cannot express that. |
 | D9 | **Double allocation is prevented in the database transaction**, not just in validation: allocation locks the catalogue row (`SELECT … FOR UPDATE`), re-checks overlap, then writes. Serialized assets additionally have a per-asset overlap check. | MySQL cannot express a range-exclusion constraint; serialising writes per equipment item is the reliable alternative. |
 | D10 | **Every inventory movement writes an `inventory_transactions` ledger row** (who, what, from/to location, from/to status, qty, reference). Current state is denormalised on the asset for speed; the ledger is the history. | "How did this asset get here?" must always be answerable. |
@@ -53,113 +53,11 @@ Each decision is recorded with its reason so it can be revisited deliberately.
 | D20 | Timezone **Africa/Lagos** for display; timestamps stored in UTC. | Single-country operation today; correct if branches span zones later. |
 | D21 | `Gate::before` grants Super Administrator only **permission abilities** (`module.action`); policy methods still run for them. | Found in Phase 1 testing: a blanket bypass let a super admin past structural policy rules (deleting a system role, deactivating themselves). The service layer still blocked it, but each rule should hold at every layer. |
 | D22 | Fonts are **self-hosted from npm** (`@fontsource-variable/*`) and bundled by Vite. | No third-party request at build or run time, and the fonts work offline in the PWA. |
-
-## 3. Target architecture
-
-```
-                         ┌───────────────────────────────┐
-  Customers ───────────▶ │ Public portal  (/ , /request) │  layouts/public, Public\* controllers
-                         └──────────────┬────────────────┘
-                                        │ RequestIntakeService (validated, throttled)
-                                        ▼
- ┌──────────────────────────────────────────────────────────────────────────────┐
- │ Internal app  (/app/*)   auth + active-user + permission middleware + policies│
- │                                                                              │
- │  Controllers (thin) ─▶ Form Requests ─▶ Services ─▶ Models / DB transactions │
- │                                           │                                  │
- │        AvailabilityService ◀──────────────┤                                  │
- │        AllocationService, ReturnService   │──▶ InventoryLedger (ledger rows) │
- │        RequestWorkflow, QuotationService  │──▶ Audit (audit_logs)            │
- │        ReferenceGenerator, Settings       │──▶ Notifications (db → mail/SMS) │
- └──────────────────────────────────────────────────────────────────────────────┘
-                 │ queue (database driver)            │ private storage (documents)
-                 ▼                                     ▼
-            Jobs: notifications, exports,        storage/app/private/…
-            maintenance reminders
-```
-
-Directory conventions:
-
-```
-app/
-  Enums/                     workflow statuses, tracking modes (backed enums with labels/transitions)
-  Http/Controllers/Public/   public portal
-  Http/Controllers/Internal/ internal app (one controller per resource)
-  Http/Controllers/Auth/     login, logout, password reset
-  Http/Requests/             form requests (all server-side validation)
-  Http/Middleware/           EnsureUserIsActive, SecurityHeaders
-  Models/                    Eloquent models (relationships, casts, scopes; no workflows)
-  Notifications/             in-app (+ future channels)
-  Policies/                  one per model
-  Services/                  business logic (availability, allocation, workflow, references)
-  Support/                   Audit, Settings, PermissionCatalog, Navigation, Search
-resources/views/
-  components/ui/             design-system components (button, badge, card, modal, drawer, …)
-  layouts/                   app (internal), public, auth, error
-  internal/ public/ auth/ errors/
-```
-
-### Authorization layers
-
-1. Route middleware: `auth`, `active` (deactivated users are logged out), `can:<permission>` on module groups.
-2. Policies on every model for record-level rules (e.g. a technician sees only assigned maintenance).
-3. Blade `@can` hides actions the user cannot take — never the only line of defence.
-4. Permission names are `module.action`, e.g. `inventory.view`, `allocations.manage`, `quotations.approve`, `financial.view` (money visibility is its own permission so crew can see an event without its value).
-
-### Security baseline
-
-CSRF on every form; Form Request validation; Blade escaping (no `{!! !!}` on user data); mass-assignment via explicit `#[Fillable]`; bcrypt/argon passwords; login throttling (5/min per email+IP) and public-form throttling; session regeneration on login; encrypted, `HttpOnly`, `SameSite=Lax`, `Secure` (in production) session cookie; security headers middleware (`X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS on HTTPS); custom error pages with no stack traces when `APP_DEBUG=false`; secrets only in `.env`.
-
-## 4. Module dependency map
-
-```
-Foundation (auth, RBAC, settings, audit, notifications, references, lookups, documents)
-   │
-   ├── Inventory  (categories, locations, statuses, equipment, assets, stock, ledger)
-   │      │
-   │      ├── Maintenance & condition ─────────────┐
-   │      │                                         │ (maintenance windows block availability)
-   │      └──────────────┐                          │
-   │                     ▼                          ▼
-   ├── CRM (customers) ─▶ Public requests ─▶ Events & production ─▶ Availability engine
-   │                           │                    │                     │
-   │                           │                    ├── Team / staff      ▼
-   │                           │                    │              Allocation ─▶ Load lists ─▶ Check-out ─▶ Return/check-in
-   │                           │                    │                                                         │
-   │                           ▼                    ▼                                                         ▼
-   │                      Quotations ◀── Packages   Logistics ◀── Vehicles                          Damage / missing → Maintenance
-   │
-   └── Reports & dashboard (read models over everything above)
-```
-
-Hard dependencies (a module cannot ship before these):
-
-| Module | Depends on |
-| --- | --- |
-| Inventory | Foundation |
-| Public requests | Foundation (references, documents, notifications), CRM customer matching, services |
-| Events | Requests (conversion), customers, lookups |
-| Availability & allocation | Inventory, events, maintenance windows (stubbed as "none" until Phase 6, then plugged in) |
-| Load lists, returns | Allocation |
-| Maintenance | Inventory (and returns feed it) |
-| Logistics | Events, vehicles, staff |
-| Quotations | Customers, events/requests, services, packages, equipment |
-| Reports | All of the above |
-
-## 5. Risks and ambiguities (with the assumption taken)
-
-| Risk / ambiguity | Assumption / mitigation |
-| --- | --- |
-| Hosting is unknown. | Build to run on shared hosting *and* a VPS: database queue and cache, prebuilt assets committed to the release package (not to git), no required daemons. Revisit if a VPS is confirmed (then: Redis, Horizon, supervisor). |
-| PHP 8.3 vs 8.4 dependency drift. | The lockfile is generated on PHP 8.3; CI tests 8.3 and 8.4. |
-| Concurrency of allocations (two planners at once). | D9 row locks + tests that simulate conflicting writes. MySQL InnoDB required (not MyISAM). |
-| Bulk items have mixed condition (some cable damaged). | Bulk stock keeps quantity per **location and condition bucket** (`available`, `quarantine` for damaged/inspection); only `available` counts for allocation. |
-| Kits / road cases containing assets. | Phase 5 adds `asset_containers` (an asset may be "inside" a case asset) so a case can be scanned and its contents moved together. Not in Phase 1–4. |
-| Customer de-duplication (same phone, different company; shared office emails). | Match on normalised email first, then normalised phone (E.164 +234); on match, link to the existing customer and flag `needs_review` if the name/company differs, rather than auto-merging. |
-| Event dates with gaps (e.g. Fri + Sun). | Hold window spans setup start → breakdown end continuously. Gaps can be modelled later as multiple windows per event. |
-| "Viewed" quotation status needs a customer-facing link. | Phase 8 adds a signed public quotation link that records the first view. |
-| Public form spam. | Throttling, honeypot field, minimum fill-time check; CAPTCHA (Turnstile) as a config option later. |
-| Email deliverability on shared hosts. | Notifications are queued; in-app first; mail failures never fail the request submission. |
-| Time zones across branches later. | Store UTC, display Africa/Lagos (configurable). |
-| Large inventory lists. | Server-side pagination, indexed filters, eager loading; no client-side loading of whole tables. |
-| CSP with Alpine.js (`unsafe-eval`). | Phase 10 evaluates Alpine's CSP build and a strict Content-Security-Policy. |
+| D23 | Every asset status belongs to one of eight fixed **groups** (`App\Enums\AssetStatusGroup`: available, committed, out, attention, damaged, lost, retired, unavailable). Dashboards and reports count by group. `is_allocatable` says whether a unit can be allocated; `is_manual = false` marks the statuses that belong to the allocation engine (reserved, allocated, checked out, in transit, deployed, on site). | Admins can add and rename statuses freely, but the code never depends on labels or codes it doesn't own. Only "available"-group statuses can be allocatable. |
+| D24 | **Engine-managed statuses can't be touched by hand**: staff can't set them, and an asset in one can't be changed, moved or archived manually. Moving into or out of lost/retired needs `inventory.archive`. | Stops a manual edit from silently breaking an allocation (Phase 5) or quietly writing off kit. |
+| D25 | **Condition grades are lookups with behaviour in `meta`**: `blocks_allocation` takes the unit out of availability; `sets_status` moves an in-service unit to that status when the grade is recorded (damaged → Damaged, requires inspection → Under Inspection). | Damaged kit can't be allocated by mistake, and the rule is configurable. |
+| D26 | **Bulk stock has two buckets per location**: `available` and `quarantine` (damaged or awaiting inspection). Only `available` counts. Write-offs and stock counts require a reason; stock can never go negative (row locks + checks). | Mixed-condition cable stock without serialising every cable. |
+| D27 | **Asset tags** come from the shared `sequences` counter per prefix (`ML-001`) and skip tags typed by hand. Each asset also has an opaque **ULID `qr_token`**; QR labels encode `/app/scan/{token}`, which needs sign-in. QR codes are rendered as SVG by bacon/bacon-qr-code (pure PHP). | Labels leak nothing if photographed, tags stay unique, and it runs on shared hosting without Imagick. |
+| D28 | **Uploaded images are decoded and re-encoded with GD** (max 1600px, WebP), stored on the private disk and served through an authorising route. | Strips EXIF/GPS, rejects disguised files, keeps pages light. |
+| D29 | **"Available now"** (Phase 2) = allocatable status + non-blocking condition (serialized) or the available bucket (bulk), computed in SQL (`Equipment::availableUnitsSql()`). Phase 5 adds date-window holds on top of this; it does not replace it. | Filtering and sorting by availability in the database, with no full-fleet loads. |
+| D30 | Lookups are read through `App\Support\Lookups`, a **container-scoped** memo, not a static cache. | Static caches go stale across tests and long-running workers (and on MySQL, auto-increment IDs don't roll back between tests). |

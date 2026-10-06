@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Support\Lookups;
 use App\Support\Navigation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // Option lists memoised per request (reset between requests and jobs).
+        $this->app->scoped(Lookups::class);
     }
 
     public function boot(): void
