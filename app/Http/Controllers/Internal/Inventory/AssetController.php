@@ -96,6 +96,7 @@ class AssetController extends Controller
 
         return view('internal.inventory.assets.show', [
             'asset' => $asset,
+            'bookings' => $asset->allocations()->active()->with('event')->orderBy('hold_starts_at')->get(),
             'history' => $asset->transactions()->with(['fromLocation', 'toLocation', 'fromStatus', 'toStatus'])->latest('occurred_at')->latest('id')->paginate(20),
             'manualStatuses' => AssetStatus::ordered()->where('is_manual', true)->where('is_active', true)->pluck('label', 'id')->all(),
             'locations' => Location::options(),

@@ -92,12 +92,12 @@ erDiagram
 
 | Table | Key columns | Notes |
 | --- | --- | --- |
-| `equipment_requirements` | event_id, equipment_id (or category_id for generic needs), quantity, notes; unique(event_id, equipment_id) | What the event needs. |
-| `equipment_allocations` | event_id, requirement_id, equipment_id, asset_id (nullable for bulk), quantity, hold_starts_at, hold_ends_at, state (`reserved`/`allocated`/`checked_out`/`returned`/`released`), allocated_by, released_at | Overlap index on (equipment_id, hold_starts_at, hold_ends_at), (asset_id, hold_starts_at, hold_ends_at). |
-| `load_lists` | event_id, reference, status (pending/picked/loaded/checked/dispatched), prepared_by | |
-| `load_list_items` | load_list_id, allocation_id, case_asset_id, status, checked_by, checked_at, note | |
-| `return_checks` | event_id, checked_by, completed_at | |
-| `return_check_items` | return_check_id, allocation_id, outcome (returned/missing/damaged/needs_inspection/needs_maintenance), quantity, note | Missing/damaged outcomes create ledger rows and notifications. |
+| `equipment_requirements` **(P5)** | event_id, equipment_id, quantity, notes; unique(event_id, equipment_id) | What the event needs (per catalogue item). |
+| `equipment_allocations` **(P5)** | event_id, equipment_id, asset_id (null for bulk), location_id (bulk source), quantity, hold_starts_at, hold_ends_at, state (`reserved`/`checked_out`/`returned`/`released`), allocated_by, checked_out_at, returned_at, released_at, return_outcome | Overlap indexes on (equipment_id, state, hold_starts_at, hold_ends_at) and (asset_id, state, hold_starts_at, hold_ends_at). Never deleted; release reasons go to the audit log. |
+| `load_lists` **(P5)** | event_id (unique), reference (unique), status (pending/picked/loaded/checked/dispatched), notes, prepared_by, dispatched_by, dispatched_at | Status history in `status_changes`. |
+| `load_list_items` **(P5)** | load_list_id, allocation_id (unique), case_label, status, checked_by, checked_at, note | |
+| `return_checks` **(P5)** | event_id, user_id + user_name, notes, returned_count, missing_count, damaged_count | One per check-in session (partial returns allowed). |
+| `return_check_items` **(P5)** | return_check_id, allocation_id, outcome (returned/missing/damaged/needs_inspection/needs_maintenance), quantity, location_id, note | Missing/damaged outcomes also write ledger rows and notify inventory managers. |
 
 ## Maintenance & condition
 

@@ -32,6 +32,7 @@ return [
         'references.quotation' => 'NEBO-QUO-{YYYY}-{SEQ:5}',
         'references.load_list' => 'NEBO-LL-{YYYY}-{SEQ:5}',
         'notifications.request_recipients' => '',
+        'availability.buffer_hours' => 0, // turnaround added before setup and after breakdown
     ],
 
     // Initial administrator created by `php artisan nebo:create-admin` when no options are given.

@@ -46,7 +46,7 @@
                         <ul class="hidden space-y-0.5 sm:block">
                             @foreach (array_slice($day['entries'], 0, 3) as $e)
                                 <li><a href="{{ $e['url'] }}" class="block truncate rounded border-l-4 px-1 py-0.5 text-[10px] leading-tight font-medium sm:text-[11px] {{ $phaseStyle[$e['phase']] }}" title="{{ $phaseLabel[$e['phase']] }}: {{ $e['title'] }}">
-                                    <span class="hidden font-semibold sm:inline">{{ $phaseLabel[$e['phase']] }} ·</span> {{ $e['title'] }}</a></li>
+                                    <span class="hidden font-semibold sm:inline">{{ $phaseLabel[$e['phase']] }} ·</span> @if ($e['shortage'])⚠<span class="sr-only">Equipment not fully allocated</span> @endif{{ $e['title'] }}</a></li>
                             @endforeach
                             @if (count($day['entries']) > 3)<li><a href="{{ $q('day', $day['date']->toDateString()) }}" class="px-1 text-[10px] font-semibold text-ink-500">+{{ count($day['entries']) - 3 }} more</a></li>@endif
                         </ul>
@@ -69,6 +69,7 @@
                                 <span class="block text-[11px] font-semibold tracking-wider uppercase">{{ $phaseLabel[$e['phase']] }}@if ($e['time']) · {{ $e['time'] }}@endif</span>
                                 <span class="block font-semibold">{{ $e['title'] }}</span>
                                 <span class="block text-xs opacity-80">{{ $e['event']->venue }} · {{ $e['event']->status->label() }}</span>
+                                @if ($e['shortage'])<span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand-700"><x-ui.icon name="triangle-alert" class="size-3.5" />Equipment not fully allocated</span>@endif
                             </a></li>
                         @empty
                             <li class="py-2 text-xs text-ink-400">Nothing scheduled</li>
@@ -78,5 +79,5 @@
             @endforeach
         </div>
     @endif
-    <p class="mt-4 text-xs text-ink-500">Equipment conflicts and maintenance windows join the calendar with Phases 5 and 6.</p>
+    <p class="mt-4 text-xs text-ink-500">⚠ marks events whose equipment requirements aren't fully allocated. Maintenance windows join the calendar in Phase 6.</p>
 </x-layouts.app>

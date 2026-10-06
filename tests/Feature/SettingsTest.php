@@ -22,6 +22,7 @@ class SettingsTest extends TestCase
             'references_event' => 'NEBO-EVT-{YYYY}-{SEQ:5}',
             'references_quotation' => 'NEBO-QUO-{YYYY}-{SEQ:5}',
             'references_load_list' => 'NEBO-LL-{YYYY}-{SEQ:5}',
+            'availability_buffer_hours' => 0,
             'notifications_request_recipients' => '',
         ], $overrides);
     }

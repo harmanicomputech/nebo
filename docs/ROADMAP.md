@@ -9,8 +9,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 2 — Inventory | Categories (+sub), locations, asset statuses, lookups, equipment catalogue, serialized assets, bulk stock, ledger, equipment profile, table/grid views, filters, QR-ready identifiers | **Done** (see below) |
 | 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | **Done** (see below) |
 | 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | **Done** (see below) |
-| 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | Next |
-| 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Planned |
+| 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | **Done** (see below) |
+| 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Next |
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Planned |
 | 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Planned |
 | 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Planned |
@@ -70,7 +70,7 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 ## Phase 4 deliverables
 
 - **Events:** create directly or convert a won request (D38). Reference `NEBO-EVT-YYYY-NNNNN`. Schedule (setup → show → breakdown, Lagos time), type, venue, services, requirements, project and production managers, and budget (needs `financial.view`). Status workflow with history (D37); archive and restore.
-- **Event workspace:** Overview, Production requirements, Team, Documents, Timeline, Notes and Financial tabs work. Equipment, Allocation and Logistics are shown as planned (Phases 5 and 7).
+- **Event workspace:** Overview, Production requirements, Team, Documents, Timeline, Notes and Financial tabs work. Equipment and Allocation followed in Phase 5; Logistics is shown as planned (Phase 7).
 - **Staff & crew:** profiles with role, contacts and an optional login link; upcoming and past assignments; crew double-booking guard with audited override (D39); in-app notification when a linked user is added to a team.
 - **Production calendar:** month, week and day views with Setup / Show / Breakdown per day (D41).
 - **Access:** Crew and Technicians see only their assigned events, in lists, calendar, search and dashboard (D40).
@@ -81,3 +81,18 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 150 tests / 849 assertions pass (12 new event tests).
 - Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Crew.
 - Fixed during the gate: request conversion passed `services` into the event's attributes (caught by strict mass-assignment protection), a stray extra week in the month view, unreadable month cells on phones, a Blade slot inside `@can`, and stale dashboard copy.
+
+## Phase 5 deliverables
+
+- **Availability engine** (D43–D45): free units per item for any window, net of overlapping bookings, unserviceable units and (from Phase 6) maintenance blocks; configurable turnaround buffer; race-safe allocation.
+- **Event equipment:** requirements per item with required / allocated / free / short, the events causing a clash, unserviceable units and alternatives from the same category family. Allocate by picking units, auto-picking or by quantity for bulk stock; release with a reason. Changing event dates re-checks every held unit.
+- **Load-out:** a load list per event with Pending → Picked → Loaded → Checked per line, mark-all, case labels, a printable load sheet with signatures, and dispatch, which checks everything out. Load lists overview at `/app/load-lists`.
+- **Check-in:** per-unit outcomes and per-line counts for bulk, partial returns, ledger entries, Lost / damaged / quarantine handling and a notification to inventory managers (D49).
+- **Availability grid** at `/app/availability`: 14 days × items with free/total per day, by category, item or search.
+- **Elsewhere:** the asset page lists its bookings, the dashboard shows deployments in the next 7 days, items out, overdue returns and kit in transit, and the calendar flags events whose equipment isn't fully allocated.
+
+### Phase 5 gate (§62)
+
+- 173 tests / 953 assertions pass (23 new: availability, allocation, load-out and returns, including concurrency-style re-checks, re-windowing and cancel/complete rules).
+- Every new page renders at 1440px and 390px with no horizontal scroll and no console errors; a real allocation, load-list update and check-in were run in Chromium.
+- Fixed during the gate: lazy loads in asset-status sync, the load list, returns and the requirement analyzer (caught by strict mode), an ambiguous `status` column in the load-lists filter, invalid markup (a block inside a paragraph) in the allocated-units list, and bulk load-list lines without a unit.

@@ -68,6 +68,159 @@
             <p class="text-sm whitespace-pre-line text-ink-800">{{ $event->production_requirements ?: 'No requirements recorded yet.' }}</p>
             <p class="mt-4 text-xs text-ink-500">Equipment requirements, shortages and conflicts arrive with the availability engine (Phase 5).</p>
         </x-ui.card>
+    @elseif ($tab === 'equipment')
+        @php $canReq = $u->can('manageRequirements', $event); $canAlloc = $u->can('allocate', $event); @endphp
+        <x-ui.card title="Equipment requirements" description="What this event needs, checked against every other booking for the hold window {{ Format::datetime($event->setup_starts_at, 'j M g:ia') }} → {{ Format::datetime($event->breakdown_ends_at, 'j M g:ia') }}." :padding="false">
+            @if ($analysis->isEmpty())
+                <x-ui.empty-state icon="layers" title="No equipment requirements yet" description="Add what this production needs to check availability and allocate units." />
+            @else
+                <ul class="divide-y divide-ink-100">
+                    @foreach ($analysis as $row)
+                        @php
+                            $req = $row['requirement'];
+                            $badge = ['allocated' => ['success', 'Fully allocated'], 'partial' => ['info', 'Partly allocated'], 'shortage' => ['danger', 'Shortage'], 'attention' => ['warning', 'Needs attention']][$row['status']];
+                        @endphp
+                        <li class="px-5 py-4 sm:px-6" x-data="{ open: {{ $row['shortage'] || $row['status'] === 'attention' ? 'true' : 'false' }} }">
+                            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                <div class="min-w-48 flex-1">
+                                    <a href="{{ route('app.inventory.equipment.show', $row['equipment']) }}" class="font-semibold hover:text-brand-700">{{ $row['equipment']->name }}</a>
+                                    <p class="text-xs text-ink-500">{{ $row['equipment']->category?->name }} · {{ $row['equipment']->tracking_mode->label() }}@if ($req->notes) · {{ $req->notes }}@endif</p>
+                                </div>
+                                <dl class="grid grid-cols-3 gap-4 text-center text-sm">
+                                    <div><dt class="text-[11px] tracking-wider text-ink-500 uppercase">Required</dt><dd class="font-semibold tabular-nums">{{ $row['required'] }}</dd></div>
+                                    <div><dt class="text-[11px] tracking-wider text-ink-500 uppercase">Allocated</dt><dd class="font-semibold tabular-nums">{{ $row['allocated'] }}</dd></div>
+                                    <div><dt class="text-[11px] tracking-wider text-ink-500 uppercase">Free</dt><dd class="font-semibold tabular-nums">{{ $row['available'] }}</dd></div>
+                                </dl>
+                                <x-ui.badge :tone="$badge[0]">{{ $badge[1] }}@if ($row['shortage']) · {{ $row['shortage'] }} short @endif</x-ui.badge>
+                                <div class="flex gap-1">
+                                    @if ($canAlloc && $row['allocated'] < $row['required'] && $row['available'] > 0)
+                                        <x-ui.button size="sm" icon="plus" x-on:click="$dispatch('open-modal', 'alloc-{{ $req->id }}')">Allocate</x-ui.button>
+                                    @endif
+                                    <x-ui.button size="sm" variant="ghost" x-on:click="open = !open" ::aria-expanded="open" icon="chevron-down" aria-label="Details" />
+                                    @if ($canReq)
+                                        <x-ui.confirm :action="route('app.events.requirements.destroy', [$event, $req])" method="DELETE" size="sm" variant="ghost" icon="trash-2" title="Remove this requirement?" confirm="Remove" aria-label="Remove requirement" />
+                                    @endif
+                                </div>
+                            </div>
+                            <div x-show="open" x-cloak class="mt-4 grid gap-4 lg:grid-cols-3">
+                                <div class="rounded-xl bg-ink-50 p-4 text-sm">
+                                    <p class="mb-2 text-xs font-semibold tracking-wider text-ink-500 uppercase">Allocated to this event</p>
+                                    @if ($row['allocations']->isEmpty())
+                                        <p class="text-ink-500">Nothing yet.</p>
+                                    @else
+                                        <ul class="flex flex-wrap gap-1.5">
+                                            @foreach ($row['allocations'] as $a)
+                                                <li class="inline-flex items-center gap-1 rounded-md bg-white py-0.5 pr-0.5 pl-2 font-mono text-xs ring-1 ring-ink-200">
+                                                    {{ $a->asset?->asset_tag ?? $a->quantity.' × '.($a->location?->code ?? '') }}
+                                                    @if ($a->state->value === 'checked_out')<span class="rounded bg-amber-100 px-1 font-sans text-[10px] font-semibold text-amber-800">out</span>@endif
+                                                    @if ($canAlloc && $a->state->value === 'reserved')
+                                                        <x-ui.confirm :action="route('app.events.allocations.destroy', [$event, $a])" method="DELETE" size="sm" variant="ghost" icon="x" class="!p-0.5" title="Release {{ $a->asset?->asset_tag ?? $a->quantity.' × '.$row['equipment']->name }}?" message="It becomes available to other events." confirm="Release" aria-label="Release {{ $a->asset?->asset_tag ?? 'this allocation' }}" />
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                                <div class="rounded-xl bg-ink-50 p-4 text-sm">
+                                    <p class="mb-2 text-xs font-semibold tracking-wider text-ink-500 uppercase">Booked on overlapping events</p>
+                                    @forelse ($row['conflicts'] as $c)
+                                        <p class="py-0.5"><a href="{{ route('app.events.show', $c['event']) }}" class="font-medium hover:text-brand-700">{{ $c['event']->name }}</a> <span class="text-ink-500">· {{ $c['quantity'] }} · {{ Format::date($c['event']->setup_starts_at) }}–{{ Format::date($c['event']->breakdown_ends_at) }}</span></p>
+                                    @empty
+                                        <p class="text-ink-500">No clashes.</p>
+                                    @endforelse
+                                </div>
+                                <div class="rounded-xl p-4 text-sm {{ $row['shortage'] || $row['unserviceable']->isNotEmpty() ? 'bg-brand-50' : 'bg-ink-50' }}">
+                                    @if ($row['unserviceable']->isNotEmpty())
+                                        <p class="mb-1 font-semibold text-brand-800">Allocated but out of service</p>
+                                        <p class="mb-3 text-brand-800">{{ $row['unserviceable']->map(fn ($a) => $a->asset->asset_tag.' ('.$a->asset->status->label.', '.$a->asset->conditionLabel().')')->implode(', ') }}. Release and replace them.</p>
+                                    @endif
+                                    @if ($row['shortage'])
+                                        <p class="mb-2 text-xs font-semibold tracking-wider text-brand-700 uppercase">Alternatives in {{ $row['equipment']->category?->parent?->name ?? $row['equipment']->category?->name }}</p>
+                                        @forelse ($row['alternatives'] as $alt)
+                                            <p class="py-0.5"><a href="{{ route('app.inventory.equipment.show', $alt['equipment']) }}" class="font-medium hover:text-brand-700">{{ $alt['equipment']->name }}</a> <span class="text-ink-600">· {{ $alt['available'] }} free</span></p>
+                                        @empty
+                                            <p class="text-ink-600">No alternatives free for these dates. Consider sub-hire or moving dates.</p>
+                                        @endforelse
+                                    @elseif ($row['unserviceable']->isEmpty())
+                                        <p class="text-ink-500">{{ $row['allocated'] >= $row['required'] ? 'All set.' : 'Enough free units to complete this requirement.' }}</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if ($canAlloc)
+                                <x-ui.modal :name="'alloc-'.$req->id" :title="'Allocate '.$row['equipment']->name" max-width="lg">
+                                    <form method="POST" action="{{ route('app.events.allocations.store', $event) }}" class="space-y-4" data-once x-data="{ mode: '{{ $row['equipment']->isSerialized() ? 'auto' : 'bulk' }}' }">
+                                        @csrf
+                                        <input type="hidden" name="equipment_id" value="{{ $row['equipment']->id }}">
+                                        <p class="text-sm text-ink-600">{{ $row['available'] }} free for these dates · {{ max(0, $row['required'] - $row['allocated']) }} still needed.</p>
+                                        @if ($row['equipment']->isSerialized())
+                                            <div class="flex gap-2 text-sm">
+                                                <label class="flex items-center gap-2"><input type="radio" name="mode" value="auto" x-model="mode" class="text-brand-600">Pick for me</label>
+                                                <label class="flex items-center gap-2"><input type="radio" name="mode" value="assets" x-model="mode" class="text-brand-600">Choose units</label>
+                                            </div>
+                                            <div x-show="mode === 'auto'"><x-ui.input label="How many" name="quantity" type="number" min="1" :max="$row['available']" :value="min($row['available'], max(1, $row['required'] - $row['allocated']))" :id="'q-'.$req->id" x-bind:disabled="mode !== 'auto'" /></div>
+                                            <fieldset x-show="mode === 'assets'" x-cloak class="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-ink-200 p-3" x-bind:disabled="mode !== 'assets'">
+                                                <legend class="sr-only">Units</legend>
+                                                @foreach ($row['freeAssets'] as $asset)
+                                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="assets[]" value="{{ $asset->id }}" class="rounded text-brand-600"><span class="font-mono">{{ $asset->asset_tag }}</span><span class="text-xs text-ink-500">{{ $asset->location?->name }}</span></label>
+                                                @endforeach
+                                            </fieldset>
+                                        @else
+                                            <input type="hidden" name="mode" value="bulk">
+                                            <x-ui.input label="Quantity" name="quantity" type="number" min="1" :max="$row['available']" :value="min($row['available'], max(1, $row['required'] - $row['allocated']))" :id="'q-'.$req->id" />
+                                        @endif
+                                        <x-ui.button type="submit" class="w-full">Allocate</x-ui.button>
+                                    </form>
+                                </x-ui.modal>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+            @if ($canReq)
+                <form method="POST" action="{{ route('app.events.requirements.store', $event) }}" class="flex flex-wrap items-end gap-3 border-t border-ink-100 bg-ink-50/60 px-5 py-4 sm:px-6" data-once>
+                    @csrf
+                    <x-ui.select label="Add equipment" name="equipment_id" :options="$equipmentOptions" placeholder="Choose equipment" required class="min-w-56 flex-1" />
+                    <x-ui.input label="Quantity" name="quantity" type="number" min="1" required class="w-28" />
+                    <x-ui.input label="Notes" name="notes" class="min-w-40 flex-1" />
+                    <x-ui.button type="submit" icon="plus" class="mb-0.5">Add</x-ui.button>
+                </form>
+            @endif
+        </x-ui.card>
+    @elseif ($tab === 'allocation')
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <x-ui.card title="Load-out & returns" class="lg:order-2">
+                <div class="space-y-3 text-sm">
+                    @if ($loadList)
+                        <p class="flex items-center justify-between"><span>Load list <span class="font-mono">{{ $loadList->reference }}</span></span><x-ui.badge :tone="$loadList->status->tone()">{{ $loadList->status->label() }}</x-ui.badge></p>
+                        <x-ui.button variant="secondary" class="w-full" icon="clipboard-check" :href="route('app.events.load-list', $event)">Open load list</x-ui.button>
+                    @elseif ($u->can('workLoadList', $event))
+                        <form method="POST" action="{{ route('app.events.load-list.sync', $event) }}">@csrf<x-ui.button type="submit" class="w-full" icon="clipboard-list">Create load list</x-ui.button></form>
+                    @else
+                        <p class="text-ink-500">No load list yet.</p>
+                    @endif
+                    <x-ui.button variant="secondary" class="w-full" icon="package-check" :href="route('app.events.returns', $event)">Check-in{{ $outstanding ? ' ('.$outstanding.' out)' : '' }}</x-ui.button>
+                </div>
+            </x-ui.card>
+            <x-ui.card title="Allocated equipment" :padding="false" class="lg:order-1 lg:col-span-2">
+                @php $rows = collect(['reserved', 'checked_out', 'returned'])->flatMap(fn ($s) => $allocations[$s] ?? collect()); @endphp
+                @if ($rows->isEmpty())
+                    <x-ui.empty-state icon="layers" title="Nothing allocated yet" description="Allocate from the Equipment tab." />
+                @else
+                    <x-ui.table>
+                        <x-slot:head><th>Item</th><th>Unit / qty</th><th>State</th><th class="hidden sm:table-cell">From</th></x-slot:head>
+                        @foreach ($rows as $a)
+                            <tr>
+                                <td>{{ $a->equipment->name }}</td>
+                                <td class="font-mono text-sm">@if ($a->asset)<a class="hover:text-brand-700" href="{{ route('app.inventory.assets.show', $a->asset) }}">{{ $a->asset->asset_tag }}</a>@else {{ $a->quantity }} @endif</td>
+                                <td><x-ui.badge :tone="$a->state->tone()">{{ $a->state->label() }}@if ($a->return_outcome && $a->return_outcome !== 'returned') · {{ str_replace('_', ' ', $a->return_outcome) }}@endif</x-ui.badge></td>
+                                <td class="hidden text-ink-600 sm:table-cell">{{ $a->location?->name ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </x-ui.table>
+                @endif
+            </x-ui.card>
+        </div>
     @elseif ($tab === 'team')
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <x-ui.card title="Team" :padding="false" class="lg:col-span-2">

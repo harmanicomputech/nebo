@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\StatusChange;
 use App\Models\User;
+use App\Services\Allocation\AllocationService;
 use App\Services\Booking\RequestWorkflow;
 use App\Services\ReferenceGenerator;
 use App\Support\Audit\Audit;
@@ -96,6 +97,11 @@ class EventService
 
         DB::transaction(function () use ($event, $data, $serviceIds) {
             $event->update($data);
+
+            // New dates move the equipment holds, or the change is refused (D43).
+            if ($event->wasChanged(['setup_starts_at', 'breakdown_ends_at'])) {
+                app(AllocationService::class)->rewindow($event);
+            }
             if ($serviceIds !== null) {
                 $event->services()->sync($serviceIds);
             }

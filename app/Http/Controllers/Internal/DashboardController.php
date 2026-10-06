@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Internal;
 use App\Enums\RequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\EquipmentAllocation;
+use App\Models\EquipmentAsset;
 use App\Models\Event;
 use App\Models\EventRequest;
+use App\Models\LoadList;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Inventory\InventorySummary;
@@ -35,6 +38,12 @@ class DashboardController extends Controller
             'activity' => $user->can('audit.view') ? AuditLog::latest('id')->limit(8)->get() : collect(),
             'notifications' => $user->unreadNotifications()->latest()->limit(5)->get(),
             'events' => $user->can('viewAny', Event::class) ? $this->events($user) : null,
+            'operations' => $user->can('allocation.view') ? [
+                'deployments' => LoadList::query()->where('status', '!=', 'dispatched')->whereHas('event', fn ($q) => $q->active()->where('setup_starts_at', '<=', now()->addDays(7)))->with('event')->withCount('items')->get()->sortBy('event.setup_starts_at')->values(),
+                'out' => EquipmentAllocation::where('state', 'checked_out')->sum('quantity'),
+                'overdue' => EquipmentAllocation::where('state', 'checked_out')->where('hold_ends_at', '<', now())->with('event')->get()->groupBy('event_id'),
+                'inTransit' => EquipmentAsset::whereHas('status', fn ($q) => $q->where('code', 'in_transit'))->count(),
+            ] : null,
             'requests' => $user->can('requests.view') ? [
                 'new' => EventRequest::where('status', RequestStatus::New)->count(),
                 'open' => EventRequest::query()->open()->count(),
@@ -50,7 +59,6 @@ class DashboardController extends Controller
                 'maintenanceDue' => $inventory->maintenanceDue(),
             ] : null,
             'roadmap' => [
-                ['phase' => 5, 'name' => 'Availability & allocation', 'icon' => 'layers', 'text' => 'Conflict detection, allocation, load lists, check-out and returns.'],
                 ['phase' => 6, 'name' => 'Maintenance & condition', 'icon' => 'wrench', 'text' => 'Maintenance records and schedules, inspections and damage reports.'],
                 ['phase' => 7, 'name' => 'Logistics & fleet', 'icon' => 'truck', 'text' => 'Vehicles, trips, dispatch, delivery and returns.'],
                 ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],

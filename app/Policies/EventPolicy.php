@@ -46,6 +46,29 @@ class EventPolicy
         return ($user->can('events.update') || $user->can('events.team')) && $this->view($user, $event);
     }
 
+    /** Set equipment requirements. */
+    public function manageRequirements(User $user, Event $event): bool
+    {
+        return ($user->can('events.update') || $user->can('allocation.manage')) && $event->status->holdsResources() && ! $event->trashed();
+    }
+
+    /** Reserve and release equipment. */
+    public function allocate(User $user, Event $event): bool
+    {
+        return $user->can('allocation.manage') && $event->status->holdsResources() && ! $event->trashed();
+    }
+
+    /** Pick, load, check and dispatch. Crew can do this on their own events. */
+    public function workLoadList(User $user, Event $event): bool
+    {
+        return $user->can('loadlists.manage') && $this->view($user, $event);
+    }
+
+    public function checkIn(User $user, Event $event): bool
+    {
+        return $user->can('returns.manage') && $this->view($user, $event);
+    }
+
     public function delete(User $user, Event $event): bool
     {
         return $user->can('events.archive') && ! $event->trashed();

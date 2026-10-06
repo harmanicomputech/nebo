@@ -4,6 +4,7 @@ namespace App\Services\Events;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Services\Allocation\RequirementAnalyzer;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
@@ -26,6 +27,9 @@ class ProductionCalendar
             ->overlapping($from->setTimezone('UTC'), $to->setTimezone('UTC'))
             ->with('customer')->orderBy('setup_starts_at')->get();
 
+        $analyzer = app(RequirementAnalyzer::class);
+        $open = $events->mapWithKeys(fn (Event $e) => [$e->id => $e->status->holdsResources() && $analyzer->hasOpenRequirements($e)]);
+
         $days = [];
         for ($day = $from; $day->lt($to); $day = $day->addDay()) {
             $entries = [];
@@ -38,6 +42,7 @@ class ProductionCalendar
                         'title' => $event->name,
                         'url' => route('app.events.show', $event),
                         'time' => $this->timeFor($event, $phase, $day, $tz),
+                        'shortage' => $open[$event->id],
                     ];
                 }
             }

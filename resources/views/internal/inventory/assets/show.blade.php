@@ -88,7 +88,20 @@
             @endcan
         </div>
 
-        <x-ui.card title="History" description="Every status, location and condition change." class="lg:col-span-2">
+        <div class="space-y-6 lg:col-span-2">
+        @if ($bookings->isNotEmpty())
+            <x-ui.card title="Booked on" description="Events holding this unit." :padding="false">
+                <ul class="divide-y divide-ink-100">
+                    @foreach ($bookings as $b)
+                        <li><a href="{{ route('app.events.show', [$b->event, 'tab' => 'allocation']) }}" class="flex flex-wrap items-center gap-3 px-5 py-3 hover:bg-ink-50">
+                            <span class="min-w-0 flex-1"><span class="block font-semibold">{{ $b->event->name }}</span><span class="block text-xs text-ink-500">{{ Format::datetime($b->hold_starts_at, 'D j M, g:ia') }} → {{ Format::datetime($b->hold_ends_at, 'D j M, g:ia') }}</span></span>
+                            <x-ui.badge :tone="$b->state->tone()">{{ $b->state->label() }}</x-ui.badge>
+                        </a></li>
+                    @endforeach
+                </ul>
+            </x-ui.card>
+        @endif
+        <x-ui.card title="History" description="Every status, location and condition change.">
             @if ($history->isEmpty())
                 <x-ui.empty-state icon="history" title="No history yet" />
             @else
@@ -96,6 +109,7 @@
                 @if ($history->hasPages())<div class="mt-6 border-t border-ink-100 pt-4">{{ $history->links() }}</div>@endif
             @endif
         </x-ui.card>
+        </div>
     </div>
 
     @if ($canChange && ! $asset->trashed())

@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Internal\Allocation\AvailabilityController;
+use App\Http\Controllers\Internal\Allocation\EventEquipmentController;
+use App\Http\Controllers\Internal\Allocation\LoadListController;
+use App\Http\Controllers\Internal\Allocation\ReturnController;
 use App\Http\Controllers\Internal\AuditLogController;
 use App\Http\Controllers\Internal\DashboardController;
 use App\Http\Controllers\Internal\DocumentController;
@@ -123,6 +127,21 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::post('/events/{id}/restore', [EventController::class, 'restore'])->whereNumber('id')->name('events.restore');
     Route::post('/events/{event}/team', [TeamController::class, 'store'])->name('events.team.store');
     Route::delete('/events/{event}/team/{member}', [TeamController::class, 'destroy'])->name('events.team.destroy');
+
+    Route::post('/events/{event}/requirements', [EventEquipmentController::class, 'setRequirement'])->name('events.requirements.store');
+    Route::delete('/events/{event}/requirements/{requirement}', [EventEquipmentController::class, 'removeRequirement'])->name('events.requirements.destroy');
+    Route::post('/events/{event}/allocations', [EventEquipmentController::class, 'allocate'])->name('events.allocations.store');
+    Route::delete('/events/{event}/allocations/{allocation}', [EventEquipmentController::class, 'release'])->name('events.allocations.destroy');
+    Route::get('/events/{event}/load-list', [LoadListController::class, 'show'])->name('events.load-list');
+    Route::get('/events/{event}/load-list/print', [LoadListController::class, 'print'])->name('events.load-list.print');
+    Route::post('/events/{event}/load-list', [LoadListController::class, 'sync'])->name('events.load-list.sync');
+    Route::post('/events/{event}/load-list/items/{item}', [LoadListController::class, 'item'])->name('events.load-list.item');
+    Route::post('/events/{event}/load-list/advance', [LoadListController::class, 'advance'])->name('events.load-list.advance');
+    Route::post('/events/{event}/load-list/dispatch', [LoadListController::class, 'dispatch'])->name('events.load-list.dispatch');
+    Route::get('/events/{event}/returns', [ReturnController::class, 'show'])->name('events.returns');
+    Route::post('/events/{event}/returns', [ReturnController::class, 'store'])->name('events.returns.store');
+    Route::get('/load-lists', [LoadListController::class, 'index'])->name('load-lists.index');
+    Route::get('/availability', AvailabilityController::class)->name('availability');
 
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');

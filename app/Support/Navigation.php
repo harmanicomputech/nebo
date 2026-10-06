@@ -32,8 +32,8 @@ class Navigation
             ['label' => 'Operations', 'items' => [
                 self::item('Requests', 'inbox', 'app.requests.index', 'requests.view'),
                 self::item('Events', 'calendar-range', 'app.events.index', $seesEvents),
-                self::planned('Availability', 'layers', 'allocation.view', 5),
-                self::planned('Load lists', 'clipboard-check', 'allocation.view', 5),
+                self::item('Availability', 'layers', 'app.availability', 'allocation.view'),
+                self::item('Load lists', 'clipboard-check', 'app.load-lists.index', fn (User $u) => $u->can('allocation.view') || $u->can('loadlists.manage')),
                 self::planned('Logistics', 'truck', 'logistics.view', 7),
             ]],
             ['label' => 'Inventory', 'items' => [

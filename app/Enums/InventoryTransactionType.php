@@ -13,10 +13,14 @@ enum InventoryTransactionType: string
     case Quarantined = 'quarantined';         // bulk: available → quarantine
     case Released = 'released';               // bulk: quarantine → available
     case WrittenOff = 'written_off';          // bulk: removed (lost / scrapped)
-    case Reserved = 'reserved';               // Phase 5
-    case Allocated = 'allocated';             // Phase 5
-    case CheckedOut = 'checked_out';          // Phase 5
-    case Returned = 'returned';               // Phase 5
+    case Reserved = 'reserved';               // allocated to an event
+    case Allocated = 'allocated';
+    case Deallocated = 'deallocated';         // released from an event before dispatch
+    case CheckedOut = 'checked_out';          // dispatched to an event
+    case Deployed = 'deployed';               // event went live
+    case Returned = 'returned';               // checked back in
+    case Damaged = 'damaged';                 // came back damaged
+    case Lost = 'lost';                       // missing after an event
     case Repaired = 'repaired';               // Phase 6
     case Retired = 'retired';
     case Archived = 'archived';
@@ -36,6 +40,10 @@ enum InventoryTransactionType: string
             self::Adjusted => 'sliders-horizontal',
             self::Quarantined, self::WrittenOff => 'triangle-alert',
             self::Retired, self::Archived => 'archive',
+            self::Reserved, self::Allocated, self::Deallocated => 'layers',
+            self::CheckedOut, self::Deployed => 'truck',
+            self::Returned => 'package-check',
+            self::Damaged, self::Lost => 'circle-x',
             default => 'history',
         };
     }

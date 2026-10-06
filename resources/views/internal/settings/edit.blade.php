@@ -26,6 +26,10 @@
                 </div>
             </x-ui.card>
 
+            <x-ui.card title="Availability" description="Extra time held before setup and after breakdown, for travel, loading and checks. Applies to new allocations and date changes.">
+                <x-ui.input label="Turnaround buffer (hours)" name="availability_buffer_hours" type="number" min="0" max="168" :value="$values['availability.buffer_hours']" required class="sm:max-w-xs" />
+            </x-ui.card>
+
             <x-ui.card title="Notifications" description="In-app notifications go to users with the right permissions. Email copies of new booking requests can also go to these addresses once mail is configured.">
                 <x-ui.input label="New request email recipients" name="notifications_request_recipients" :value="$values['notifications.request_recipients']" placeholder="bookings@example.com, ops@example.com" hint="Comma-separated." />
             </x-ui.card>

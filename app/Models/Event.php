@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -73,6 +74,30 @@ class Event extends Model
     public function team(): HasMany
     {
         return $this->hasMany(EventStaff::class);
+    }
+
+    /** @return HasMany<EquipmentRequirement, $this> */
+    public function requirements(): HasMany
+    {
+        return $this->hasMany(EquipmentRequirement::class);
+    }
+
+    /** @return HasMany<EquipmentAllocation, $this> */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(EquipmentAllocation::class);
+    }
+
+    /** @return HasOne<LoadList, $this> */
+    public function loadList(): HasOne
+    {
+        return $this->hasOne(LoadList::class);
+    }
+
+    /** @return HasMany<ReturnCheck, $this> */
+    public function returnChecks(): HasMany
+    {
+        return $this->hasMany(ReturnCheck::class)->latest('id');
     }
 
     public function eventTypeLabel(): string

@@ -70,6 +70,40 @@
         </section>
     @endif
 
+    @if ($operations)
+        <section class="mt-8" aria-labelledby="ops-heading">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div><h2 id="ops-heading" class="text-lg font-semibold">Operations</h2>
+                    <p class="text-sm text-ink-500">{{ number_format($operations['out']) }} items out on events · {{ $operations['inTransit'] }} in transit</p></div>
+                <div class="flex gap-1"><x-ui.button variant="ghost" size="sm" icon="layers" :href="route('app.availability')">Availability</x-ui.button><x-ui.button variant="ghost" size="sm" icon-right="arrow-right" :href="route('app.load-lists.index')">Load lists</x-ui.button></div>
+            </div>
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                <x-ui.card title="Deployments in the next 7 days" :padding="false">
+                    @forelse ($operations['deployments'] as $list)
+                        <a href="{{ route('app.events.load-list', $list->event) }}" class="flex items-center gap-3 border-b border-ink-100 px-5 py-3 last:border-0 hover:bg-ink-50">
+                            <span class="w-16 shrink-0 text-xs font-semibold text-ink-500">{{ \App\Support\Format::datetime($list->event->setup_starts_at, 'D j M') }}</span>
+                            <span class="min-w-0 flex-1"><span class="block truncate font-semibold">{{ $list->event->name }}</span><span class="block text-xs text-ink-500">{{ $list->items_count }} lines</span></span>
+                            <x-ui.badge :tone="$list->status->tone()">{{ $list->status->label() }}</x-ui.badge>
+                        </a>
+                    @empty
+                        <x-ui.empty-state icon="truck" title="No load-outs due" />
+                    @endforelse
+                </x-ui.card>
+                <x-ui.card title="Overdue returns" :padding="false">
+                    @forelse ($operations['overdue'] as $eventId => $rows)
+                        <a href="{{ route('app.events.returns', $rows->first()->event) }}" class="flex items-center gap-3 border-b border-ink-100 px-5 py-3 last:border-0 hover:bg-brand-50">
+                            <x-ui.icon name="triangle-alert" class="size-4 shrink-0 text-brand-600" />
+                            <span class="min-w-0 flex-1"><span class="block truncate font-semibold">{{ $rows->first()->event->name }}</span><span class="block text-xs text-ink-500">due back {{ \App\Support\Format::datetime($rows->first()->hold_ends_at) }}</span></span>
+                            <span class="text-sm font-semibold text-brand-700">{{ $rows->sum('quantity') }} out</span>
+                        </a>
+                    @empty
+                        <x-ui.empty-state icon="package-check" title="Nothing overdue" />
+                    @endforelse
+                </x-ui.card>
+            </div>
+        </section>
+    @endif
+
     @if ($requests)
         <section class="mt-8" aria-labelledby="req-heading">
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">

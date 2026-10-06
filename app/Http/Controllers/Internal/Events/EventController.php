@@ -6,11 +6,13 @@ use App\Enums\EventStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Internal\EventFormRequest;
 use App\Models\Customer;
+use App\Models\Equipment;
 use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\Service;
 use App\Models\Staff;
 use App\Models\User;
+use App\Services\Allocation\RequirementAnalyzer;
 use App\Services\Events\EventService;
 use App\Services\Events\EventWorkflow;
 use App\Support\Lookups;
@@ -26,8 +28,8 @@ class EventController extends Controller
     public const TABS = [
         'overview' => ['Overview', null],
         'requirements' => ['Production requirements', null],
-        'equipment' => ['Equipment', 5],
-        'allocation' => ['Allocation', 5],
+        'equipment' => ['Equipment', null],
+        'allocation' => ['Allocation', null],
         'logistics' => ['Logistics', 7],
         'team' => ['Team', null],
         'documents' => ['Documents', null],
@@ -105,7 +107,20 @@ class EventController extends Controller
 
         $event->load(['customer', 'request', 'projectManager', 'productionManager', 'services', 'team.staff', 'statusChanges', 'notes', 'documents']);
 
-        return view('internal.events.show', [
+        $extra = match ($tab) {
+            'equipment' => [
+                'analysis' => app(RequirementAnalyzer::class)->analyze($event),
+                'equipmentOptions' => Equipment::query()->where('is_active', true)->orderBy('name')->get()->mapWithKeys(fn ($e) => [$e->id => $e->name.' ('.$e->sku.')'])->all(),
+            ],
+            'allocation' => [
+                'allocations' => $event->allocations()->with(['asset.status', 'equipment', 'location', 'loadListItem'])->orderByDesc('id')->get()->groupBy(fn ($a) => $a->state->value),
+                'loadList' => $event->loadList()->withCount('items')->first(),
+                'outstanding' => $event->allocations()->where('state', 'checked_out')->count(),
+            ],
+            default => [],
+        };
+
+        return view('internal.events.show', $extra + [
             'event' => $event,
             'tab' => $tab,
             'tabs' => self::TABS,

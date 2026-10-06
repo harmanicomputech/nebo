@@ -70,6 +70,12 @@ class EquipmentAsset extends Model
         return $this->hasMany(InventoryTransaction::class, 'asset_id');
     }
 
+    /** @return HasMany<EquipmentAllocation, $this> */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(EquipmentAllocation::class, 'asset_id');
+    }
+
     public function conditionLabel(): string
     {
         return app(Lookups::class)->label('condition', $this->condition);
