@@ -26,6 +26,9 @@ class SettingsTest extends TestCase
             'references_maintenance' => 'NEBO-MNT-{YYYY}-{SEQ:5}',
             'references_trip' => 'NEBO-TRP-{YYYY}-{SEQ:5}',
             'maintenance_reminder_days' => 7,
+            'quotations_validity_days' => 14,
+            'quotations_vat_percent' => '7.5',
+            'quotations_terms' => 'Standard terms.',
             'notifications_request_recipients' => '',
         ], $overrides);
     }

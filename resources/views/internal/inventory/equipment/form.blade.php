@@ -73,8 +73,11 @@
             </x-ui.card>
 
             @if ($canCosts)
-                <x-ui.card title="Value">
-                    <x-ui.input label="Replacement value per unit (₦)" name="replacement_value" inputmode="decimal" :value="Format::nairaInput($equipment->replacement_value_kobo)" placeholder="0" />
+                <x-ui.card title="Value & pricing">
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <x-ui.input label="Replacement value per unit (₦)" name="replacement_value" inputmode="decimal" :value="Format::nairaInput($equipment->replacement_value_kobo)" placeholder="0" />
+                        <x-ui.input label="Day rate per unit (₦)" name="day_rate" inputmode="decimal" :value="Format::nairaInput($equipment->day_rate_kobo)" placeholder="0" hint="Fills equipment lines on quotations." />
+                    </div>
                 </x-ui.card>
             @endif
 

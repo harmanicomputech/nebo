@@ -26,6 +26,7 @@ class EquipmentRequest extends FormRequest
             'sku' => strtoupper(trim((string) $this->input('sku'))),
             'asset_prefix' => strtoupper(trim((string) $this->input('asset_prefix'), '- ')) ?: null,
             'replacement_value' => str_replace([',', ' ', '₦'], '', (string) $this->input('replacement_value')) ?: null,
+            'day_rate' => str_replace([',', ' ', '₦'], '', (string) $this->input('day_rate')) ?: null,
         ]);
     }
 
@@ -45,6 +46,7 @@ class EquipmentRequest extends FormRequest
             'asset_prefix' => array_merge(['nullable'], $serialized ? [] : ['prohibited'], ['string', 'max:10', 'regex:/^[A-Z0-9]+$/']),
             'description' => ['nullable', 'string', 'max:5000'],
             'replacement_value' => ['nullable', 'numeric', 'min:0', 'max:100000000000'],
+            'day_rate' => ['nullable', 'numeric', 'min:0', 'max:10000000000'],
             'low_stock_threshold' => ['nullable', 'integer', 'min:0', 'max:1000000'],
             'image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],
@@ -65,11 +67,12 @@ class EquipmentRequest extends FormRequest
      */
     public function equipmentData(): array
     {
-        $data = $this->safe()->except(['image', 'remove_image', 'replacement_value']);
+        $data = $this->safe()->except(['image', 'remove_image', 'replacement_value', 'day_rate']);
 
         // Values are only accepted from people allowed to see them.
         if ($this->user()->can('inventory.costs')) {
             $data['replacement_value_kobo'] = Format::toKobo($this->validated('replacement_value'));
+            $data['day_rate_kobo'] = Format::toKobo($this->validated('day_rate'));
         }
 
         return $data;

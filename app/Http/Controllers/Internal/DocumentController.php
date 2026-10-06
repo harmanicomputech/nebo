@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Internal;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Document;
 use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
+use App\Models\Quotation;
 use App\Models\Vehicle;
 use App\Services\Documents\DocumentStore;
 use App\Services\Documents\UploadRules;
@@ -33,6 +35,8 @@ class DocumentController extends Controller
         'maintenance' => MaintenanceRecord::class,
         'trip' => LogisticsTrip::class,
         'vehicle' => Vehicle::class,
+        'customer' => Customer::class,
+        'quotation' => Quotation::class,
     ];
 
     public function download(Document $document): StreamedResponse

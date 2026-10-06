@@ -13,6 +13,7 @@ class SettingsRequest extends FormRequest
         'company.name', 'company.email', 'company.phone', 'company.address', 'company.coverage',
         'references.request', 'references.event', 'references.quotation', 'references.load_list', 'references.maintenance', 'references.trip',
         'notifications.request_recipients', 'availability.buffer_hours', 'maintenance.reminder_days',
+        'quotations.validity_days', 'quotations.vat_percent', 'quotations.terms',
     ];
 
     public function authorize(): bool
@@ -42,6 +43,9 @@ class SettingsRequest extends FormRequest
             'references_trip' => $reference,
             'availability_buffer_hours' => ['required', 'integer', 'min:0', 'max:168'],
             'maintenance_reminder_days' => ['required', 'integer', 'min:0', 'max:90'],
+            'quotations_validity_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'quotations_vat_percent' => ['required', 'numeric', 'min:0', 'max:50'],
+            'quotations_terms' => ['nullable', 'string', 'max:5000'],
             'notifications_request_recipients' => ['nullable', 'string', 'max:1000', function (string $attribute, mixed $value, Closure $fail) {
                 foreach (array_filter(array_map('trim', explode(',', (string) $value))) as $email) {
                     if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {

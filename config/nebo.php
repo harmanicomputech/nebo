@@ -36,6 +36,9 @@ return [
         'notifications.request_recipients' => '',
         'availability.buffer_hours' => 0, // turnaround added before setup and after breakdown
         'maintenance.reminder_days' => 7, // remind this many days before a schedule falls due
+        'quotations.validity_days' => 14,
+        'quotations.vat_percent' => '7.5', // Nigerian VAT; 0 to quote without tax
+        'quotations.terms' => "50% deposit confirms the booking; the balance is due before load-in.\nPrices are in Naira and valid until the date shown.\nTransport outside Lagos, accommodation and venue power are quoted separately unless listed.\nEquipment damaged or lost through the client's negligence is charged at replacement cost.",
     ],
 
     // Initial administrator created by `php artisan nebo:create-admin` when no options are given.

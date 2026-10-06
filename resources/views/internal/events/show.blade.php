@@ -291,11 +291,17 @@
                     <div><dt class="text-ink-500">Production budget</dt><dd class="text-xl font-semibold">{{ Format::naira($event->budget_kobo) }}</dd></div>
                     <div><dt class="text-ink-500">Customer's stated budget</dt><dd class="font-medium">{{ $event->request?->budgetLabel() ?? '—' }}</dd></div>
                 </dl>
-                <p class="mt-4 text-xs text-ink-500">Quotations arrive in Phase 8.</p>
+                @php $accepted = $quotes?->where('status', App\Enums\QuotationStatus::Accepted)->sum('total_kobo'); @endphp
+                @if ($accepted)
+                    <p class="mt-4 text-sm">Accepted quotations: <strong>{{ Format::naira($accepted) }}</strong>@if ($event->budget_kobo) · {{ $accepted >= $event->budget_kobo ? 'covers' : 'is below' }} the production budget @endif</p>
+                @endif
             @else
                 <p class="text-sm text-ink-500">You don't have access to financial information.</p>
             @endcan
         </x-ui.card>
+        @if ($quotes !== null)
+            <div class="mt-6">@include('internal.commercial.quotations._list', ['quotes' => $quotes, 'newUrl' => $u->can('create', App\Models\Quotation::class) && ! $event->status->isClosed() ? route('app.quotations.create', ['event' => $event->id]) : null])</div>
+        @endif
     @endif
 
     @if (! $event->trashed() && $u->can('delete', $event) && $tab === 'overview')

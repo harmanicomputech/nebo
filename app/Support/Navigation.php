@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Event;
 use App\Models\LogisticsTrip;
 use App\Models\MaintenanceRecord;
+use App\Models\ProductionPackage;
 use App\Models\User;
 use Closure;
 
@@ -48,8 +49,9 @@ class Navigation
             ]],
             ['label' => 'Commercial', 'items' => [
                 self::item('Services', 'sparkles', 'app.settings.services', 'services.manage', 'app.settings.services*'),
-                self::planned('Customers', 'contact', 'customers.view', 8),
-                self::planned('Quotations', 'receipt', 'quotations.view', 8),
+                self::item('Customers', 'contact', 'app.customers.index', 'customers.view', 'app.customers.*'),
+                self::item('Quotations', 'receipt', 'app.quotations.index', 'quotations.view', 'app.quotations.*'),
+                self::item('Packages', 'package', 'app.packages.index', fn (User $u) => $u->can('viewAny', ProductionPackage::class), 'app.packages.*'),
                 self::planned('Reports', 'chart-column', 'reports.view', 9),
             ]],
             ['label' => 'Administration', 'items' => [

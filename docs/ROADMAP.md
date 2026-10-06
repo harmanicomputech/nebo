@@ -12,8 +12,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | **Done** (see below) |
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | **Done** (see below) |
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | **Done** (see below) |
-| 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Next |
-| 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Planned |
+| 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | **Done** (see below) |
+| 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Next |
 | 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Planned |
 
 ## Phase 1 deliverables
@@ -126,3 +126,22 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 195 tests / 1,140 assertions pass (10 new logistics tests; two earlier tests updated for the now-live Logistics tab and Crew's new permission).
 - Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Crew; editing a trip, a refused departure (kit not dispatched) and planning a trip were run in Chromium.
 - Fixed during the gate: `notes` columns on trips and vehicles shadowed the notes relation (renamed, D58), and breadcrumbs that dropped their first item.
+
+## Tap feedback (between Phases 7 and 8)
+
+- Every button and link shows a pressed state on touch screens; the tapped button shows a spinner and further taps are ignored until the next page loads; a progress bar runs at the top (D59). Verified in a phone emulator with a slowed server: three taps sent one request, and the tapped button's value still reached the server.
+
+## Phase 8 deliverables
+
+- **Customers** (`/app/customers`): list with search, type filter, "to check" filter and sorting (by accepted value for `financial.view`); profile with contact details, requests, events, quotations, accepted and pending value, notes and documents; add and edit; likely duplicates shown for flagged profiles, "mark checked" and **merge** (D63).
+- **Quotations** (`/app/quotations`): start from a request (prefilled with the requested services), an event, a customer or a package; line editor with sections, catalogue picker (equipment day rates, services), live preview; server-computed totals with discount and VAT; approve and send, customer link with copy button and "opened" tracking, email to the customer when mail is set up; record an answer by phone; revise, duplicate, cancel; printable / PDF-ready document; notes, documents and timeline. Request and event pages list their quotations; the event's Financial tab compares accepted value with the budget.
+- **Customer page** `/q/{token}` (D62): branded quotation that reads well on a phone, PDF download through the browser, accept (name + tick) or decline.
+- **Packages** (`/app/packages`): priced bundles with lines, event type, hide/show, archive; "quote with it".
+- **Settings:** quotation validity, VAT and standard terms; reference format for quotations. Equipment gets a day rate (cost-permission only).
+- **Elsewhere:** customers and quotations in global search, Customers / Quotations / Packages in the navigation, a daily expiry job.
+
+### Phase 8 gate (§62)
+
+- 204 tests / 1,224 assertions pass (9 new commercial tests).
+- Every new page renders at 1440px and 390px with no horizontal scroll and no console errors. In Chromium a quotation was built with the line editor (₦387,000 preview matched the saved total), approved and sent, then accepted on a phone through the customer link.
+- Fixed during the gate: a discount entered before any lines was lost (now kept and applied up to the subtotal), package lines passing the section as an enum, the copy-link button's script, an unlabeled catalogue picker, and line tables that scrolled sideways on phones (now stacked cards).

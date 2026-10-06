@@ -21,6 +21,8 @@ class GlobalSearch
             MaintenanceSearch::class,
             TripSearch::class,
             VehicleSearch::class,
+            CustomerSearch::class,
+            QuotationSearch::class,
             StaffSearch::class,
             UserSearch::class,
             RoleSearch::class,

@@ -19,6 +19,7 @@ class ReferenceDataSeeder extends Seeder
             EventsReferenceSeeder::class,
             MaintenanceReferenceSeeder::class,
             LogisticsReferenceSeeder::class,
+            CommercialReferenceSeeder::class,
         ]);
     }
 }

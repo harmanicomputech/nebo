@@ -73,6 +73,7 @@ class RequestController extends Controller
             'request' => $request,
             'transitions' => collect($request->status->transitions())->mapWithKeys(fn ($s) => [$s->value => $s->label()])->all(),
             'assignees' => User::query()->active()->orderBy('name')->get()->filter(fn (User $u) => $u->can('requests.view'))->pluck('name', 'id')->all(),
+            'quotes' => auth()->user()->can('quotations.view') ? $request->quotations()->get() : null,
             'otherRequests' => $request->customer ? $request->customer->requests()->whereKeyNot($request->id)->latest('id')->limit(5)->get() : collect(),
         ]);
     }

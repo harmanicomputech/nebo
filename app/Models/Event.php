@@ -176,4 +176,10 @@ class Event extends Model
             || $this->productionManager?->user_id === $user->id
             || $this->team()->whereHas('staff', fn ($s) => $s->where('user_id', $user->id))->exists();
     }
+
+    /** @return HasMany<Quotation, $this> */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class)->latest('id');
+    }
 }

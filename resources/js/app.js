@@ -85,6 +85,57 @@ Alpine.data('installApp', () => ({
 }));
 
 /*
+ | Quotation and package line editor. Totals here are a preview only; the
+ | server recomputes every figure from the lines (D60).
+ */
+Alpine.data('lineItems', (initial = [], catalogue = { equipment: [], services: [] }, opts = {}) => ({
+    rows: initial.map((r) => ({ ...r, key: Math.random() })),
+    discount: opts.discount ?? '0',
+    tax: opts.tax ?? '0',
+    add(section = 'services') {
+        this.rows.push({ key: Math.random(), section, description: '', quantity: 1, days: 1, unit_price: '', service_id: null, equipment_id: null });
+        this.$nextTick(() => this.$root.querySelector('[data-row]:last-of-type input[data-description]')?.focus());
+    },
+    remove(i) {
+        this.rows.splice(i, 1);
+    },
+    pick(row, value) {
+        const [kind, id] = String(value).split(':');
+        if (kind === 'e') {
+            const e = catalogue.equipment.find((x) => String(x.id) === id);
+            if (!e) return;
+            Object.assign(row, { section: 'equipment', equipment_id: e.id, service_id: null, description: e.name });
+            if (e.rate !== '' && !this.num(row.unit_price)) row.unit_price = e.rate;
+        } else if (kind === 's') {
+            const s = catalogue.services.find((x) => String(x.id) === id);
+            if (!s) return;
+            Object.assign(row, { section: 'services', service_id: s.id, equipment_id: null, description: s.name });
+        }
+    },
+    num(v) {
+        return parseFloat(String(v ?? '').replace(/[,\u20a6\s]/g, '')) || 0;
+    },
+    line(r) {
+        return Math.max(1, this.num(r.quantity)) * Math.max(1, this.num(r.days)) * this.num(r.unit_price);
+    },
+    get subtotal() {
+        return this.rows.reduce((t, r) => t + this.line(r), 0);
+    },
+    get discountValue() {
+        return Math.min(this.num(this.discount), this.subtotal);
+    },
+    get taxValue() {
+        return Math.round((this.subtotal - this.discountValue) * this.num(this.tax)) / 100;
+    },
+    get total() {
+        return this.subtotal - this.discountValue + this.taxValue;
+    },
+    money(v) {
+        return '\u20a6' + Number(v).toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    },
+}));
+
+/*
  | Tap feedback and double-submit protection (D59).
  |
  | - Any form submit marks the tapped button busy (spinner, no more taps)

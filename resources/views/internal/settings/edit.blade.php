@@ -32,6 +32,14 @@
                 <x-ui.input label="Turnaround buffer (hours)" name="availability_buffer_hours" type="number" min="0" max="168" :value="$values['availability.buffer_hours']" required class="sm:max-w-xs" />
             </x-ui.card>
 
+            <x-ui.card title="Quotations" description="Defaults for new quotations. Each quotation can change its own validity, VAT and terms.">
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <x-ui.input label="Valid for (days)" name="quotations_validity_days" type="number" min="1" max="365" :value="$values['quotations.validity_days']" required />
+                    <x-ui.input label="VAT (%)" name="quotations_vat_percent" inputmode="decimal" :value="$values['quotations.vat_percent']" required hint="7.5 is the current Nigerian rate; 0 to quote without VAT." />
+                    <x-ui.textarea label="Standard terms" name="quotations_terms" :value="$values['quotations.terms']" rows="5" class="sm:col-span-2" />
+                </div>
+            </x-ui.card>
+
             <x-ui.card title="Maintenance" description="Maintenance managers are reminded about scheduled work this many days before it falls due, and again weekly while it is overdue.">
                 <x-ui.input label="Reminder lead time (days)" name="maintenance_reminder_days" type="number" min="0" max="90" :value="$values['maintenance.reminder_days']" required class="sm:max-w-xs" />
             </x-ui.card>

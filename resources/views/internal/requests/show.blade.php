@@ -71,6 +71,9 @@
                     <a href="mailto:{{ $request->email }}" class="flex items-center gap-2 text-brand-700 hover:underline"><x-ui.icon name="mail" class="size-4" />{{ $request->email }}</a>
                     <a href="tel:{{ $request->phone }}" class="flex items-center gap-2 text-brand-700 hover:underline"><x-ui.icon name="phone" class="size-4" />{{ $request->phone }}</a>
                 </div>
+                @if ($request->customer && auth()->user()->can('customers.view'))
+                    <a href="{{ route('app.customers.show', $request->customer) }}" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:underline">Customer profile <x-ui.icon name="arrow-right" class="size-3.5" /></a>
+                @endif
                 @if ($request->customer?->needs_review)
                     <p class="mt-3 flex gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900"><x-ui.icon name="triangle-alert" class="size-4 shrink-0" />Matched an existing customer whose details differ. Check before merging.</p>
                 @endif
@@ -83,6 +86,10 @@
                     </div>
                 @endif
             </x-ui.card>
+
+            @if ($quotes !== null)
+                @include('internal.commercial.quotations._list', ['quotes' => $quotes, 'newUrl' => auth()->user()->can('create', App\Models\Quotation::class) && $request->status->isOpen() ? route('app.quotations.create', ['request' => $request->id]) : null])
+            @endif
 
             <x-ui.card title="Assigned to">
                 @if ($canManage)

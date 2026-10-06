@@ -58,7 +58,7 @@ erDiagram
 | `audit_logs` **(P1)** | user_id → users (set null), user_name, event, auditable_type, auditable_id, description, old_values json, new_values json, ip_address, user_agent, url, created_at | Append-only: the model refuses update/delete; no edit routes. Indexed on (auditable_type, auditable_id), user_id, event, created_at. |
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
-| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`, `vehicle_type`. |
+| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`, `vehicle_type`, `customer_type`. |
 | `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
 
@@ -116,13 +116,16 @@ erDiagram
 | `logistics_trip_crew` **(P7)** | trip_id (cascade), staff_id; unique(trip_id, staff_id) | |
 | `logistics_trip_items` **(P7)** | trip_id (cascade), allocation_id → equipment_allocations; unique(trip_id, allocation_id) | The manifest (D54). |
 
-## Commercial
+## Customers & commercial
 
-| Table | Key columns |
-| --- | --- |
-| `quotations` | reference, customer_id, event_id / event_request_id, status, issued_on, valid_until, subtotal_kobo, discount_kobo, tax_kobo, total_kobo, notes, terms, prepared_by, sent_at, viewed_at, accepted_at |
-| `quotation_items` | quotation_id, section (services/equipment/labour/transport/logistics/other), description, equipment_id / service_id (nullable), quantity, days, unit_price_kobo, line_total_kobo, sort_order |
-| `production_packages`, `package_items` | name, description, is_active / package_id, item type, references, quantity, unit_price_kobo |
+| Table | Key columns | Notes |
+| --- | --- | --- |
+| `customers` (P3, extended **P8**) | + type (lookup `customer_type`), city, state; `notes` renamed `remarks` | Notes and documents are polymorphic. Merge: D63. |
+| `equipment` (extended **P8**) | + day_rate_kobo | Internal price used to fill quotation lines. |
+| `production_packages` **(P8)** | name, slug (unique), description, event_type (lookup), is_active, sort_order, soft deletes | |
+| `package_items` **(P8)** | package_id (cascade), section, description, service_id, equipment_id, quantity, days, unit_price_kobo, sort_order | |
+| `quotations` **(P8)** | reference (unique), public_token (ULID, unique), revision, customer_id, event_request_id, event_id, title, status (draft/sent/accepted/declined/expired/cancelled), issued_on, valid_until, subtotal_kobo, discount_kobo, tax_rate_bp, tax_kobo, total_kobo, intro, terms, prepared_by, sent_by, sent_at, viewed_at, responded_at, responded_by_name, response_note, soft deletes | Totals computed by `QuotationService` (D60). Status history, notes and documents are polymorphic. |
+| `quotation_items` **(P8)** | quotation_id (cascade), section (services/equipment/labour/transport/other), description, service_id, equipment_id, quantity, days, unit_price_kobo, line_total_kobo, sort_order | |
 
 ## Integrity rules enforced in the database
 

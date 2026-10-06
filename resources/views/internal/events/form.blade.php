@@ -18,7 +18,7 @@
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-ui.input label="Event name" name="name" :value="$event->name" required class="sm:col-span-2" />
                     @if (! $editing && ! $fromRequest)
-                        <x-ui.select label="Client" name="customer_id" :options="$customers" placeholder="Choose a client" required class="sm:col-span-2" hint="Clients come from requests; a full customer module arrives in Phase 8." />
+                        <x-ui.select label="Client" name="customer_id" :options="$customers" placeholder="Choose a client" required class="sm:col-span-2" hint="Clients come from requests or the Customers page." />
                     @elseif ($fromRequest)
                         <div class="sm:col-span-2 rounded-xl bg-ink-50 px-4 py-3 text-sm">Client: <strong>{{ $fromRequest->customer->displayName() }}</strong> · from request <a class="font-mono text-brand-700" href="{{ route('app.requests.show', $fromRequest) }}">{{ $fromRequest->reference }}</a></div>
                     @endif

@@ -117,6 +117,9 @@ class EventController extends Controller
                 'loadList' => $event->loadList()->withCount('items')->first(),
                 'outstanding' => $event->allocations()->where('state', 'checked_out')->count(),
             ],
+            'financial' => [
+                'quotes' => $request->user()->can('quotations.view') ? $event->quotations()->get() : null,
+            ],
             'logistics' => [
                 'trips' => $event->trips()->visibleTo($request->user())->with(['vehicle', 'driver'])->withCount(['items', 'crew'])->orderBy('departs_at')->get(),
             ],

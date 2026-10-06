@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * An Event Production Request from the public form (or entered by staff).
@@ -92,5 +93,11 @@ class EventRequest extends Model
     public function scopeOpen(Builder $query): void
     {
         $query->whereIn('status', RequestStatus::openValues());
+    }
+
+    /** @return HasMany<Quotation, $this> */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class, 'event_request_id')->latest('id');
     }
 }

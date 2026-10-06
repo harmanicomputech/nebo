@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * A catalogue item. Serialized items have EquipmentAsset rows; bulk items
  * have StockLevel quantities per location (ARCHITECTURE D6).
  */
-#[Fillable(['category_id', 'name', 'sku', 'manufacturer', 'model', 'tracking_mode', 'unit', 'asset_prefix', 'description', 'image_path', 'replacement_value_kobo', 'low_stock_threshold', 'is_active'])]
+#[Fillable(['category_id', 'name', 'sku', 'manufacturer', 'model', 'tracking_mode', 'unit', 'asset_prefix', 'description', 'image_path', 'replacement_value_kobo', 'day_rate_kobo', 'low_stock_threshold', 'is_active'])]
 class Equipment extends Model
 {
     use Auditable, SoftDeletes;

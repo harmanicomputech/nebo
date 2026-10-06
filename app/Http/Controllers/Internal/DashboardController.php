@@ -67,7 +67,6 @@ class DashboardController extends Controller
                 'openJobs' => $user->can('viewAny', MaintenanceRecord::class) ? MaintenanceRecord::query()->visibleTo($user)->open()->count() : null,
             ] : null,
             'roadmap' => [
-                ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],
                 ['phase' => 9, 'name' => 'Reports', 'icon' => 'chart-column', 'text' => 'Utilisation, events, maintenance and commercial reports.'],
             ],
         ]);

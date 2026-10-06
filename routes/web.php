@@ -7,6 +7,9 @@ use App\Http\Controllers\Internal\Allocation\EventEquipmentController;
 use App\Http\Controllers\Internal\Allocation\LoadListController;
 use App\Http\Controllers\Internal\Allocation\ReturnController;
 use App\Http\Controllers\Internal\AuditLogController;
+use App\Http\Controllers\Internal\Commercial\CustomerController;
+use App\Http\Controllers\Internal\Commercial\PackageController;
+use App\Http\Controllers\Internal\Commercial\QuotationController;
 use App\Http\Controllers\Internal\DashboardController;
 use App\Http\Controllers\Internal\DocumentController;
 use App\Http\Controllers\Internal\Events\CalendarController;
@@ -36,6 +39,7 @@ use App\Http\Controllers\Internal\ServiceController;
 use App\Http\Controllers\Internal\SettingsController;
 use App\Http\Controllers\Internal\UserController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\QuotationController as PublicQuotationController;
 use App\Http\Controllers\Public\RequestController;
 use App\Http\Controllers\Public\TrackingController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +56,8 @@ Route::get('/request/received/{token}', [RequestController::class, 'received'])-
 Route::get('/track', [TrackingController::class, 'form'])->name('requests.track-form');
 Route::post('/track', [TrackingController::class, 'lookup'])->middleware('throttle:10,1')->name('requests.track-lookup');
 Route::get('/track/{token}', [TrackingController::class, 'show'])->middleware('throttle:60,1')->name('requests.track');
+Route::get('/q/{token}', [PublicQuotationController::class, 'show'])->middleware('throttle:60,1')->name('quotations.public');
+Route::post('/q/{token}', [PublicQuotationController::class, 'respond'])->middleware('throttle:10,1')->name('quotations.public.respond');
 
 /*
 | Authentication
@@ -166,6 +172,38 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
         Route::post('/vehicles/{id}/restore', [VehicleController::class, 'restore'])->whereNumber('id')->name('vehicles.restore');
         Route::post('/vehicles/{vehicle}/notes', [VehicleController::class, 'note'])->name('vehicles.notes');
     });
+
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('/customers/create', [CustomerController::class, 'create'])->name('customers.create');
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+    Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    Route::post('/customers/{customer}/reviewed', [CustomerController::class, 'reviewed'])->name('customers.reviewed');
+    Route::post('/customers/{customer}/merge', [CustomerController::class, 'merge'])->name('customers.merge');
+    Route::post('/customers/{customer}/notes', [CustomerController::class, 'note'])->name('customers.notes');
+
+    Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
+    Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+    Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
+    Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::get('/quotations/{quotation}/edit', [QuotationController::class, 'edit'])->name('quotations.edit');
+    Route::put('/quotations/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
+    Route::get('/quotations/{quotation}/print', [QuotationController::class, 'print'])->name('quotations.print');
+    Route::post('/quotations/{quotation}/package', [QuotationController::class, 'addPackage'])->name('quotations.package');
+    Route::post('/quotations/{quotation}/send', [QuotationController::class, 'send'])->name('quotations.send');
+    Route::post('/quotations/{quotation}/respond', [QuotationController::class, 'respond'])->name('quotations.respond');
+    Route::post('/quotations/{quotation}/revise', [QuotationController::class, 'revise'])->name('quotations.revise');
+    Route::post('/quotations/{quotation}/cancel', [QuotationController::class, 'cancel'])->name('quotations.cancel');
+    Route::post('/quotations/{quotation}/duplicate', [QuotationController::class, 'duplicate'])->name('quotations.duplicate');
+    Route::post('/quotations/{quotation}/notes', [QuotationController::class, 'note'])->name('quotations.notes');
+
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+    Route::get('/packages/create', [PackageController::class, 'create'])->name('packages.create');
+    Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
+    Route::get('/packages/{package}/edit', [PackageController::class, 'edit'])->name('packages.edit');
+    Route::put('/packages/{package}', [PackageController::class, 'update'])->name('packages.update');
+    Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::get('/maintenance/create', [MaintenanceController::class, 'create'])->name('maintenance.create');

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\Concerns\HasNotesAndDocuments;
 use App\Support\Audit\Auditable;
+use App\Support\Lookups;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['name', 'company', 'email', 'phone', 'address', 'notes', 'needs_review', 'source'])]
+#[Fillable(['name', 'company', 'type', 'email', 'phone', 'address', 'city', 'state', 'remarks', 'needs_review', 'source'])]
 class Customer extends Model
 {
     use Auditable, HasNotesAndDocuments, SoftDeletes;
@@ -30,6 +31,17 @@ class Customer extends Model
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+    /** @return HasMany<Quotation, $this> */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
+    public function typeLabel(): ?string
+    {
+        return $this->type ? app(Lookups::class)->label('customer_type', $this->type) : null;
     }
 
     public function displayName(): string
