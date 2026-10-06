@@ -43,7 +43,7 @@ enum EventStatus: string
         return in_array($to, $this->transitions(), true);
     }
 
-    /** Events that hold equipment and crew (Phase 5 availability counts these). */
+    /** Events that hold equipment and crew (availability counts only these). */
     public function holdsResources(): bool
     {
         return in_array($this, [self::Planning, self::Confirmed, self::InPreparation, self::InProgress, self::OnHold], true);

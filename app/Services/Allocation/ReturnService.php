@@ -7,6 +7,7 @@ use App\Enums\InventoryTransactionType as T;
 use App\Enums\ReturnOutcome;
 use App\Enums\StockBucket;
 use App\Models\AssetStatus;
+use App\Models\ConditionReport;
 use App\Models\EquipmentAllocation;
 use App\Models\Event;
 use App\Models\Location;
@@ -15,11 +16,14 @@ use App\Models\User;
 use App\Notifications\EquipmentReturnIssues;
 use App\Services\Inventory\InventoryLedger;
 use App\Services\Inventory\StockService;
+use App\Services\Maintenance\MaintenanceService;
 use App\Support\Audit\Audit;
+use App\Support\Lookups;
 use App\Support\Recipients;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -63,7 +67,7 @@ class ReturnService
             foreach ($lines as $id => $line) {
                 $allocation = $outstanding[$id];
                 $allocation->asset
-                    ? $this->returnAsset($check, $allocation, ReturnOutcome::from($line['outcome'] ?? 'returned'), $location, $line['note'] ?? null, $counts)
+                    ? $this->returnAsset($actor, $check, $allocation, ReturnOutcome::from($line['outcome'] ?? 'returned'), $location, $line['note'] ?? null, $counts)
                     : $this->returnBulk($check, $allocation, $line, $counts);
             }
 
@@ -83,7 +87,7 @@ class ReturnService
     /**
      * @param  array{returned: int, missing: int, damaged: int}  $counts
      */
-    private function returnAsset(ReturnCheck $check, EquipmentAllocation $allocation, ReturnOutcome $outcome, Location $location, ?string $note, array &$counts): void
+    private function returnAsset(User $actor, ReturnCheck $check, EquipmentAllocation $allocation, ReturnOutcome $outcome, Location $location, ?string $note, array &$counts): void
     {
         $asset = $allocation->asset;
         $fromStatus = $asset->status_id;
@@ -119,9 +123,49 @@ class ReturnService
         ]);
 
         $check->items()->create(['allocation_id' => $allocation->id, 'outcome' => $outcome, 'quantity' => 1, 'location_id' => $location->id, 'note' => $note]);
+        $this->followUp($actor, $allocation, $outcome, $fromCondition, $note);
         $counts[match ($outcome) {
             ReturnOutcome::Returned => 'returned', ReturnOutcome::Missing => 'missing', default => 'damaged'
         }]++;
+    }
+
+    /**
+     * Damaged units and units flagged for inspection or maintenance get a
+     * condition-history entry and an open maintenance job (D53), unless one
+     * is already open for the unit.
+     */
+    private function followUp(User $actor, EquipmentAllocation $allocation, ReturnOutcome $outcome, ?string $fromCondition, ?string $note): void
+    {
+        if (! in_array($outcome, [ReturnOutcome::Damaged, ReturnOutcome::NeedsInspection, ReturnOutcome::NeedsMaintenance], true)) {
+            return;
+        }
+
+        $asset = $allocation->asset;
+        $event = $allocation->event;
+
+        if ($outcome->condition()) {
+            ConditionReport::create([
+                'asset_id' => $asset->id, 'from_condition' => $fromCondition, 'to_condition' => $outcome->condition(), 'source' => 'return',
+                'note' => $note, 'event_id' => $event->id, 'user_id' => $actor->id, 'user_name' => $actor->name, 'created_at' => now(),
+            ]);
+        }
+
+        // Use the expected type, or any active one if an admin has retired it.
+        $types = app(Lookups::class)->activeKeys('maintenance_type');
+        $preferred = $outcome === ReturnOutcome::NeedsInspection ? 'inspection' : 'repair';
+        $type = in_array($preferred, $types, true) ? $preferred : ($types[0] ?? null);
+
+        if (! $type || $asset->maintenanceRecords()->open()->exists()) {
+            return;
+        }
+
+        app(MaintenanceService::class)->report($actor, $asset, [
+            'type' => $type,
+            'priority' => $outcome === ReturnOutcome::Damaged ? 'high' : 'normal',
+            'issue' => Str::limit($outcome->label().' after '.$event->name.($note ? ": {$note}" : ''), 200, ''),
+            'source' => 'return',
+            'event_id' => $event->id,
+        ]);
     }
 
     /**

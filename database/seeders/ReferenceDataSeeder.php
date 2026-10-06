@@ -17,6 +17,7 @@ class ReferenceDataSeeder extends Seeder
             InventoryReferenceSeeder::class,
             BookingReferenceSeeder::class,
             EventsReferenceSeeder::class,
+            MaintenanceReferenceSeeder::class,
         ]);
     }
 }

@@ -25,6 +25,7 @@ class Lookups
         'budget_range' => 'Budget ranges',
         'document_category' => 'Document categories',
         'staff_role' => 'Staff roles',
+        'maintenance_type' => 'Maintenance types',
     ];
 
     /** @var array<string, Collection<int, Lookup>> */

@@ -58,7 +58,7 @@ erDiagram
 | `audit_logs` **(P1)** | user_id → users (set null), user_name, event, auditable_type, auditable_id, description, old_values json, new_values json, ip_address, user_agent, url, created_at | Append-only: the model refuses update/delete; no edit routes. Indexed on (auditable_type, auditable_id), user_id, event, created_at. |
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
-| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Later: event types, budget ranges, maintenance types, staff roles, vehicle types. |
+| `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`; later vehicle types. |
 | `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
 
@@ -101,11 +101,11 @@ erDiagram
 
 ## Maintenance & condition
 
-| Table | Key columns |
-| --- | --- |
-| `maintenance_records` | asset_id (or equipment_id for bulk), type (lookup), issue, description, reported_at, reported_by, technician_id → staff, starts_at, completed_at, cost_kobo, parts_used, next_due_on, status |
-| `maintenance_schedules` | equipment_id or asset_id, type, interval_days, next_due_on, last_done_on, is_active |
-| `condition_reports` | asset_id, from_condition, to_condition, note, reported_by, source (return/inspection/manual) — photos via `documents` |
+| Table | Key columns | Notes |
+| --- | --- | --- |
+| `maintenance_records` **(P6)** | reference (unique), asset_id, equipment_id, schedule_id (set null), event_id (set null; raised at check-in), type (lookup `maintenance_type`), priority (low/normal/high/urgent), status (reported/scheduled/in_progress/completed/cancelled), source (manual/inspection/return/schedule), issue, description, reported_by, technician_id → staff, scheduled_starts_at, scheduled_ends_at, started_at, completed_at, cost_kobo, parts_used, work_done, outcome_condition | Indexed on (asset_id, status) and (status, scheduled window). Notes, documents and status history are polymorphic. The scheduled window blocks availability (D50). |
+| `maintenance_schedules` **(P6)** | asset_id (cascade), type (lookup), interval_days, next_due_on, last_done_on, last_reminded_on, notes, is_active, created_by; unique(asset_id, type) | Asset's `next_maintenance_due_on` mirrors the earliest active schedule (D52). |
+| `condition_reports` **(P6)** | asset_id, from_condition, to_condition, source (inspection/return/maintenance), note, event_id, maintenance_record_id, user_id + user_name, created_at | Append-only (the model refuses update/delete). Photos are `documents` on the report. |
 
 ## Logistics, commercial
 

@@ -23,11 +23,16 @@
                     <x-ui.input label="Events" name="references_event" :value="$values['references.event']" required />
                     <x-ui.input label="Quotations" name="references_quotation" :value="$values['references.quotation']" required />
                     <x-ui.input label="Load lists" name="references_load_list" :value="$values['references.load_list']" required />
+                    <x-ui.input label="Maintenance jobs" name="references_maintenance" :value="$values['references.maintenance']" required />
                 </div>
             </x-ui.card>
 
             <x-ui.card title="Availability" description="Extra time held before setup and after breakdown, for travel, loading and checks. Applies to new allocations and date changes.">
                 <x-ui.input label="Turnaround buffer (hours)" name="availability_buffer_hours" type="number" min="0" max="168" :value="$values['availability.buffer_hours']" required class="sm:max-w-xs" />
+            </x-ui.card>
+
+            <x-ui.card title="Maintenance" description="Maintenance managers are reminded about scheduled work this many days before it falls due, and again weekly while it is overdue.">
+                <x-ui.input label="Reminder lead time (days)" name="maintenance_reminder_days" type="number" min="0" max="90" :value="$values['maintenance.reminder_days']" required class="sm:max-w-xs" />
             </x-ui.card>
 
             <x-ui.card title="Notifications" description="In-app notifications go to users with the right permissions. Email copies of new booking requests can also go to these addresses once mail is configured.">

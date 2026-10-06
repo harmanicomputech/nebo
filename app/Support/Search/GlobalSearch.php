@@ -18,6 +18,7 @@ class GlobalSearch
             RequestSearch::class,
             EquipmentSearch::class,
             AssetSearch::class,
+            MaintenanceSearch::class,
             StaffSearch::class,
             UserSearch::class,
             RoleSearch::class,

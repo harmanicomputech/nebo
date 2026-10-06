@@ -76,6 +76,24 @@ class EquipmentAsset extends Model
         return $this->hasMany(EquipmentAllocation::class, 'asset_id');
     }
 
+    /** @return HasMany<MaintenanceRecord, $this> */
+    public function maintenanceRecords(): HasMany
+    {
+        return $this->hasMany(MaintenanceRecord::class, 'asset_id');
+    }
+
+    /** @return HasMany<MaintenanceSchedule, $this> */
+    public function maintenanceSchedules(): HasMany
+    {
+        return $this->hasMany(MaintenanceSchedule::class, 'asset_id');
+    }
+
+    /** @return HasMany<ConditionReport, $this> */
+    public function conditionReports(): HasMany
+    {
+        return $this->hasMany(ConditionReport::class, 'asset_id');
+    }
+
     public function conditionLabel(): string
     {
         return app(Lookups::class)->label('condition', $this->condition);
@@ -88,7 +106,7 @@ class EquipmentAsset extends Model
 
     /**
      * Can go to an event right now: allocatable status and a condition that
-     * doesn't block allocation. (Date-window holds arrive in Phase 5.)
+     * doesn't block allocation. Date-window holds are AvailabilityService's job.
      */
     public function isAllocatable(): bool
     {

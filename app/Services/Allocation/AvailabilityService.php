@@ -9,6 +9,7 @@ use App\Models\EquipmentAllocation;
 use App\Models\EquipmentAsset;
 use App\Models\Event;
 use App\Models\StockLevel;
+use App\Services\Maintenance\MaintenanceBlocker;
 use App\Support\Lookups;
 use App\Support\Settings;
 use Carbon\CarbonImmutable;
@@ -28,7 +29,7 @@ use Illuminate\Support\Collection;
 class AvailabilityService
 {
     /** @var list<class-string<AvailabilityBlocker>> */
-    public const BLOCKERS = [];
+    public const BLOCKERS = [MaintenanceBlocker::class];
 
     public function __construct(private Lookups $lookups) {}
 

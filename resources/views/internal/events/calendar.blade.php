@@ -1,6 +1,6 @@
 @php
-    $phaseStyle = ['setup' => 'border-l-amber-500 bg-amber-50 text-amber-900', 'show' => 'border-l-brand-600 bg-brand-50 text-brand-900', 'breakdown' => 'border-l-ink-500 bg-ink-100 text-ink-800'];
-    $phaseLabel = ['setup' => 'Setup', 'show' => 'Show', 'breakdown' => 'Breakdown'];
+    $phaseStyle = ['setup' => 'border-l-amber-500 bg-amber-50 text-amber-900', 'show' => 'border-l-brand-600 bg-brand-50 text-brand-900', 'breakdown' => 'border-l-ink-500 bg-ink-100 text-ink-800', 'maintenance' => 'border-l-sky-600 bg-sky-50 text-sky-900'];
+    $phaseLabel = ['setup' => 'Setup', 'show' => 'Show', 'breakdown' => 'Breakdown', 'maintenance' => 'Maintenance'];
     $q = fn ($v, $d) => route('app.calendar', ['view' => $v, 'date' => $d]);
 @endphp
 <x-layouts.app title="Calendar">
@@ -40,7 +40,7 @@
                         @if ($day['entries'])
                             <a href="{{ $q('day', $day['date']->toDateString()) }}" class="block sm:hidden" aria-label="{{ count($day['entries']) }} scheduled on {{ $day['date']->format('j F') }}">
                                 <span class="block text-[10px] font-bold text-ink-700">{{ count($day['entries']) }}</span>
-                                <span class="mt-0.5 flex flex-col gap-0.5">@foreach (array_slice($day['entries'], 0, 3) as $e)<span class="block h-1 w-full rounded-full {{ ['setup' => 'bg-amber-500', 'show' => 'bg-brand-600', 'breakdown' => 'bg-ink-500'][$e['phase']] }}"></span>@endforeach</span>
+                                <span class="mt-0.5 flex flex-col gap-0.5">@foreach (array_slice($day['entries'], 0, 3) as $e)<span class="block h-1 w-full rounded-full {{ ['setup' => 'bg-amber-500', 'show' => 'bg-brand-600', 'breakdown' => 'bg-ink-500', 'maintenance' => 'bg-sky-600'][$e['phase']] }}"></span>@endforeach</span>
                             </a>
                         @endif
                         <ul class="hidden space-y-0.5 sm:block">
@@ -68,7 +68,7 @@
                             <li><a href="{{ $e['url'] }}" class="block rounded-lg border-l-4 px-2.5 py-2 text-sm {{ $phaseStyle[$e['phase']] }}">
                                 <span class="block text-[11px] font-semibold tracking-wider uppercase">{{ $phaseLabel[$e['phase']] }}@if ($e['time']) · {{ $e['time'] }}@endif</span>
                                 <span class="block font-semibold">{{ $e['title'] }}</span>
-                                <span class="block text-xs opacity-80">{{ $e['event']->venue }} · {{ $e['event']->status->label() }}</span>
+                                <span class="block text-xs opacity-80">{{ $e['subtitle'] }}</span>
                                 @if ($e['shortage'])<span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand-700"><x-ui.icon name="triangle-alert" class="size-3.5" />Equipment not fully allocated</span>@endif
                             </a></li>
                         @empty
@@ -79,5 +79,5 @@
             @endforeach
         </div>
     @endif
-    <p class="mt-4 text-xs text-ink-500">⚠ marks events whose equipment requirements aren't fully allocated. Maintenance windows join the calendar in Phase 6.</p>
+    <p class="mt-4 text-xs text-ink-500">⚠ marks events whose equipment requirements aren't fully allocated..</p>
 </x-layouts.app>

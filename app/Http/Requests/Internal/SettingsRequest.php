@@ -11,8 +11,8 @@ class SettingsRequest extends FormRequest
     /** Settings editable on the General page. Form fields use _ for the dots. */
     public const KEYS = [
         'company.name', 'company.email', 'company.phone', 'company.address', 'company.coverage',
-        'references.request', 'references.event', 'references.quotation', 'references.load_list',
-        'notifications.request_recipients', 'availability.buffer_hours',
+        'references.request', 'references.event', 'references.quotation', 'references.load_list', 'references.maintenance',
+        'notifications.request_recipients', 'availability.buffer_hours', 'maintenance.reminder_days',
     ];
 
     public function authorize(): bool
@@ -38,7 +38,9 @@ class SettingsRequest extends FormRequest
             'references_event' => $reference,
             'references_quotation' => $reference,
             'references_load_list' => $reference,
+            'references_maintenance' => $reference,
             'availability_buffer_hours' => ['required', 'integer', 'min:0', 'max:168'],
+            'maintenance_reminder_days' => ['required', 'integer', 'min:0', 'max:90'],
             'notifications_request_recipients' => ['nullable', 'string', 'max:1000', function (string $attribute, mixed $value, Closure $fail) {
                 foreach (array_filter(array_map('trim', explode(',', (string) $value))) as $email) {
                     if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {

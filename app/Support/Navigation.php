@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Event;
+use App\Models\MaintenanceRecord;
 use App\Models\User;
 use Closure;
 
@@ -41,7 +42,7 @@ class Navigation
                 self::item('Assets', 'qr-code', 'app.inventory.assets.index', 'inventory.view'),
                 self::item('Stock movements', 'history', 'app.inventory.movements', 'inventory.view'),
                 self::item('Inventory setup', 'warehouse', 'app.inventory.setup.categories', 'inventory.configure', 'app.inventory.setup.*'),
-                self::planned('Maintenance', 'wrench', 'maintenance.view', 6),
+                self::item('Maintenance', 'wrench', 'app.maintenance.index', fn (User $u) => $u->can('viewAny', MaintenanceRecord::class), 'app.maintenance.*'),
             ]],
             ['label' => 'Commercial', 'items' => [
                 self::item('Services', 'sparkles', 'app.settings.services', 'services.manage', 'app.settings.services*'),

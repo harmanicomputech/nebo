@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Event;
 use App\Models\EventRequest;
+use App\Models\MaintenanceRecord;
 use App\Services\Documents\DocumentStore;
 use App\Services\Documents\UploadRules;
 use App\Support\Lookups;
@@ -27,6 +28,7 @@ class DocumentController extends Controller
     public const OWNERS = [
         'request' => EventRequest::class,
         'event' => Event::class,
+        'maintenance' => MaintenanceRecord::class,
     ];
 
     public function download(Document $document): StreamedResponse

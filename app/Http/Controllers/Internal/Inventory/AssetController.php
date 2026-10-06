@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Internal\Inventory;
 
+use App\Enums\MaintenancePriority;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\AssetRequest;
+use App\Http\Requests\Maintenance\InspectionRequest;
 use App\Models\AssetStatus;
 use App\Models\Equipment;
 use App\Models\EquipmentAsset;
 use App\Models\EquipmentCategory;
 use App\Models\Location;
 use App\Services\Inventory\AssetService;
+use App\Services\Maintenance\InspectionService;
 use App\Support\Lookups;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -97,6 +100,11 @@ class AssetController extends Controller
         return view('internal.inventory.assets.show', [
             'asset' => $asset,
             'bookings' => $asset->allocations()->active()->with('event')->orderBy('hold_starts_at')->get(),
+            'jobs' => $asset->maintenanceRecords()->latest()->limit(10)->get(),
+            'schedules' => $asset->maintenanceSchedules()->orderBy('next_due_on')->get(),
+            'conditionReports' => $asset->conditionReports()->with(['documents', 'event', 'maintenanceRecord'])->latest('created_at')->latest('id')->limit(10)->get(),
+            'maintenanceTypes' => $this->lookups->options('maintenance_type'),
+            'priorities' => MaintenancePriority::options(),
             'history' => $asset->transactions()->with(['fromLocation', 'toLocation', 'fromStatus', 'toStatus'])->latest('occurred_at')->latest('id')->paginate(20),
             'manualStatuses' => AssetStatus::ordered()->where('is_manual', true)->where('is_active', true)->pluck('label', 'id')->all(),
             'locations' => Location::options(),
@@ -145,17 +153,12 @@ class AssetController extends Controller
         return back()->with('success', "{$asset->asset_tag} moved to {$location->name}.");
     }
 
-    public function condition(Request $request, EquipmentAsset $asset): RedirectResponse
+    /** Inspection or damage report: condition, photos and an optional job. */
+    public function condition(InspectionRequest $request, EquipmentAsset $asset, InspectionService $inspections): RedirectResponse
     {
-        $this->authorize('changeState', $asset);
-        $data = $request->validate([
-            'condition' => ['required', 'string', 'max:50'],
-            'note' => ['nullable', 'string', 'max:500'],
-        ]);
+        $result = $inspections->record($request->user(), $asset, $request->validated('condition'), $request->validated('note'), $request->file('photos', []), $request->job());
 
-        $this->assets->recordCondition($asset, $data['condition'], $data['note'] ?? null);
-
-        return back()->with('success', "Condition recorded for {$asset->asset_tag}: {$asset->conditionLabel()}.");
+        return back()->with('success', "Condition recorded for {$asset->asset_tag}: {$asset->conditionLabel()}.".($result['job'] ? " Job {$result['job']->reference} opened." : ''));
     }
 
     public function destroy(Request $request, EquipmentAsset $asset): RedirectResponse

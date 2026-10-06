@@ -175,7 +175,7 @@ class AllocationService
 
             if ($clash) {
                 $who = $availability->conflicts->first();
-                throw ValidationException::withMessages(['setup_starts_at' => 'The new dates clash with '.($clash->asset?->asset_tag ?? $equipment->name).($who ? " booked on {$who['event']->name} (".Format::date($who['event']->setup_starts_at).')' : '').'. Release or swap that equipment first.']);
+                throw ValidationException::withMessages(['setup_starts_at' => 'The new dates clash with '.($clash->asset?->asset_tag ?? $equipment->name).($who ? " booked on {$who['event']->name} (".Format::date($who['event']->setup_starts_at).')' : ', which is scheduled for maintenance or out of service then').'. Release or swap that equipment first.']);
             }
         }
 

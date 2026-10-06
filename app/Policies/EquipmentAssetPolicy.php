@@ -23,6 +23,12 @@ class EquipmentAssetPolicy
     }
 
     /** Status, location and condition. Further rules live in AssetService. */
+    /** Record an inspection or damage report (inventory staff and technicians). */
+    public function inspect(User $user, EquipmentAsset $asset): bool
+    {
+        return ($user->can('inventory.update') || $user->can('maintenance.manage')) && ! $asset->trashed();
+    }
+
     public function changeState(User $user, EquipmentAsset $asset): bool
     {
         return $user->can('inventory.update') && ! $asset->trashed();

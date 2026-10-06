@@ -7,7 +7,7 @@ use Carbon\CarbonInterface;
 
 /**
  * Something other than an event that makes serialized units unavailable for
- * a window (scheduled maintenance in Phase 6). Register implementations in
+ * a window (e.g. scheduled maintenance). Register implementations in
  * AvailabilityService::BLOCKERS.
  */
 interface AvailabilityBlocker

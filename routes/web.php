@@ -23,6 +23,8 @@ use App\Http\Controllers\Internal\Inventory\MovementController;
 use App\Http\Controllers\Internal\Inventory\ScanController;
 use App\Http\Controllers\Internal\Inventory\StockController;
 use App\Http\Controllers\Internal\LookupController;
+use App\Http\Controllers\Internal\Maintenance\MaintenanceController;
+use App\Http\Controllers\Internal\Maintenance\ScheduleController;
 use App\Http\Controllers\Internal\NotificationController;
 use App\Http\Controllers\Internal\ProfileController;
 use App\Http\Controllers\Internal\RequestController as InternalRequestController;
@@ -142,6 +144,19 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::post('/events/{event}/returns', [ReturnController::class, 'store'])->name('events.returns.store');
     Route::get('/load-lists', [LoadListController::class, 'index'])->name('load-lists.index');
     Route::get('/availability', AvailabilityController::class)->name('availability');
+
+    Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::get('/maintenance/create', [MaintenanceController::class, 'create'])->name('maintenance.create');
+    Route::post('/maintenance', [MaintenanceController::class, 'store'])->name('maintenance.store');
+    Route::post('/maintenance/schedules', [ScheduleController::class, 'store'])->name('maintenance.schedules.store');
+    Route::put('/maintenance/schedules/{schedule}', [ScheduleController::class, 'update'])->name('maintenance.schedules.update');
+    Route::post('/maintenance/schedules/{schedule}/job', [ScheduleController::class, 'openJob'])->name('maintenance.schedules.job');
+    Route::get('/maintenance/{record}', [MaintenanceController::class, 'show'])->name('maintenance.show');
+    Route::post('/maintenance/{record}/schedule', [MaintenanceController::class, 'schedule'])->name('maintenance.schedule');
+    Route::post('/maintenance/{record}/start', [MaintenanceController::class, 'start'])->name('maintenance.start');
+    Route::post('/maintenance/{record}/complete', [MaintenanceController::class, 'complete'])->name('maintenance.complete');
+    Route::post('/maintenance/{record}/cancel', [MaintenanceController::class, 'cancel'])->name('maintenance.cancel');
+    Route::post('/maintenance/{record}/notes', [MaintenanceController::class, 'note'])->name('maintenance.notes');
 
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');

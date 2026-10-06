@@ -98,7 +98,7 @@ class AssetService
         });
     }
 
-    public function changeStatus(User $actor, EquipmentAsset $asset, AssetStatus $status, ?string $note = null): void
+    public function changeStatus(User $actor, EquipmentAsset $asset, AssetStatus $status, ?string $note = null, ?T $type = null): void
     {
         if ($asset->status_id === $status->id) {
             return;
@@ -114,11 +114,11 @@ class AssetService
             throw ValidationException::withMessages(['status_id' => 'Only people who can archive or retire equipment can mark assets lost or retired, or bring them back.']);
         }
 
-        DB::transaction(function () use ($asset, $status, $note) {
+        DB::transaction(function () use ($asset, $status, $note, $type) {
             $from = $asset->status_id;
             $asset->update(['status_id' => $status->id]);
 
-            $this->ledger->record($status->group === AssetStatusGroup::Retired ? T::Retired : T::StatusChanged, $asset->equipment, $asset, [
+            $this->ledger->record($type ?? ($status->group === AssetStatusGroup::Retired ? T::Retired : T::StatusChanged), $asset->equipment, $asset, [
                 'from_status_id' => $from,
                 'to_status_id' => $status->id,
                 'from_location_id' => $asset->location_id,

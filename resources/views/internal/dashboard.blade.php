@@ -167,12 +167,15 @@
                             </a></li>
                         @endforeach
                     </ul>
-                    <p class="mt-4 text-xs text-ink-500">“Available now” counts units whose status and condition allow allocation. Date-by-date availability for events arrives with allocation (Phase 5).</p>
+                    <p class="mt-4 text-xs text-ink-500">“Available now” counts units whose status and condition allow allocation today. For event dates, see <a href="{{ route('app.availability') }}" class="font-semibold text-brand-700 hover:underline">Availability</a>.</p>
                 </x-ui.card>
                 <x-ui.card title="Needs attention" :padding="false">
                     <ul class="divide-y divide-ink-100 text-sm">
                         <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="triangle-alert" class="size-4 text-brand-600" />Low-stock items</span><a href="{{ route('app.inventory.equipment.index', ['availability' => 'low']) }}" class="font-semibold tabular-nums hover:text-brand-700">{{ $inventory['lowStockCount'] }}</a></li>
-                        <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="wrench" class="size-4 text-amber-600" />Maintenance due (14 days)</span><span class="font-semibold tabular-nums">{{ $inventory['maintenanceDue'] }}</span></li>
+                        <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="wrench" class="size-4 text-amber-600" />Maintenance due (14 days)</span>@can('maintenance.view')<a href="{{ route('app.maintenance.index', ['view' => 'due']) }}" class="font-semibold tabular-nums hover:text-brand-700">{{ $inventory['maintenanceDue'] }}</a>@else<span class="font-semibold tabular-nums">{{ $inventory['maintenanceDue'] }}</span>@endcan</li>
+                        @if ($inventory['openJobs'] !== null)
+                            <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="hammer" class="size-4 text-amber-600" />Open maintenance jobs</span><a href="{{ route('app.maintenance.index') }}" class="font-semibold tabular-nums hover:text-brand-700">{{ $inventory['openJobs'] }}</a></li>
+                        @endif
                         <li class="flex items-center justify-between gap-3 px-5 py-3"><span class="flex items-center gap-2"><x-ui.icon name="package" class="size-4 text-ink-500" />Quarantined stock units</span><span class="font-semibold tabular-nums">{{ number_format($inventory['bulk']['quarantine']) }}</span></li>
                     </ul>
                     @if ($inventory['lowStock']->isNotEmpty())

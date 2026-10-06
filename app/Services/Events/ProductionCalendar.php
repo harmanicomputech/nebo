@@ -3,6 +3,7 @@
 namespace App\Services\Events;
 
 use App\Models\Event;
+use App\Models\MaintenanceRecord;
 use App\Models\User;
 use App\Services\Allocation\RequirementAnalyzer;
 use Carbon\CarbonImmutable;
@@ -11,8 +12,8 @@ use Illuminate\Support\Collection;
 /**
  * Builds calendar entries for a date range in Lagos time. Each event appears
  * on every day of its hold window, labelled Setup / Show / Breakdown, so the
- * phase is readable without relying on colour. Later phases add maintenance
- * and conflicts through extra entry sources.
+ * phase is readable without relying on colour. Scheduled maintenance windows
+ * appear as Maintenance entries for people who can see them.
  */
 class ProductionCalendar
 {
@@ -30,6 +31,11 @@ class ProductionCalendar
         $analyzer = app(RequirementAnalyzer::class);
         $open = $events->mapWithKeys(fn (Event $e) => [$e->id => $e->status->holdsResources() && $analyzer->hasOpenRequirements($e)]);
 
+        $jobs = $user->can('viewAny', MaintenanceRecord::class)
+            ? MaintenanceRecord::query()->visibleTo($user)->windowOverlapping($from->setTimezone('UTC'), $to->setTimezone('UTC'))
+                ->with('asset')->orderBy('scheduled_starts_at')->get()
+            : collect();
+
         $days = [];
         for ($day = $from; $day->lt($to); $day = $day->addDay()) {
             $entries = [];
@@ -43,6 +49,21 @@ class ProductionCalendar
                         'url' => route('app.events.show', $event),
                         'time' => $this->timeFor($event, $phase, $day, $tz),
                         'shortage' => $open[$event->id],
+                        'subtitle' => $event->venue.' · '.$event->status->label(),
+                    ];
+                }
+            }
+            foreach ($jobs as $job) {
+                $start = $job->scheduled_starts_at->setTimezone($tz);
+                if ($start->lt($day->addDay()) && $job->scheduled_ends_at->setTimezone($tz)->gt($day)) {
+                    $entries[] = [
+                        'type' => 'maintenance',
+                        'phase' => 'maintenance',
+                        'title' => $job->asset->asset_tag.' · '.$job->typeLabel(),
+                        'url' => route('app.maintenance.show', $job),
+                        'time' => $start->isSameDay($day) ? $start->format('g:ia') : null,
+                        'shortage' => false,
+                        'subtitle' => $job->issue.' · '.$job->status->label(),
                     ];
                 }
             }

@@ -3,6 +3,10 @@
     use App\Support\QrCode;
     $canCosts = auth()->user()->can('inventory.costs');
     $canChange = auth()->user()->can('changeState', $asset);
+    $canInspect = auth()->user()->can('inspect', $asset);
+    $canMaintain = auth()->user()->can('maintenance.manage');
+    $canSchedule = auth()->user()->can('maintenance.schedule');
+    $seesJobs = auth()->user()->can('maintenance.view');
     $managed = ! $asset->status->is_manual;
 @endphp
 <x-layouts.app :title="$asset->asset_tag">
@@ -51,11 +55,13 @@
                     <div class="flex items-center justify-between gap-4 px-5 py-3"><dt class="text-ink-500">Next maintenance</dt><dd @class(['font-semibold text-brand-700' => $asset->next_maintenance_due_on?->isPast()])>{{ Format::date($asset->next_maintenance_due_on) }}</dd></div>
                     <div class="flex items-center justify-between gap-4 px-5 py-3"><dt class="text-ink-500">Times deployed</dt><dd class="tabular-nums">{{ $asset->usage_count }}</dd></div>
                 </dl>
-                @if ($canChange && ! $asset->trashed())
+                @if (($canChange || $canInspect) && ! $asset->trashed())
                     <div class="grid grid-cols-3 gap-2 border-t border-ink-100 p-4">
-                        <x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-condition')">Condition</x-ui.button>
-                        <x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-status')" :disabled="$managed">Status</x-ui.button>
-                        <x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-move')" :disabled="$managed">Move</x-ui.button>
+                        @if ($canInspect)<x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-condition')">Inspect</x-ui.button>@endif
+                        @if ($canChange)
+                            <x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-status')" :disabled="$managed">Status</x-ui.button>
+                            <x-ui.button size="sm" variant="secondary" x-data x-on:click="$dispatch('open-modal', 'asset-move')" :disabled="$managed">Move</x-ui.button>
+                        @endif
                     </div>
                 @endif
             </x-ui.card>
@@ -101,6 +107,65 @@
                 </ul>
             </x-ui.card>
         @endif
+        @if ($seesJobs || $canMaintain)
+            <x-ui.card title="Maintenance" :padding="false">
+                <x-slot:actions>
+                    @if ($canMaintain && ! $asset->trashed())<x-ui.button size="sm" variant="secondary" icon="wrench" :href="route('app.maintenance.create', ['asset' => $asset->asset_tag])">Log a job</x-ui.button>@endif
+                    @if ($canSchedule && ! $asset->trashed())<x-ui.button size="sm" variant="secondary" icon="calendar-clock" x-data x-on:click="$dispatch('open-modal', 'asset-schedule')">Add schedule</x-ui.button>@endif
+                </x-slot:actions>
+                @if ($jobs->isEmpty() && $schedules->isEmpty())
+                    <p class="px-5 py-4 text-sm text-ink-500 sm:px-6">No maintenance jobs or schedules yet.</p>
+                @endif
+                @if ($schedules->isNotEmpty())
+                    <h3 class="px-5 pt-4 text-xs font-semibold tracking-wider text-ink-500 uppercase sm:px-6">Schedules</h3>
+                    <ul class="divide-y divide-ink-100">
+                        @foreach ($schedules as $sc)
+                            <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 sm:px-6">
+                                <span class="min-w-0 flex-1"><span class="block font-medium">{{ $sc->typeLabel() }} every {{ $sc->interval_days }} days</span><span class="block text-xs text-ink-500">Last done {{ $sc->last_done_on?->format('j M Y') ?? 'never' }}@if ($sc->notes) · {{ $sc->notes }}@endif</span></span>
+                                <span @class(['text-sm tabular-nums', 'font-semibold text-brand-700' => $sc->is_active && $sc->isOverdue(), 'text-ink-600' => ! ($sc->is_active && $sc->isOverdue())])>{{ $sc->is_active ? 'Due '.$sc->next_due_on->format('j M Y') : 'Paused' }}</span>
+                                @if ($canSchedule)<x-ui.button size="sm" variant="ghost" icon="pencil" x-data x-on:click="$dispatch('open-modal', 'schedule-{{ $sc->id }}')"><span class="sr-only">Edit schedule</span></x-ui.button>@endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($jobs->isNotEmpty())
+                    <h3 class="border-t border-ink-100 px-5 pt-4 text-xs font-semibold tracking-wider text-ink-500 uppercase sm:px-6">Jobs</h3>
+                    <ul class="divide-y divide-ink-100">
+                        @foreach ($jobs as $job)
+                            <li><a href="{{ route('app.maintenance.show', $job) }}" class="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 hover:bg-ink-50 sm:px-6">
+                                <span class="min-w-0 flex-1"><span class="block font-medium">{{ $job->issue }}</span><span class="block text-xs text-ink-500"><span class="font-mono">{{ $job->reference }}</span> · {{ $job->typeLabel() }} · {{ Format::date($job->created_at) }}</span></span>
+                                <x-ui.badge :tone="$job->status->tone()">{{ $job->status->label() }}</x-ui.badge>
+                            </a></li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-ui.card>
+        @endif
+
+        @if ($conditionReports->isNotEmpty())
+            <x-ui.card title="Condition history" description="Inspections, check-ins and repairs." :padding="false">
+                <ul class="divide-y divide-ink-100">
+                    @foreach ($conditionReports as $cr)
+                        <li class="px-5 py-3 sm:px-6">
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                                <x-ui.badge tone="neutral">{{ $cr->sourceLabel() }}</x-ui.badge>
+                                <span>{{ $cr->conditionLabel($cr->from_condition) }} → <strong>{{ $cr->conditionLabel($cr->to_condition) }}</strong></span>
+                                <span class="text-xs text-ink-500">{{ $cr->user_name }} · {{ Format::datetime($cr->created_at, 'j M Y, g:ia') }}@if ($cr->event) · {{ $cr->event->name }}@endif @if ($cr->maintenanceRecord) · {{ $cr->maintenanceRecord->reference }}@endif</span>
+                            </div>
+                            @if ($cr->note)<p class="mt-1 text-sm whitespace-pre-line text-ink-600">{{ $cr->note }}</p>@endif
+                            @if ($cr->documents->isNotEmpty() && auth()->user()->can('documents.view'))
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    @foreach ($cr->documents as $photo)
+                                        <a href="{{ route('app.documents.download', $photo) }}" target="_blank" class="block size-16 overflow-hidden rounded-lg ring-1 ring-ink-100"><img src="{{ route('app.documents.download', $photo) }}" alt="Inspection photo {{ $loop->iteration }}" class="size-full object-cover" loading="lazy"></a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </x-ui.card>
+        @endif
+
         <x-ui.card title="History" description="Every status, location and condition change.">
             @if ($history->isEmpty())
                 <x-ui.empty-state icon="history" title="No history yet" />
@@ -112,15 +177,70 @@
         </div>
     </div>
 
-    @if ($canChange && ! $asset->trashed())
-        <x-ui.modal name="asset-condition" title="Record condition">
-            <form method="POST" action="{{ route('app.inventory.assets.condition', $asset) }}" class="space-y-4" data-once>
+    @if ($canInspect && ! $asset->trashed())
+        <x-ui.modal name="asset-condition" title="Inspection / damage report" max-width="lg">
+            <form method="POST" action="{{ route('app.inventory.assets.condition', $asset) }}" enctype="multipart/form-data" class="space-y-4" data-once x-data="{ job: {{ old('raise_job') ? 'true' : 'false' }} }">
                 @csrf
                 <x-ui.select label="Condition" name="condition" :options="$conditions" :value="$asset->condition" required hint="Damaged, critical or needs-inspection conditions take the unit out of service automatically." />
-                <x-ui.textarea label="Inspection notes" name="note" rows="3" />
-                <x-ui.button type="submit" class="w-full">Record condition</x-ui.button>
+                <x-ui.textarea label="What you found" name="note" rows="3" />
+                <div>
+                    <label for="f-photos" class="mb-1.5 block text-sm font-medium text-ink-800">Photos</label>
+                    <input id="f-photos" type="file" name="photos[]" accept=".jpg,.jpeg,.png,.webp" capture="environment" multiple class="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
+                    <p class="mt-1.5 text-xs text-ink-500">Up to 5 JPG, PNG or WebP images.</p>
+                    @error('photos')<p class="mt-1.5 text-xs font-medium text-brand-700">{{ $message }}</p>@enderror
+                    @error('photos.*')<p class="mt-1.5 text-xs font-medium text-brand-700">{{ $message }}</p>@enderror
+                </div>
+                @if ($canMaintain)
+                    <label class="flex items-center gap-2 text-sm font-medium"><input type="checkbox" name="raise_job" value="1" x-model="job" class="size-4 rounded border-ink-300 text-brand-600">Open a maintenance job for this</label>
+                    <div x-show="job" x-cloak class="space-y-4 rounded-xl border border-ink-100 bg-ink-50 p-4">
+                        <x-ui.input label="Issue" name="job_issue" x-bind:required="job" />
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <x-ui.select label="Type" name="job_type" :options="$maintenanceTypes" :value="old('job_type', 'repair')" />
+                            <x-ui.select label="Priority" name="job_priority" :options="$priorities" :value="old('job_priority', 'normal')" />
+                        </div>
+                    </div>
+                @endif
+                <x-ui.button type="submit" class="w-full" icon="clipboard-check">Save inspection</x-ui.button>
             </form>
         </x-ui.modal>
+    @endif
+    @if ($canSchedule && ! $asset->trashed())
+        <x-ui.modal name="asset-schedule" title="Add a maintenance schedule">
+            <form method="POST" action="{{ route('app.maintenance.schedules.store') }}" class="space-y-4" data-once>
+                @csrf
+                <x-ui.select label="Type" name="type" :options="$maintenanceTypes" :value="old('type', 'preventive')" required />
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-ui.input label="Every (days)" name="interval_days" type="number" min="1" max="3650" :value="old('interval_days', 90)" required />
+                    <x-ui.input label="First due" name="next_due_on" type="date" :value="old('next_due_on', now(config('nebo.display_timezone'))->addDays(30)->toDateString())" required />
+                </div>
+                <x-ui.textarea label="Instructions" name="notes" rows="2" />
+                <fieldset class="space-y-2 text-sm">
+                    <legend class="mb-1 font-medium text-ink-800">Apply to</legend>
+                    <input type="hidden" name="asset_id" value="{{ $asset->id }}">
+                    <input type="hidden" name="equipment_id" value="{{ $asset->equipment_id }}">
+                    <label class="flex items-center gap-2"><input type="radio" name="scope" value="asset" checked class="text-brand-600"> This unit only ({{ $asset->asset_tag }})</label>
+                    <label class="flex items-center gap-2"><input type="radio" name="scope" value="equipment" class="text-brand-600"> Every unit of {{ $asset->equipment->name }}</label>
+                </fieldset>
+                <x-ui.button type="submit" class="w-full">Add schedule</x-ui.button>
+            </form>
+        </x-ui.modal>
+        @foreach ($schedules as $sc)
+            <x-ui.modal :name="'schedule-'.$sc->id" :title="'Edit '.$sc->typeLabel().' schedule'">
+                <form method="POST" action="{{ route('app.maintenance.schedules.update', $sc) }}" class="space-y-4" data-once>
+                    @csrf @method('PUT')
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <x-ui.input label="Every (days)" name="interval_days" type="number" min="1" max="3650" :value="$sc->interval_days" :use-old="false" required :id="'iv-'.$sc->id" />
+                        <x-ui.input label="Next due" name="next_due_on" type="date" :value="$sc->next_due_on->toDateString()" :use-old="false" required :id="'nd-'.$sc->id" />
+                    </div>
+                    <x-ui.textarea label="Instructions" name="notes" rows="2" :value="$sc->notes" :id="'nt-'.$sc->id" />
+                    <input type="hidden" name="is_active" value="0">
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_active" value="1" @checked($sc->is_active) class="size-4 rounded border-ink-300 text-brand-600"> Active</label>
+                    <x-ui.button type="submit" class="w-full">Save</x-ui.button>
+                </form>
+            </x-ui.modal>
+        @endforeach
+    @endif
+    @if ($canChange && ! $asset->trashed())
         @unless ($managed)
             <x-ui.modal name="asset-status" title="Change status">
                 <form method="POST" action="{{ route('app.inventory.assets.status', $asset) }}" class="space-y-4" data-once>

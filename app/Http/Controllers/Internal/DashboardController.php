@@ -10,6 +10,7 @@ use App\Models\EquipmentAsset;
 use App\Models\Event;
 use App\Models\EventRequest;
 use App\Models\LoadList;
+use App\Models\MaintenanceRecord;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Inventory\InventorySummary;
@@ -57,9 +58,9 @@ class DashboardController extends Controller
                 'lowStock' => $inventory->lowStock(),
                 'lowStockCount' => $inventory->lowStockCount(),
                 'maintenanceDue' => $inventory->maintenanceDue(),
+                'openJobs' => $user->can('viewAny', MaintenanceRecord::class) ? MaintenanceRecord::query()->visibleTo($user)->open()->count() : null,
             ] : null,
             'roadmap' => [
-                ['phase' => 6, 'name' => 'Maintenance & condition', 'icon' => 'wrench', 'text' => 'Maintenance records and schedules, inspections and damage reports.'],
                 ['phase' => 7, 'name' => 'Logistics & fleet', 'icon' => 'truck', 'text' => 'Vehicles, trips, dispatch, delivery and returns.'],
                 ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],
             ],

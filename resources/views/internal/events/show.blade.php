@@ -66,7 +66,7 @@
     @elseif ($tab === 'requirements')
         <x-ui.card title="Production requirements">
             <p class="text-sm whitespace-pre-line text-ink-800">{{ $event->production_requirements ?: 'No requirements recorded yet.' }}</p>
-            <p class="mt-4 text-xs text-ink-500">Equipment requirements, shortages and conflicts arrive with the availability engine (Phase 5).</p>
+            <p class="mt-4 text-xs text-ink-500">Equipment quantities, shortages and clashes are on the <a href="{{ route('app.events.show', [$event, 'tab' => 'equipment']) }}" class="font-semibold text-brand-700 hover:underline">Equipment</a> tab.</p>
         </x-ui.card>
     @elseif ($tab === 'equipment')
         @php $canReq = $u->can('manageRequirements', $event); $canAlloc = $u->can('allocate', $event); @endphp

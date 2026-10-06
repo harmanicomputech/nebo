@@ -10,8 +10,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | **Done** (see below) |
 | 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | **Done** (see below) |
 | 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | **Done** (see below) |
-| 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Next |
-| 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Planned |
+| 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | **Done** (see below) |
+| 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Next |
 | 8 — Customers & commercial | CRM profile, quotations (+ PDF-ready), packages, quote workflow | Planned |
 | 9 — Reporting | Inventory, utilisation, events, maintenance, commercial reports; dashboard charts | Planned |
 | 10 — Hardening | Security/permission review, CSP, query/index review, performance, accessibility, mobile polish | Planned |
@@ -96,3 +96,18 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - 173 tests / 953 assertions pass (23 new: availability, allocation, load-out and returns, including concurrency-style re-checks, re-windowing and cancel/complete rules).
 - Every new page renders at 1440px and 390px with no horizontal scroll and no console errors; a real allocation, load-list update and check-in were run in Chromium.
 - Fixed during the gate: lazy loads in asset-status sync, the load list, returns and the requirement analyzer (caught by strict mode), an ambiguous `status` column in the load-lists filter, invalid markup (a block inside a paragraph) in the allocated-units list, and bulk load-list lines without a unit.
+
+## Phase 6 deliverables
+
+- **Maintenance jobs** (`/app/maintenance`, `NEBO-MNT-YYYY-NNNNN`): log a fault or planned service for a unit with type, priority, issue, technician and an optional window; schedule, start, complete (work done, parts, cost, condition after, next due) or cancel with a reason. Photos and documents, internal notes and a timeline on every job. Views for open jobs, due schedules, all schedules and closed jobs, with search and filters, plus counts for open, in-progress, high/urgent and overdue.
+- **Availability integration** (D50): scheduled windows block allocation and event date changes; maintenance can't be booked over an allocation; units at an event can't be worked on until they're back.
+- **Schedules and reminders** (D52): per-unit recurring schedules (or every unit of an item at once), editing and pausing, "open job" from a due schedule, automatic advancing on completion, and a daily reminder digest with a configurable lead time (Settings › Maintenance).
+- **Inspections and damage reports** (D53): from the asset page, with condition, notes, up to five photos (content-checked) and an optional follow-up job. Condition history on the asset page with photo thumbnails.
+- **Check-in follow-up:** damaged, needs-inspection and needs-maintenance returns open a job and record condition history.
+- **Elsewhere:** maintenance windows on the production calendar, open jobs and a link to due schedules on the dashboard, maintenance in global search, technicians notified when a job is assigned to them and seeing only their own jobs.
+
+### Phase 6 gate (§62)
+
+- 185 tests / 1,051 assertions pass (12 new maintenance tests).
+- Every new page renders at 1440px and 390px with no horizontal scroll and no console errors, checked as admin and as Technician; an inspection with a photo and follow-up job, and completing a job, were run in Chromium.
+- Fixed during the gate: a lazy load when updating a schedule (caught by strict mode), and stale "coming in Phase 5/6" copy on the event and calendar pages.

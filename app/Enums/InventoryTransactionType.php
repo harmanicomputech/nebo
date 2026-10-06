@@ -21,7 +21,7 @@ enum InventoryTransactionType: string
     case Returned = 'returned';               // checked back in
     case Damaged = 'damaged';                 // came back damaged
     case Lost = 'lost';                       // missing after an event
-    case Repaired = 'repaired';               // Phase 6
+    case Repaired = 'repaired';               // back in service after maintenance
     case Retired = 'retired';
     case Archived = 'archived';
     case Restored = 'restored';
