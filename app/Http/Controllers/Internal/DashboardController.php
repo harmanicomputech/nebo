@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Internal;
 
+use App\Enums\RequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\EventRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Inventory\InventorySummary;
@@ -31,6 +33,12 @@ class DashboardController extends Controller
             ],
             'activity' => $user->can('audit.view') ? AuditLog::latest('id')->limit(8)->get() : collect(),
             'notifications' => $user->unreadNotifications()->latest()->limit(5)->get(),
+            'requests' => $user->can('requests.view') ? [
+                'new' => EventRequest::where('status', RequestStatus::New)->count(),
+                'open' => EventRequest::query()->open()->count(),
+                'mine' => EventRequest::query()->open()->where('assigned_to', $user->id)->count(),
+                'recent' => EventRequest::query()->open()->latest('id')->limit(5)->get(),
+            ] : null,
             'inventory' => $canInventory ? [
                 'groups' => $inventory->assetsByGroup(),
                 'allocatable' => $inventory->allocatableAssets(),
@@ -40,10 +48,10 @@ class DashboardController extends Controller
                 'maintenanceDue' => $inventory->maintenanceDue(),
             ] : null,
             'roadmap' => [
-                ['phase' => 3, 'name' => 'Public booking', 'icon' => 'inbox', 'text' => 'Event Production Request form, customer matching, uploads and the request workflow.'],
                 ['phase' => 4, 'name' => 'Events & production', 'icon' => 'calendar-range', 'text' => 'Event workspace, team assignment and the production calendar.'],
                 ['phase' => 5, 'name' => 'Availability & allocation', 'icon' => 'layers', 'text' => 'Conflict detection, allocation, load lists, check-out and returns.'],
                 ['phase' => 6, 'name' => 'Maintenance & condition', 'icon' => 'wrench', 'text' => 'Maintenance records and schedules, inspections and damage reports.'],
+                ['phase' => 8, 'name' => 'Customers & quotations', 'icon' => 'receipt', 'text' => 'Customer profiles, quotations and production packages.'],
             ],
         ]);
     }

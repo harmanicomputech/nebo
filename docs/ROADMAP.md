@@ -7,8 +7,8 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 | 0 — Discovery & architecture | Repo inspection, decisions, schema, dependency map, risks | **Done** — [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md) |
 | 1 — Foundation | Auth (login, logout, throttling, password reset, deactivated users), RBAC (permission catalog, editable roles, users), settings, audit log, in-app notifications, reference generator, global search framework, design system, internal + public layouts, error pages, security headers, PWA | **Done** (see below) |
 | 2 — Inventory | Categories (+sub), locations, asset statuses, lookups, equipment catalogue, serialized assets, bulk stock, ledger, equipment profile, table/grid views, filters, QR-ready identifiers | **Done** (see below) |
-| 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | Next |
-| 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | Planned |
+| 3 — Public booking | Public site, Event Production Request form, services, customer matching, document uploads, references, confirmation, tracking page, staff notification, request workflow + timeline | **Done** (see below) |
+| 4 — Events & production | Request → event conversion, event workspace (tabs), staff & team, production calendar | Next |
 | 5 — Availability & allocation | Availability service, requirements with shortages/conflicts/alternatives, allocation, load lists (+ print), check-out, return/check-in, missing/damage flags, availability calendar | Planned |
 | 6 — Maintenance & condition | Maintenance records/schedules, inspections, damage reports with photos, condition history, availability integration, reminders | Planned |
 | 7 — Logistics | Vehicles, trips, drivers, crew, dispatch/delivery/return tracking | Planned |
@@ -51,3 +51,18 @@ Each phase ends with the gate in §62 of the brief: tests pass, errors fixed, ar
 - Every new page renders in Chromium at 1440px and 390px with no horizontal scroll and no console errors. The stock drawer and asset modals were checked.
 - Bugs found and fixed during the gate: an N+1 query on the equipment history tab (caught by strict lazy-loading), editing a quantity item failing validation, a submitted "allocatable" flag overriding the rule for custom statuses, a nav highlight pattern that would have matched every inventory page, ledger wording for first entries, subcategory icons, and the phone layout of the catalogue.
 - Not yet verified: the MySQL CI job (no MySQL in the build sandbox).
+
+## Phase 3 deliverables
+
+- **Public form** (`/request`): every field from brief §8–14 in six sections with a progress rail, service cards from the database, event-type chips, conditional "Other" fields, drag-and-drop uploads when the customer has a plan, budget options from the database, server-side validation with errors next to each field, and duplicate and bot protection (D31).
+- **Submission:** reference `NEBO-REQ-YYYY-NNNNN` (configurable), customer matched or created (D32), services, private documents, the first timeline entry, in-app notification to request managers, an optional email copy to configured addresses, and a confirmation email to the customer when mail is configured (D36). Confirmation page with reference and private tracking link.
+- **Tracking** (`/track`): by link, or reference + email; shows five simple stages only (D33).
+- **Internal requests:** list with Open/Won/Closed views, search and filters (status, assignee, service, event dates), counts; request page with all details, documents (upload, download, remove), internal notes, assignment, status changes along the allowed transitions (reason required to cancel or decline) and the full timeline; notifications on assignment and status change; audit entries.
+- **Services catalogue** (Commercial › Services / Settings › Services): add, edit, hide from the form, disable. The public home page and form read from it.
+- **Reusable foundations:** `status_changes`, `notes` and `documents` are polymorphic and are used by later modules.
+
+### Phase 3 gate (§62)
+
+- 138 tests / 757 assertions pass (23 new).
+- A real Chromium submission at 390px worked end to end: request, file, services, and 09:00 Lagos stored as 08:00 UTC. Every new page has no horizontal scroll at 390px and no console errors.
+- Fixed during the gate: MIME checks now sniff the bytes with finfo instead of trusting the framework's guess, which a renamed PHP file could pass. Also fixed: the timezone of datetime inputs, the old-input redisplay of converted datetimes, settings tabs shown to people without access, and a navigation path for Finance to reach Services.

@@ -59,8 +59,8 @@ erDiagram
 | `notifications` **(P1)** | Laravel schema (uuid, type, notifiable morph, data json, read_at) | In-app channel. |
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
 | `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Later: event types, budget ranges, maintenance types, staff roles, vehicle types. |
-| `status_changes` | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
-| `documents` | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
+| `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
+| `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |
 
 ## Inventory
 
@@ -78,10 +78,11 @@ erDiagram
 
 | Table | Key columns | Notes |
 | --- | --- | --- |
-| `customers` | name, company, email (normalised, indexed), phone (E.164, indexed), address, notes, needs_review, soft deletes | De-duplication: see ARCHITECTURE risks. |
-| `services` | name, slug (unique), description, icon, sort_order, is_active, is_public | Public form shows `is_public && is_active`. |
-| `event_requests` | reference (unique), public_token (unique), customer_id, event_name, event_type (lookup), event_type_other, event_date, venue, venue_meta json, phone, email, contact_person, company, duration_days, starts_at, ends_at, setup_at, has_existing_design, budget_range (lookup), requirements, additional_info, services_other, status, assigned_to → users, submitted_ip, converted_event_id | Status enum + `status_changes`. |
-| `event_request_services` | event_request_id, service_id | Pivot. |
+| `customers` **(P3)** | name, company, email (normalised, indexed), phone (E.164, indexed), address, notes, needs_review, soft deletes | De-duplication: see ARCHITECTURE risks. |
+| `services` **(P3)** | name, slug (unique), description, icon, sort_order, is_active, is_public | Public form shows `is_public && is_active`. |
+| `event_requests` **(P3)** | reference (unique), public_token (unique), customer_id, event_name, event_type (lookup), event_type_other, event_date, venue, venue_meta json, phone, email, contact_person, company, duration_days, starts_at, ends_at, setup_at, has_existing_design, budget_range (lookup), requirements, additional_info, services_other, status, assigned_to → users, submitted_ip, converted_event_id | Status enum + `status_changes`. |
+| `event_request_service` **(P3)** | event_request_id, service_id | Pivot. |
+| `notes` **(P3)** | notable morph, body, user_id, user_name | Internal notes on any record; never public. |
 | `events` | reference (unique), event_request_id, customer_id, name, event_type, venue, venue_meta, starts_at, ends_at, setup_starts_at, breakdown_ends_at, status, project_manager_id, production_manager_id (→ staff), budget_kobo, notes, soft deletes | Hold window = setup_starts_at → breakdown_ends_at (+ buffer). |
 | `event_services` | event_id, service_id, notes | |
 | `staff` | user_id (nullable, unique), name, phone, email, role (lookup), is_active, soft deletes | |

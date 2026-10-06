@@ -24,7 +24,7 @@
                 <p class="px-3 pb-2 text-[10.5px] font-semibold tracking-[0.16em] text-ink-500 uppercase">{{ $section['label'] }}</p>
                 <ul class="space-y-0.5">
                     @foreach ($section['items'] as $item)
-                        @php $active = request()->routeIs($item['route'], $item['active']); @endphp
+                        @php $active = request()->routeIs($item['route'], ...(array) $item['active']); @endphp
                         <li>
                             <a href="{{ route($item['route']) }}" @if ($active) aria-current="page" @endif
                                class="group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition {{ $active ? 'bg-white/[0.07] text-white' : 'hover:bg-white/[0.04] hover:text-white' }}">

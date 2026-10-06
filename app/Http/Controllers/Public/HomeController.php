@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Service;
 use App\Support\Settings;
 use Illuminate\View\View;
 
 /**
- * Public landing page. Uses settings only; internal data is never loaded
- * from public controllers.
+ * Public landing page. Loads only public data (settings and offered
+ * services); internal data is never loaded from public controllers.
  */
 class HomeController extends Controller
 {
@@ -21,18 +22,7 @@ class HomeController extends Controller
                 'phone' => Settings::string('company.phone'),
                 'coverage' => Settings::string('company.coverage'),
             ],
-            // Phase 3 moves these to the services table, managed in the console.
-            'services' => [
-                ['icon' => 'panels-top-left', 'name' => 'Stage & Staging'],
-                ['icon' => 'route', 'name' => 'Trussing & Rigging'],
-                ['icon' => 'shield', 'name' => 'Barricades'],
-                ['icon' => 'lightbulb', 'name' => 'Event Lighting'],
-                ['icon' => 'monitor-down', 'name' => 'LED Screens & Displays'],
-                ['icon' => 'speaker', 'name' => 'Sound & Audio Production'],
-                ['icon' => 'video', 'name' => 'Photography & Videography'],
-                ['icon' => 'radio', 'name' => 'Livestreaming'],
-                ['icon' => 'sparkles', 'name' => 'Full Event Production'],
-            ],
+            'services' => Service::query()->offered()->get(['name', 'icon', 'description']),
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D30), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D36), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
@@ -21,10 +21,12 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D30), `docs/DATABASE.md` and `docs/R
 - **References** come from `ReferenceGenerator::next('request'|'event'|…)`. Formats are settings.
 - **Notifications** extend `App\Notifications\NeboNotification`. They are in-app by default; channels come from `NotificationChannels`.
 - **Inventory changes go through services.** `AssetService` (register, status, move, condition, archive), `StockService` (receive, transfer, quarantine/release, write off, count) and `EquipmentService` write the ledger in the same transaction. Never update an asset's status, location or condition, or a stock quantity, directly. Asset behaviour comes from status `group`/`is_allocatable`/`is_manual` and condition `meta`, never from labels (D23–D25).
+- **Public portal:** `Public\*` controllers may read only `Service`, option lists, settings, and a customer's own `EventRequest` by its token. Never expose internal statuses, notes, staff or documents (D33). Public datetimes are Lagos time and are converted to UTC in the form request (D35).
+- **Workflow history** goes in `status_changes` (`HasStatusHistory`). Use `notes` and `documents` (`HasNotesAndDocuments`) for any record; register new document owners in `DocumentController::OWNERS`. Uploads are validated with `UploadRules` (content-sniffed).
 - **Option lists** are read through `app(App\Support\Lookups::class)` (scoped, not static). Records store the lookup `key`. Add new groups to `Lookups::GROUPS`.
 - **Strict models:** lazy loading is disabled outside production, so eager-load relations that views use.
 - **Money** is stored as integer kobo. Times are stored in UTC and displayed with `App\Support\Format` (Africa/Lagos).
-- **No hard-coded business lists.** Services, categories, locations, statuses and option lists belong in the database. Reference data is seeded idempotently by `InventoryReferenceSeeder` (safe in production); demo data uses `DEMO-` SKUs. The public home page's service list is a temporary exception until Phase 3.
+- **No hard-coded business lists.** Services, categories, locations, statuses and option lists belong in the database. Reference data is seeded idempotently by `ReferenceDataSeeder` (it calls each module's reference seeder and is safe in production; add new ones to it); demo data uses `DEMO-` SKUs.
 - **Nothing fake.** A module that isn't built appears only under "Coming next" in `App\Support\Navigation` (pass `planned(...)`), never as a working link or button.
 - **UI:** use the Blade components in `resources/views/components/ui` (button, badge, card, stat, page-header, input, select, textarea, modal, confirm, drawer, table, empty-state, skeleton) and the layouts `x-layouts.app|auth|public|error`. Wrap tables in `<x-ui.table>`, which scrolls on phones. Check every page at 390px wide with no horizontal scroll.
 - **PWA:** `public/sw.js` caches only `/build`, icons and `/offline`. Never cache HTML or JSON. Bump `VERSION` when the caching logic changes.

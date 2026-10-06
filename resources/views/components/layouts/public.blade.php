@@ -10,16 +10,18 @@
     <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <a href="{{ route('home') }}" aria-label="{{ config('nebo.brand.name') }} home"><x-ui.logo dark /></a>
         <nav class="hidden items-center gap-8 text-sm font-medium text-ink-200 md:flex" aria-label="Main">
-            <a href="#services" class="hover:text-white">Services</a>
-            <a href="#how" class="hover:text-white">How it works</a>
-            <a href="#contact" class="hover:text-white">Contact</a>
+            <a href="{{ route('home') }}#services" class="hover:text-white">Services</a>
+            <a href="{{ route('home') }}#how" class="hover:text-white">How it works</a>
+            <a href="{{ route('requests.track-form') }}" class="hover:text-white">Track a request</a>
+            <a href="{{ route('requests.create') }}" class="rounded-lg bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700">Request a production</a>
         </nav>
         <button type="button" class="rounded-lg p-2 text-white md:hidden" x-on:click="open = !open" :aria-expanded="open" aria-label="Menu"><x-ui.icon name="menu" /></button>
     </div>
     <div x-cloak x-show="open" x-transition class="mx-4 rounded-xl bg-ink-900 p-2 md:hidden">
-        <a href="#services" x-on:click="open = false" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">Services</a>
-        <a href="#how" x-on:click="open = false" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">How it works</a>
-        <a href="#contact" x-on:click="open = false" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">Contact</a>
+        <a href="{{ route('home') }}#services" x-on:click="open = false" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">Services</a>
+        <a href="{{ route('home') }}#how" x-on:click="open = false" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">How it works</a>
+        <a href="{{ route('requests.track-form') }}" class="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5">Track a request</a>
+        <a href="{{ route('requests.create') }}" class="block rounded-lg bg-brand-600 px-4 py-3 text-sm font-semibold text-white">Request a production</a>
     </div>
 </header>
 

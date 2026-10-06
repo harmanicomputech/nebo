@@ -52,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
+        // Public request form: generous for real people, hard on scripts.
+        RateLimiter::for('public-request', fn (Request $request) => [
+            Limit::perMinute(5)->by('req-m:'.$request->ip()),
+            Limit::perHour(20)->by('req-h:'.$request->ip()),
+        ]);
+
         RateLimiter::for('search', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
     }
 }

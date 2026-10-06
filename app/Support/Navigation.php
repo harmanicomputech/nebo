@@ -15,7 +15,7 @@ class Navigation
      * Working modules grouped into sections, then the planned modules the
      * user will get access to, kept apart so they never crowd out live links.
      *
-     * @return array{sections: list<array{label: string, items: list<array{label: string, icon: string, route: ?string, active: string, permission: ?string, phase: ?int}>}>, planned: list<array{label: string, icon: string, route: ?string, active: string, permission: ?string, phase: ?int}>}
+     * @return array{sections: list<array{label: string, items: list<array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}>}>, planned: list<array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}>}
      */
     public static function for(User $user): array
     {
@@ -25,7 +25,7 @@ class Navigation
                 self::planned('Calendar', 'calendar-days', 'events.view', 4),
             ]],
             ['label' => 'Operations', 'items' => [
-                self::planned('Requests', 'inbox', 'requests.view', 3),
+                self::item('Requests', 'inbox', 'app.requests.index', 'requests.view'),
                 self::planned('Events', 'calendar-range', 'events.view', 4),
                 self::planned('Availability', 'layers', 'allocation.view', 5),
                 self::planned('Load lists', 'clipboard-check', 'allocation.view', 5),
@@ -39,6 +39,7 @@ class Navigation
                 self::planned('Maintenance', 'wrench', 'maintenance.view', 6),
             ]],
             ['label' => 'Commercial', 'items' => [
+                self::item('Services', 'sparkles', 'app.settings.services', 'services.manage', 'app.settings.services*'),
                 self::planned('Customers', 'contact', 'customers.view', 8),
                 self::planned('Quotations', 'receipt', 'quotations.view', 8),
                 self::planned('Reports', 'chart-column', 'reports.view', 9),
@@ -47,7 +48,7 @@ class Navigation
                 self::item('Users', 'users', 'app.users.index', 'users.view'),
                 self::item('Roles & permissions', 'shield-check', 'app.roles.index', 'roles.view'),
                 self::item('Audit log', 'scroll-text', 'app.audit.index', 'audit.view'),
-                self::item('Settings', 'settings', 'app.settings.edit', 'settings.view', 'app.settings.*'),
+                self::item('Settings', 'settings', 'app.settings.edit', 'settings.view', ['app.settings.edit', 'app.settings.options*']),
             ]],
         ];
 
@@ -70,9 +71,9 @@ class Navigation
     }
 
     /**
-     * @return array{label: string, icon: string, route: ?string, active: string, permission: ?string, phase: ?int}
+     * @return array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}
      */
-    private static function item(string $label, string $icon, string $route, ?string $permission, ?string $active = null): array
+    private static function item(string $label, string $icon, string $route, ?string $permission, string|array|null $active = null): array
     {
         // A resource index (app.users.index) is active on all of app.users.*; anything else only on itself.
         $active ??= str_ends_with($route, '.index') ? substr($route, 0, -strlen('index')).'*' : $route;
@@ -81,7 +82,7 @@ class Navigation
     }
 
     /**
-     * @return array{label: string, icon: string, route: ?string, active: string, permission: ?string, phase: ?int}
+     * @return array{label: string, icon: string, route: ?string, active: string|list<string>, permission: ?string, phase: ?int}
      */
     private static function planned(string $label, string $icon, ?string $permission, int $phase): array
     {

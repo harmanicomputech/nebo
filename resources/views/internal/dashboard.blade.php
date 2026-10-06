@@ -31,6 +31,33 @@
         @endif
     </div>
 
+    @if ($requests)
+        <section class="mt-8" aria-labelledby="req-heading">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <h2 id="req-heading" class="text-lg font-semibold">Production requests</h2>
+                    <p class="text-sm text-ink-500">{{ $requests['open'] }} open · {{ $requests['mine'] }} assigned to you</p>
+                </div>
+                <x-ui.button variant="ghost" size="sm" icon-right="arrow-right" :href="route('app.requests.index')">All requests</x-ui.button>
+            </div>
+            <x-ui.card :padding="false">
+                @if ($requests['recent']->isEmpty())
+                    <x-ui.empty-state icon="inbox" title="No open requests" description="New requests from the public form will appear here." />
+                @else
+                    <ul class="divide-y divide-ink-100">
+                        @foreach ($requests['recent'] as $r)
+                            <li><a href="{{ route('app.requests.show', $r) }}" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 hover:bg-ink-50 sm:px-6">
+                                <span class="min-w-0 flex-1"><span class="block truncate font-semibold text-ink-900">{{ $r->event_name }}</span><span class="block text-xs text-ink-500">{{ $r->company ?: $r->contact_person }} · {{ \App\Support\Format::date($r->event_date) }}</span></span>
+                                <x-ui.badge :tone="$r->status->tone()">{{ $r->status->label() }}</x-ui.badge>
+                                <span class="w-20 text-right text-xs text-ink-400">{{ $r->created_at->diffForHumans(short: true) }}</span>
+                            </a></li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-ui.card>
+        </section>
+    @endif
+
     @if ($inventory)
         @php
             $g = $inventory['groups'];

@@ -14,6 +14,7 @@ class GlobalSearch
     public static function providers(): array
     {
         return [
+            RequestSearch::class,
             EquipmentSearch::class,
             AssetSearch::class,
             UserSearch::class,

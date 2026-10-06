@@ -8,10 +8,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([RolesAndPermissionsSeeder::class, InventoryReferenceSeeder::class]);
+        $this->call(ReferenceDataSeeder::class);
 
         if (! app()->isProduction()) {
-            $this->call([DemoUsersSeeder::class, InventoryDemoSeeder::class]);
+            $this->call([DemoUsersSeeder::class, InventoryDemoSeeder::class, BookingDemoSeeder::class]);
         }
     }
 }

@@ -14,9 +14,8 @@
                 Staging, rigging, lighting, LED screens, sound, video and livestreaming — engineered, delivered and run by one technical team, anywhere in Nigeria.
             </p>
             <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-                {{-- The request form goes live in Phase 3; until then enquiries go by email. --}}
-                <x-ui.button size="lg" :href="$company['email'] ? 'mailto:'.$company['email'].'?subject='.rawurlencode('Event production enquiry') : '#contact'" icon-right="arrow-right">Start a production enquiry</x-ui.button>
-                <p class="text-sm text-ink-400">Online production request form — <span class="font-semibold text-ink-200">coming soon</span></p>
+                <x-ui.button size="lg" :href="route('requests.create')" icon-right="arrow-right">Request a production</x-ui.button>
+                <a href="{{ route('requests.track-form') }}" class="text-sm font-semibold text-ink-300 hover:text-white">Already sent a request? Track it →</a>
             </div>
         </div>
     </section>
@@ -32,8 +31,8 @@
             <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($services as $service)
                     <li class="group flex items-center gap-4 rounded-2xl border border-ink-100 bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lift">
-                        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-ink-950 text-white transition group-hover:bg-brand-600"><x-ui.icon :name="$service['icon']" class="size-6" /></span>
-                        <span class="font-semibold text-ink-900">{{ $service['name'] }}</span>
+                        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-ink-950 text-white transition group-hover:bg-brand-600"><x-ui.icon :name="$service['icon'] ?: 'sparkles'" class="size-6" /></span>
+                        <span><span class="block font-semibold text-ink-900">{{ $service['name'] }}</span>@if ($service['description'])<span class="block text-xs text-ink-500">{{ $service['description'] }}</span>@endif</span>
                     </li>
                 @endforeach
             </ul>
@@ -73,7 +72,8 @@
                     </div>
                     <div class="flex flex-col gap-3 sm:flex-row">
                         @if ($company['email'])
-                            <x-ui.button size="lg" :href="'mailto:'.$company['email']" icon="mail">{{ $company['email'] }}</x-ui.button>
+                            <x-ui.button size="lg" :href="route('requests.create')" icon-right="arrow-right">Start your request</x-ui.button>
+                        <x-ui.button size="lg" variant="secondary" :href="'mailto:'.$company['email']" icon="mail">{{ $company['email'] }}</x-ui.button>
                         @endif
                         @if ($company['phone'])
                             <x-ui.button size="lg" variant="secondary" :href="'tel:'.preg_replace('/[^+0-9]/', '', $company['phone'])" icon="phone">{{ $company['phone'] }}</x-ui.button>

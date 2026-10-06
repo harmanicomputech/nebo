@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Internal\AuditLogController;
 use App\Http\Controllers\Internal\DashboardController;
+use App\Http\Controllers\Internal\DocumentController;
 use App\Http\Controllers\Internal\Inventory\AssetController;
 use App\Http\Controllers\Internal\Inventory\AssetStatusController;
 use App\Http\Controllers\Internal\Inventory\CategoryController;
@@ -16,11 +17,15 @@ use App\Http\Controllers\Internal\Inventory\StockController;
 use App\Http\Controllers\Internal\LookupController;
 use App\Http\Controllers\Internal\NotificationController;
 use App\Http\Controllers\Internal\ProfileController;
+use App\Http\Controllers\Internal\RequestController as InternalRequestController;
 use App\Http\Controllers\Internal\RoleController;
 use App\Http\Controllers\Internal\SearchController;
+use App\Http\Controllers\Internal\ServiceController;
 use App\Http\Controllers\Internal\SettingsController;
 use App\Http\Controllers\Internal\UserController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\RequestController;
+use App\Http\Controllers\Public\TrackingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +33,13 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', HomeController::class)->name('home');
 Route::view('/offline', 'public.offline')->name('offline');
+
+Route::get('/request', [RequestController::class, 'create'])->name('requests.create');
+Route::post('/request', [RequestController::class, 'store'])->middleware('throttle:public-request')->name('requests.store');
+Route::get('/request/received/{token}', [RequestController::class, 'received'])->name('requests.received');
+Route::get('/track', [TrackingController::class, 'form'])->name('requests.track-form');
+Route::post('/track', [TrackingController::class, 'lookup'])->middleware('throttle:10,1')->name('requests.track-lookup');
+Route::get('/track/{token}', [TrackingController::class, 'show'])->middleware('throttle:60,1')->name('requests.track');
 
 /*
 | Authentication
@@ -79,6 +91,22 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
 
     Route::get('/settings', [SettingsController::class, 'edit'])->middleware('can:settings.view')->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->middleware('can:settings.manage')->name('settings.update');
+    Route::middleware('can:services.manage')->group(function () {
+        Route::get('/settings/services', [ServiceController::class, 'index'])->name('settings.services');
+        Route::post('/settings/services', [ServiceController::class, 'store'])->name('settings.services.store');
+        Route::put('/settings/services/{service}', [ServiceController::class, 'update'])->name('settings.services.update');
+    });
+
+    Route::get('/requests', [InternalRequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/{request}', [InternalRequestController::class, 'show'])->name('requests.show');
+    Route::post('/requests/{request}/status', [InternalRequestController::class, 'status'])->name('requests.status');
+    Route::post('/requests/{request}/assign', [InternalRequestController::class, 'assign'])->name('requests.assign');
+    Route::post('/requests/{request}/notes', [InternalRequestController::class, 'note'])->name('requests.notes');
+
+    Route::get('/documents/{document}', [DocumentController::class, 'download'])->name('documents.download');
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+    Route::post('/documents/{type}/{id}', [DocumentController::class, 'store'])->whereNumber('id')->name('documents.store');
+
     Route::get('/settings/options/{group?}', [LookupController::class, 'index'])->middleware('can:settings.view')->name('settings.options');
     Route::post('/settings/options/{group}', [LookupController::class, 'store'])->middleware('can:settings.manage')->name('settings.options.store');
     Route::put('/settings/options/item/{lookup}', [LookupController::class, 'update'])->middleware('can:settings.manage')->name('settings.options.update');

@@ -1,4 +1,4 @@
-@props(['label' => null, 'name', 'type' => 'text', 'value' => null, 'hint' => null, 'required' => false, 'id' => null])
+@props(['label' => null, 'name', 'type' => 'text', 'value' => null, 'hint' => null, 'required' => false, 'id' => null, 'useOld' => true])
 @php
     $id ??= 'f-'.str_replace(['[', ']', '.'], '-', $name);
     $errorKey = str_replace(['[', ']'], ['.', ''], $name);
@@ -11,7 +11,7 @@
         </label>
     @endif
     <input id="{{ $id }}" name="{{ $name }}" type="{{ $type }}"
-        @if ($type !== 'password') value="{{ old($errorKey, $value) }}" @endif
+        @if ($type !== 'password') value="{{ $useOld ? old($errorKey, $value) : $value }}" @endif
         @if ($required) required @endif
         @if ($hasError) aria-invalid="true" aria-describedby="{{ $id }}-error" @elseif ($hint) aria-describedby="{{ $id }}-hint" @endif
         {{ $attributes->except('class')->merge(['class' => 'field'.($hasError ? ' field-error' : '')]) }}>

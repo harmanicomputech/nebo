@@ -21,6 +21,9 @@ class Lookups
         'condition' => 'Equipment condition grades',
         'location_type' => 'Location types',
         'unit' => 'Units of measure',
+        'event_type' => 'Event types',
+        'budget_range' => 'Budget ranges',
+        'document_category' => 'Document categories',
     ];
 
     /** @var array<string, Collection<int, Lookup>> */
