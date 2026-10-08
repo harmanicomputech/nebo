@@ -20,11 +20,11 @@
             @if ($sample)
                 @php
                     $c = $sample['counts'];
-                    $parts = collect(['events' => 'events', 'event_requests' => 'requests', 'customers' => 'customers', 'quotations' => 'quotations', 'equipment' => 'equipment items', 'assets' => 'units', 'logistics_trips' => 'trips', 'maintenance_records' => 'repair jobs', 'users' => 'sign-in accounts'])
+                    $parts = collect(['events' => 'events', 'event_requests' => 'requests', 'customers' => 'customers', 'quotations' => 'quotations', 'logistics_trips' => 'trips', 'maintenance_records' => 'repair jobs', 'users' => 'sign-in accounts'])
                         ->filter(fn ($label, $table) => ($c[$table] ?? 0) > 0)->map(fn ($label, $table) => number_format($c[$table]).' '.$label);
                 @endphp
                 <x-ui.card title="Sample data">
-                    <p class="text-sm text-ink-600">The system holds sample records for trying it out: {{ $parts->join(', ', ' and ') }}. Clearing removes all of them and everything they created; records you added yourself stay.</p>
+                    <p class="text-sm text-ink-600">The system holds sample records for trying it out: {{ $parts->join(', ', ' and ') }}. Clearing removes all of them and puts your equipment back as it was; records you added yourself stay.</p>
                     <details class="mt-3 text-sm">
                         <summary class="cursor-pointer font-semibold text-ink-800">Sample sign-in accounts</summary>
                         <p class="mt-2 text-xs text-ink-500">Password for all: <code class="rounded bg-ink-100 px-1.5 py-0.5 font-mono text-ink-800">{{ $sample['password'] }}</code></p>
@@ -44,9 +44,16 @@
                             confirm="Clear everything listed" icon="trash-2">Clear sample data and these records</x-ui.confirm>
                     @else
                         <x-ui.confirm class="mt-4 w-full" :action="route('app.settings.system.sample.clear')" method="DELETE" title="Clear all sample data?"
-                            message="Every sample event, request, customer, quote, item, trip, repair and sample account is deleted for good. Records you added yourself stay. Back up the database first if you might want it again."
+                            message="Every sample event, request, customer, quote, trip, repair and sample account is deleted for good, and your equipment, units and stock go back to how they were before the sample data was loaded. Records you added yourself stay."
                             confirm="Clear sample data" icon="trash-2">Clear sample data</x-ui.confirm>
                     @endif
+                </x-ui.card>
+            @else
+                <x-ui.card title="Sample data">
+                    <p class="text-sm text-ink-600">Load a year of realistic sample productions, customers, quotes, trips and repairs that use your own equipment, plus a sign-in account for every role, to try the system or train staff. Clear it all with one button when you are done; your equipment goes back exactly as it is now.</p>
+                    <x-ui.confirm class="mt-4 w-full" :action="route('app.settings.system.sample.load')" title="Load sample data?"
+                        message="This takes a minute or two; keep the page open. Sample people and customers never receive emails."
+                        confirm="Load sample data" variant="secondary" icon="flask-conical">Load sample data</x-ui.confirm>
                 </x-ui.card>
             @endif
 

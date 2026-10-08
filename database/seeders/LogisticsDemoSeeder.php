@@ -42,7 +42,7 @@ class LogisticsDemoSeeder extends Seeder
         }
 
         $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
-        auth()->login($admin);
+        auth()->setUser($admin);
         $main = Location::where('code', 'MAIN')->first();
         $driver = Staff::where('role', 'driver')->first();
         $crewMember = Staff::where('user_id', User::where('email', 'bayo.ogun@nebostage.com')->value('id'))->first();
@@ -71,6 +71,6 @@ class LogisticsDemoSeeder extends Seeder
                 'items' => $trips->manifestCandidates($jazz, TripDirection::Outbound)->modelKeys()]);
         }
 
-        auth()->logout();
+        auth()->forgetUser();
     }
 }

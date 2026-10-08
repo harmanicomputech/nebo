@@ -3,6 +3,7 @@
 <html lang="en" class="h-full">
 <head>
     @include('partials.head', ['title' => $title])
+    @stack('head')
     <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="has-tabbar h-full" x-data="{ more: false, search: false }" x-on:keydown.escape.window="more = false; search = false">

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Requests\Setup\InstallRequest;
+use App\Models\Equipment;
 use App\Models\User;
 use App\Services\System\InstallSteps;
 use App\Support\BackgroundTasks;
@@ -114,15 +115,17 @@ class InstallerTest extends TestCase
             'admin' => ['name' => 'Ada Obi', 'email' => 'Ada@Example.ng', 'password_hash' => Hash::make('Stage-Lights-2026'), 'company' => 'Nebo Stage Ltd'],
         ]];
 
-        $this->withSession($session)->get('/install/run')->assertOk()->assertSee('1 of 3 steps')->assertSee('http-equiv="refresh"', false);
-        $this->get('/install/run')->assertOk()->assertSee('2 of 3 steps');
-        $this->get('/install/run')->assertOk()->assertSee('3 of 3 steps');
+        $this->withSession($session)->get('/install/run')->assertOk()->assertSee('1 of 4 steps')->assertSee('http-equiv="refresh"', false);
+        $this->get('/install/run')->assertOk()->assertSee('2 of 4 steps');
+        $this->get('/install/run')->assertOk()->assertSee('3 of 4 steps');
+        $this->get('/install/run')->assertOk()->assertSee('4 of 4 steps');
         $this->get('/install/run')->assertRedirect(route('login'));
 
         $admin = User::where('email', 'ada@example.ng')->firstOrFail();
         $this->assertTrue($admin->hasRole(PermissionCatalog::SUPER_ADMIN));
         $this->assertTrue(Hash::check('Stage-Lights-2026', $admin->password));
         $this->assertFileExists(Installer::lockPath());
+        $this->assertSame(27, Equipment::count(), 'the stage and screen inventory is installed');
         $this->assertFalse(Installer::active());
         $this->get('/install')->assertNotFound();
         $this->get('/')->assertOk();

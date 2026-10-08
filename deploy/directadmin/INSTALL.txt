@@ -65,8 +65,13 @@ UPDATING TO A NEW VERSION
 
 SAMPLE DATA
    Settings → System → Clear sample data removes every sample record and
-   sample account in one go; anything you entered yourself stays. Sample
-   people and customers never receive emails.
+   sample account in one go, and puts your equipment back exactly as it
+   was; anything you entered yourself stays. "Load sample data" on the same
+   page brings it back. Sample people and customers never receive emails.
+
+YOUR INVENTORY
+   Your 2026 stage and LED screen inventory is installed automatically
+   (Inventory → Equipment). It is real data, not sample data.
 
 
 REINSTALLING (starting again with an empty database)

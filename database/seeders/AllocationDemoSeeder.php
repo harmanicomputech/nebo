@@ -23,12 +23,12 @@ class AllocationDemoSeeder extends Seeder
         }
 
         $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
-        auth()->login($admin);
+        auth()->setUser($admin);
         $item = fn (string $sku) => Equipment::where('sku', $sku)->firstOrFail();
 
-        // Today's town hall: allocated and dispatched.
+        // Today's town hall: a 6 m² screen and a small stage, allocated and dispatched.
         if ($today = Event::where('name', 'Marina Trust Town Hall')->first()) {
-            foreach ([['NS-ML-01', 4], ['NS-S4-03', 6], ['NS-CL-06', 1], ['NS-BLK-02', 20]] as [$sku, $qty]) {
+            foreach ([['LED-P391-L', 12], ['VID-VX600', 1], ['STG-PANEL', 16], ['STG-STAIR', 1], ['TRS-44-2M', 4], ['TRS-EGG', 32], ['TRS-PIN', 64]] as [$sku, $qty]) {
                 $requirements->set($today, $item($sku), $qty);
                 $item($sku)->isSerialized() ? $allocations->autoReserve($admin, $today, $item($sku), $qty) : $allocations->reserveBulk($admin, $today, $item($sku), $qty);
             }
@@ -37,9 +37,10 @@ class AllocationDemoSeeder extends Seeder
             $lists->dispatch($admin, $list->fresh());
         }
 
-        // Jazz weekend: partly allocated, load list being picked.
+        // Jazz weekend: outdoor stage with roof and screens, partly allocated, load list being picked.
         if ($jazz = Event::where('name', 'Lagos Jazz Weekend')->first()) {
-            foreach ([['NS-ML-01', 16, 12], ['NS-MW-02', 12, 12], ['NS-FS-04', 4, 4], ['NS-HST-10', 8, 8], ['NS-BLK-01', 40, 40], ['NS-GMA-05', 1, 0]] as [$sku, $need, $give]) {
+            foreach ([['LED-P391-S', 48, 40], ['LED-P391-L', 24, 24], ['VID-VX600', 2, 2], ['RIG-HOIST', 6, 4], ['TRS-46-3M', 16, 16], ['TRS-44-3M', 16, 16],
+                ['ROOF-TOP', 6, 6], ['ROOF-SLEEVE', 6, 6], ['ROOF-BASE', 6, 6], ['STG-PANEL', 40, 40], ['STG-STAIR', 2, 2], ['TRS-PIN', 600, 0]] as [$sku, $need, $give]) {
                 $requirements->set($jazz, $item($sku), $need);
                 if ($give) {
                     $item($sku)->isSerialized() ? $allocations->autoReserve($admin, $jazz, $item($sku), $give) : $allocations->reserveBulk($admin, $jazz, $item($sku), $give);
@@ -49,15 +50,15 @@ class AllocationDemoSeeder extends Seeder
             $list->items()->limit(10)->get()->each(fn ($i) => $lists->setItemStatus($admin, $i, LoadStatus::Picked));
         }
 
-        // Product launch: needs more moving lights than the fleet can serve.
+        // Product launch: wants a bigger screen than the 12 m² of small panels.
         if ($launch = Event::where('name', 'like', '%Volt Phone X%')->first()) {
-            $requirements->set($launch, $item('NS-ML-01'), 24, 'Full rig per lighting plot');
-            $allocations->autoReserve($admin, $launch, $item('NS-ML-01'), 20);
-            $requirements->set($launch, $item('NS-GMA-05'), 1);
-            $allocations->autoReserve($admin, $launch, $item('NS-GMA-05'), 1);
-            $requirements->set($launch, $item('NS-BLK-03'), 60);
+            $requirements->set($launch, $item('LED-P391-S'), 64, '16 m² centre screen; hire in the extra 4 m²');
+            $allocations->autoReserve($admin, $launch, $item('LED-P391-S'), 44);
+            $requirements->set($launch, $item('VID-VX600'), 2);
+            $allocations->autoReserve($admin, $launch, $item('VID-VX600'), 2);
+            $requirements->set($launch, $item('STG-PANEL'), 30);
         }
 
-        auth()->logout();
+        auth()->forgetUser();
     }
 }

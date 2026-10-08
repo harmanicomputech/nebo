@@ -25,7 +25,7 @@ class EventsDemoSeeder extends Seeder
         }
 
         $admin = User::where('email', 'ada.okafor@nebostage.com')->firstOrFail();
-        auth()->login($admin);
+        auth()->setUser($admin);
         $link = fn (string $email) => User::where('email', $email)->value('id');
 
         $crew = collect([
@@ -85,6 +85,6 @@ class EventsDemoSeeder extends Seeder
         $team->assign($next, $crew[1], 'lighting_technician');
         $team->assign($next, $crew[5], 'driver');
 
-        auth()->logout();
+        auth()->forgetUser();
     }
 }

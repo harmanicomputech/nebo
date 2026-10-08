@@ -27,6 +27,9 @@ class SampleData
     private const SEQUENCES = ['request' => 'event_requests', 'event' => 'events', 'quotation' => 'quotations',
         'load_list' => 'load_lists', 'maintenance' => 'maintenance_records', 'trip' => 'logistics_trips'];
 
+    /** Real records the sample activity changes (bookings, check-ins, repairs, day rates); snapshotted and restored (D73). */
+    private const SNAPSHOT = ['equipment', 'equipment_assets', 'stock_levels'];
+
     private static bool $recording = false;
 
     /** @var list<array{table_name: string, key_name: string, record_key: string}> */
@@ -37,6 +40,7 @@ class SampleData
     /** Runs the callback and notes every record it creates as sample data. */
     public static function record(callable $callback): mixed
     {
+        self::snapshot();
         self::$recording = true;
         self::$buffer = [];
         try {
@@ -51,6 +55,34 @@ class SampleData
             self::$buffer = [];
             self::$emails = null;
         }
+    }
+
+    /**
+     * Before the first sample record is created, keep a copy of the real
+     * equipment, units and stock so clearing can put them back exactly.
+     */
+    private static function snapshot(): void
+    {
+        if (DB::table('sample_records')->exists() || DB::table('sample_snapshots')->exists()) {
+            return;
+        }
+        foreach (self::SNAPSHOT as $table) {
+            DB::table($table)->orderBy('id')->chunk(500, fn ($rows) => DB::table('sample_snapshots')->insert(
+                $rows->map(fn ($row) => ['table_name' => $table, 'record_key' => (string) $row->id, 'data' => json_encode($row)])->all()
+            ));
+        }
+    }
+
+    /** Puts snapshotted real records back as they were (rows deleted since are left deleted). */
+    private static function restoreSnapshot(): void
+    {
+        DB::table('sample_snapshots')->orderBy('id')->chunk(500, function ($rows) {
+            foreach ($rows as $row) {
+                $data = collect(json_decode($row->data, true))->except(['id', 'created_at'])->all();
+                DB::table($row->table_name)->where('id', $row->record_key)->update($data);
+            }
+        });
+        DB::table('sample_snapshots')->delete();
     }
 
     /** Called for every Eloquent "created" event. */
@@ -184,6 +216,7 @@ class SampleData
                 }
 
                 DB::table('sample_records')->delete();
+                self::restoreSnapshot();
             });
         } catch (\Throwable $e) {
             report($e);

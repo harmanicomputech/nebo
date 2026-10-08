@@ -11,7 +11,6 @@ use App\Support\SampleData;
 use Database\Seeders\BookingDemoSeeder;
 use Database\Seeders\DemoUsersSeeder;
 use Database\Seeders\EventsDemoSeeder;
-use Database\Seeders\InventoryDemoSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -20,7 +19,7 @@ class SampleDataTest extends TestCase
 {
     private function loadSample(): void
     {
-        SampleData::record(fn () => $this->seed([DemoUsersSeeder::class, InventoryDemoSeeder::class, BookingDemoSeeder::class, EventsDemoSeeder::class]));
+        SampleData::record(fn () => $this->seed([DemoUsersSeeder::class, BookingDemoSeeder::class, EventsDemoSeeder::class]));
         session()->flush(); // the seeders sign in as the sample administrator while they work
     }
 

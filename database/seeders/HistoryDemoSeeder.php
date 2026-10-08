@@ -49,17 +49,25 @@ use Illuminate\Support\Str;
  */
 class HistoryDemoSeeder extends Seeder
 {
-    /** Day rates (₦) used to price the quotations. */
-    private const RATES = ['NS-ML-01' => 45000, 'NS-MW-02' => 35000, 'NS-S4-03' => 8000, 'NS-FS-04' => 25000, 'NS-GMA-05' => 150000, 'NS-CL-06' => 120000,
-        'NS-HZ-07' => 15000, 'NS-DIS-08' => 30000, 'NS-DIM-09' => 40000, 'NS-HST-10' => 20000, 'NS-COM-11' => 12000,
-        'NS-BLK-01' => 6000, 'NS-BLK-02' => 1500, 'NS-BLK-03' => 1000, 'NS-BLK-04' => 1000, 'NS-BLK-05' => 500, 'NS-BLK-06' => 2000];
+    /** Sample day rates (₦) for pricing quotations; written to the equipment while sample data is loaded (D71/D73). */
+    public const RATES = ['LED-P391-S' => 10000, 'LED-P391-L' => 20000, 'VID-VX600' => 60000, 'LED-HOOK' => 1000,
+        'TRS-46-3M' => 20000, 'TRS-46-2M' => 14000, 'TRS-46-1M' => 8000, 'TRS-44-3M' => 15000, 'TRS-44-2M' => 10000, 'TRS-44-1M5' => 8000, 'TRS-44-1M' => 6000,
+        'ROOF-SLEEVE' => 10000, 'ROOF-HINGE' => 2000, 'ROOF-TOP' => 15000, 'ROOF-BASE' => 8000, 'ROOF-SLANT' => 3000, 'ROOF-ADAPT' => 10000, 'ROOF-SLOPE' => 8000,
+        'RIG-HOIST' => 20000, 'RIG-STRAP' => 3000, 'TRS-FAST' => 1000, 'TRS-EGG' => 200, 'TRS-PIN' => 100,
+        'STG-RACK' => 10000, 'STG-BUCKLE' => 500, 'STG-PANEL' => 12000, 'STG-STAIR' => 15000];
 
     /** Kit per production size: [serialized SKU => units], [bulk SKU => quantity], crew, management fee (₦). */
     private const KITS = [
-        'small' => [['NS-S4-03' => 8, 'NS-CL-06' => 1, 'NS-COM-11' => 4], ['NS-BLK-02' => 20, 'NS-BLK-04' => 24], 4, 350000],
-        'medium' => [['NS-ML-01' => 8, 'NS-MW-02' => 6, 'NS-GMA-05' => 1, 'NS-CL-06' => 1, 'NS-HST-10' => 4, 'NS-HZ-07' => 1], ['NS-BLK-01' => 24, 'NS-BLK-02' => 60, 'NS-BLK-03' => 40, 'NS-BLK-05' => 16], 8, 650000],
-        'large' => [['NS-ML-01' => 16, 'NS-MW-02' => 10, 'NS-S4-03' => 12, 'NS-FS-04' => 2, 'NS-GMA-05' => 1, 'NS-CL-06' => 2, 'NS-HST-10' => 8, 'NS-DIS-08' => 2, 'NS-DIM-09' => 1, 'NS-COM-11' => 8],
-            ['NS-BLK-01' => 60, 'NS-BLK-02' => 120, 'NS-BLK-03' => 80, 'NS-BLK-04' => 60, 'NS-BLK-05' => 40, 'NS-BLK-06' => 12], 14, 1200000],
+        // Indoor: a 6 m² screen on a ground-stacked frame, small stage.
+        'small' => [['LED-P391-L' => 12, 'VID-VX600' => 1], ['TRS-44-2M' => 4, 'TRS-44-1M' => 2, 'TRS-EGG' => 24, 'TRS-PIN' => 48, 'STG-PANEL' => 12, 'STG-STAIR' => 1], 4, 350000],
+        // A 12 m² screen flown from truss, a mid-size stage.
+        'medium' => [['LED-P391-S' => 24, 'LED-P391-L' => 12, 'VID-VX600' => 1, 'RIG-HOIST' => 2],
+            ['TRS-44-3M' => 8, 'TRS-44-2M' => 6, 'TRS-44-1M' => 2, 'TRS-EGG' => 64, 'TRS-PIN' => 128, 'LED-HOOK' => 8, 'RIG-STRAP' => 2, 'STG-PANEL' => 24, 'STG-STAIR' => 1, 'STG-BUCKLE' => 12], 8, 650000],
+        // Outdoor: full stage with roof and the whole 24 m² of screen.
+        'large' => [['LED-P391-S' => 48, 'LED-P391-L' => 24, 'VID-VX600' => 2, 'RIG-HOIST' => 6],
+            ['TRS-46-3M' => 16, 'TRS-46-2M' => 2, 'TRS-44-3M' => 16, 'TRS-44-2M' => 12, 'TRS-44-1M' => 4, 'ROOF-SLEEVE' => 6, 'ROOF-HINGE' => 24, 'ROOF-TOP' => 6, 'ROOF-BASE' => 6,
+                'ROOF-SLANT' => 12, 'ROOF-SLOPE' => 4, 'ROOF-ADAPT' => 2, 'TRS-EGG' => 240, 'TRS-PIN' => 600, 'TRS-FAST' => 8, 'LED-HOOK' => 18, 'RIG-STRAP' => 6,
+                'STG-PANEL' => 50, 'STG-STAIR' => 2, 'STG-RACK' => 1, 'STG-BUCKLE' => 24], 14, 1200000],
     ];
 
     /** key => [company, contact, email, phone, type, city, state] */
@@ -181,7 +189,7 @@ class HistoryDemoSeeder extends Seeder
         $this->staff = Staff::query()->get()->keyBy('role')->all();
         $this->fleet = LogisticsDemoSeeder::fleet($this->staff['driver'] ?? null, $this->warehouse);
         $this->seq = $batch * self::BATCH_SIZE;
-        auth()->login($this->admin);
+        auth()->setUser($this->admin);
 
         try {
             foreach ($productions as $i => [$ago, $name, $type, $customer, $venue, $days, $size, $services, $damage]) {
@@ -203,7 +211,7 @@ class HistoryDemoSeeder extends Seeder
             }
         }
 
-        auth()->logout();
+        auth()->forgetUser();
     }
 
     /** One production from first enquiry to check-in. */
@@ -284,11 +292,11 @@ class HistoryDemoSeeder extends Seeder
         $damagedDone = false;
         foreach ($this->returns->outstanding($event->fresh()) as $allocation) {
             if ($allocation->asset_id) {
-                $broken = $damage && ! $damagedDone && $allocation->equipment->sku === 'NS-ML-01';
+                $broken = $damage && ! $damagedDone && $allocation->equipment->sku === 'LED-P391-S';
                 $damagedDone = $damagedDone || $broken;
-                $lines[$allocation->id] = ['include' => 1, 'outcome' => $broken ? 'damaged' : 'returned', 'note' => $broken ? 'Dropped during breakdown; lens cracked' : null];
+                $lines[$allocation->id] = ['include' => 1, 'outcome' => $broken ? 'damaged' : 'returned', 'note' => $broken ? 'Knocked during breakdown; corner modules cracked' : null];
             } else {
-                $missing = $damage && $allocation->equipment->sku === 'NS-BLK-02' ? 2 : 0;
+                $missing = $damage && $allocation->equipment->sku === 'TRS-PIN' ? 6 : 0;
                 $lines[$allocation->id] = ['include' => 1, 'returned' => $allocation->quantity - $missing, 'missing' => $missing, 'damaged' => 0];
             }
         }
@@ -303,8 +311,8 @@ class HistoryDemoSeeder extends Seeder
             $this->at($breakdown->addDays(2)->setTime(10, 0));
             $this->maintenance->start($this->admin, $job);
             $this->at($breakdown->addDays(4 + $i % 3)->setTime(15, 0));
-            $this->maintenance->complete($this->admin, $job->fresh(), ['work_done' => 'Replaced front lens and checked the optics; tested for 2 hours.', 'outcome_condition' => 'good',
-                'cost_kobo' => (85000 + 5000 * ($i % 4)) * 100, 'parts_used' => '1 × front lens assembly']);
+            $this->maintenance->complete($this->admin, $job->fresh(), ['work_done' => 'Replaced two LED modules and the receiving card; ran a full-white burn-in for 2 hours.', 'outcome_condition' => 'good',
+                'cost_kobo' => (85000 + 5000 * ($i % 4)) * 100, 'parts_used' => '2 × LED module 250 × 250, 1 × receiving card']);
         }
     }
 
@@ -353,7 +361,7 @@ class HistoryDemoSeeder extends Seeder
             'project_manager_id' => $this->pm->id]);
         $this->workflow->transition($this->pm, $event, EventStatus::Confirmed);
         $this->at($show->subDays(10));
-        $item = Equipment::where('sku', 'NS-CL-06')->firstOrFail();
+        $item = Equipment::where('sku', 'VID-VX600')->firstOrFail();
         $this->requirements->set($event, $item, 1);
         $this->allocations->autoReserve($this->pm, $event, $item, 1);
         $this->at($show->subDays(6));
@@ -377,12 +385,12 @@ class HistoryDemoSeeder extends Seeder
         $quote->update(['event_id' => $event->id]);
         $this->workflow->transition($this->pm, $event, EventStatus::Confirmed);
         $this->at(CarbonImmutable::now(config('nebo.display_timezone'))->addDay()->min($now->subDay()));
-        foreach (['NS-MW-02' => 6, 'NS-S4-03' => 8] as $sku => $qty) {
+        foreach (['LED-P391-L' => 12, 'VID-VX600' => 1] as $sku => $qty) {
             $item = Equipment::where('sku', $sku)->firstOrFail();
             $this->requirements->set($event, $item, $qty);
             $this->allocations->autoReserve($this->pm, $event, $item, $qty);
         }
-        $this->requirements->set($event, Equipment::where('sku', 'NS-BLK-02')->firstOrFail(), 40);
+        $this->requirements->set($event, Equipment::where('sku', 'STG-PANEL')->firstOrFail(), 20);
 
         // Quotation out, waiting for the client.
         $request = $this->enquiry($now->subDays(9), 'Kano Trade Fair 2027 Launch', 'festival', 'kanofair', 'Kano Trade Fair Complex, Kano', $now->addDays(75), 2, ['stage-staging', 'barricades', 'sound-audio-production', 'event-lighting']);
@@ -406,7 +414,7 @@ class HistoryDemoSeeder extends Seeder
             'services' => Service::whereIn('slug', $services)->pluck('id')->map(fn ($id) => (string) $id)->all(),
             'duration_days' => $days, 'setup_at' => $date->subDay()->setTime(9, 0)->utc()->toDateTimeString(),
             'has_existing_design' => false, 'budget_range' => $budget, 'submission_key' => (string) Str::uuid(),
-            'requirements' => 'Stage, lighting and sound for the audience size discussed on the phone; venue power to be confirmed on the site visit.',
+            'requirements' => 'Stage and LED screen for the audience size discussed on the phone; venue power and ground conditions to be confirmed on the site visit.',
         ]);
     }
 

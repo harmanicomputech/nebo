@@ -27,9 +27,9 @@ Open <http://localhost:8000> for the public site and <http://localhost:8000/app>
 
 ### Sample data (local only)
 
-`DatabaseSeeder` loads realistic sample data outside production: a sign-in account per role (password `NeboStage@2026`, e.g. `ada.okafor@nebostage.com` as Super Administrator), equipment with units and stock, about 40 production requests from 14 customers, 29 events (24 completed with load lists, trips, check-ins, damage and repairs), quotations in every state, upcoming bookings, maintenance and a fleet. It is built through the real services, so ledgers, timelines and audit history are consistent.
+`DatabaseSeeder` adds Nebo Stage's real 2026 stage and LED screen inventory (27 items, 81 tagged units; `InitialInventory`, D73) and then, outside production, realistic sample data that uses it: a sign-in account per role (password `NeboStage@2026`, e.g. `ada.okafor@nebostage.com` as Super Administrator), about 40 production requests from 14 customers, 29 events (24 completed with load lists, trips, check-ins, damage and repairs), quotations in every state, upcoming bookings, maintenance and a fleet. It is built through the real services, so ledgers, timelines and audit history are consistent.
 
-Nothing in it is labelled "demo". Instead every row it creates is noted in `sample_records`, and **Settings → System → Clear sample data** removes exactly those rows (plus, if you confirm, records of yours that use them), restarts reference numbers, and leaves everything else. Sample people and customers never receive email (D71).
+Nothing in it is labelled "demo". Instead every row it creates is noted in `sample_records`, and **Settings → System → Clear sample data** removes exactly those rows (plus, if you confirm, records of yours that use them), restarts reference numbers, puts the real equipment back exactly as it was, and leaves everything else. **Load sample data** on the same page brings it back. Sample people and customers never receive email (D71).
 
 ## Production setup
 

@@ -3,6 +3,7 @@
 namespace App\Services\System;
 
 use App\Models\User;
+use App\Services\Inventory\InitialInventory;
 use App\Support\Audit\Audit;
 use Database\Seeders\ReferenceDataSeeder;
 use Illuminate\Support\Facades\Artisan;
@@ -20,6 +21,7 @@ class SystemUpdater
     {
         @set_time_limit(300);
 
+        $added = 0;
         try {
             foreach ([
                 ['migrate', ['--force' => true]],
@@ -32,6 +34,8 @@ class SystemUpdater
                     throw new \RuntimeException(trim(Artisan::output()) ?: "{$command} failed.");
                 }
             }
+            // The company's own inventory (D73), added once.
+            $added = app(InitialInventory::class)->import();
         } catch (\Throwable $e) {
             Log::error('System update failed', ['exception' => $e]);
             Audit::record('system_update_failed', "{$by->name} ran the system update; it failed: ".str($e->getMessage())->limit(200));
@@ -41,6 +45,6 @@ class SystemUpdater
 
         Audit::record('system_updated', "{$by->name} applied the system update (migrations, reference data, caches)");
 
-        return ['ok' => true, 'message' => 'Update applied: the database and reference data are up to date.'];
+        return ['ok' => true, 'message' => 'Update applied: the database and reference data are up to date.'.($added ? " {$added} inventory items were added." : '')];
     }
 }

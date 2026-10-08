@@ -3,6 +3,7 @@
 namespace App\Services\System;
 
 use App\Models\User;
+use App\Services\Inventory\InitialInventory;
 use App\Support\Audit\Audit;
 use App\Support\Permissions\PermissionCatalog;
 use App\Support\SampleData;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class InstallSteps
 {
-    private const LABELS = ['DemoUsersSeeder' => 'sign-in accounts', 'InventoryDemoSeeder' => 'equipment', 'BookingDemoSeeder' => 'enquiries',
+    private const LABELS = ['DemoUsersSeeder' => 'sign-in accounts', 'BookingDemoSeeder' => 'enquiries',
         'EventsDemoSeeder' => 'crew and events', 'AllocationDemoSeeder' => 'equipment bookings', 'MaintenanceDemoSeeder' => 'repairs and servicing',
         'LogisticsDemoSeeder' => 'fleet and trips', 'CommercialDemoSeeder' => 'packages and quotations'];
 
@@ -33,6 +34,7 @@ class InstallSteps
         $steps = [
             ['key' => 'migrate', 'label' => 'Creating the database tables'],
             ['key' => 'reference', 'label' => 'Adding roles, permissions and reference data'],
+            ['key' => 'inventory', 'label' => 'Adding your stage and LED screen inventory'],
             ['key' => 'admin', 'label' => 'Creating your administrator account'],
         ];
 
@@ -62,6 +64,7 @@ class InstallSteps
         match (true) {
             $key === 'migrate' => $this->artisan('migrate', ['--force' => true]),
             $key === 'reference' => $this->artisan('db:seed', ['--class' => ReferenceDataSeeder::class, '--force' => true]),
+            $key === 'inventory' => app(InitialInventory::class)->import(),
             $key === 'admin' => $this->createAdmin($admin),
             str_starts_with($key, 'history:') => DB::transaction(fn () => SampleData::record(fn () => app(HistoryDemoSeeder::class)->runBatch((int) substr($key, 8)))),
             str_starts_with($key, 'demo:') => $this->demo(substr($key, 5)),
