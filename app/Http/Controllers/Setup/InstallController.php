@@ -59,10 +59,9 @@ class InstallController extends Controller
         ]);
 
         $request->session()->put('install', [
-            'steps' => app(InstallSteps::class)->plan($request->boolean('demo')),
+            'steps' => app(InstallSteps::class)->plan(),
             'done' => 0,
             'admin' => ['name' => $data['admin_name'], 'email' => $data['admin_email'], 'password_hash' => Hash::make($data['admin_password']), 'company' => $data['company'] ?? null],
-            'demo' => $request->boolean('demo'),
         ]);
 
         return redirect()->route('install.run');
@@ -81,8 +80,7 @@ class InstallController extends Controller
             Installer::lock();
             $request->session()->forget('install');
 
-            return redirect()->route('login')->with('status', 'Nebo Stage is installed. Sign in with the administrator account you just created.'
-                .($install['demo'] ? ' Sample data is loaded; clear it any time in Settings → System.' : ''));
+            return redirect()->route('login')->with('status', 'Nebo Stage is installed. Sign in with the administrator account you just created.');
         }
 
         $lock = Cache::lock('nebo:install', 310);

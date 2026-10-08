@@ -2,14 +2,14 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`). The logo is monochrome: always use `<x-ui.logo>` (`dark` for the white version on dark backgrounds, `compact` for the mark only); its artwork is `resources/brand/nebo-stage.png` and `php scripts/generate-icons.php` rebuilds the icons and email PNGs (D68).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D73), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D74), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
 - `php artisan test`: run the suite. CI runs it on PHP 8.3/8.4 with SQLite and on MySQL 8.
 - `vendor/bin/pint`: format. CI runs `pint --test`.
 - `npm run build`: build assets. Fonts come from `@fontsource` and are bundled; never add a font CDN.
-- `php artisan migrate:fresh --seed`: reset local data with sample data (`ada.okafor@nebostage.com` / `NeboStage@2026`). Settings → System clears it.
+- `php artisan migrate:fresh --seed` then `php artisan nebo:create-admin`: reset local data (reference data and the real inventory; there is no sample data, D74).
 - `php artisan nebo:check-production`: pre-flight check for a live server. Deployment steps are in `docs/DEPLOYMENT.md`.
 - `scripts/build-directadmin.sh`: build the no-terminal upload zip (browser installer at `/install`, D69). Never commit the zip.
 
@@ -34,7 +34,7 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D73), `docs/DATABASE.md` and `docs/R
 - **Option lists** are read through `app(App\Support\Lookups::class)` (scoped, not static). Records store the lookup `key`. Add new groups to `Lookups::GROUPS`.
 - **Strict models:** lazy loading is disabled outside production, so eager-load relations that views use.
 - **Money** is stored as integer kobo. Times are stored in UTC and displayed with `App\Support\Format` (Africa/Lagos).
-- **No hard-coded business lists.** Services, categories, locations, statuses and option lists belong in the database. Reference data is seeded idempotently by `ReferenceDataSeeder` (it calls each module's reference seeder and is safe in production; add new ones to it); sample data (the `*DemoSeeder` classes) looks like real data with no "demo" labels and is tracked in `sample_records` by `SampleData::record()`, so `SampleData::clear()` can remove it (D71). Run new sample seeders inside `SampleData::record()` and use realistic names, never placeholder text. The real equipment comes from `InitialInventory` (D73), never from a sample seeder; sample seeders book, check in and repair that real equipment, and the clear restores it from `sample_snapshots`. In seeders use `auth()->setUser()` / `forgetUser()`, never `login()` / `logout()`.
+- **No hard-coded business lists.** Services, categories, locations, statuses and option lists belong in the database. Reference data is seeded idempotently by `ReferenceDataSeeder` (it calls each module's reference seeder and is safe in production; add new ones to it); the real equipment comes from `InitialInventory` (D73). The system is live: there is no sample data or sample seeder (D74). `SampleData` and the Clear sample data button remain only to remove sample records left on installs from before going live; don't add sample data back.
 - **Nothing fake.** A module that isn't built appears only under "Coming next" in `App\Support\Navigation` (pass `planned(...)`), never as a working link or button.
 - **UI:** use the Blade components in `resources/views/components/ui` (button, badge, card, stat, page-header, input, select, textarea, modal, confirm, drawer, table, empty-state, skeleton) and the layouts `x-layouts.app|auth|public|error`. Wrap tables in `<x-ui.table>`: on phones its rows become labelled cards (first column is the card title; `:stack="false"` for grids). Mark list filter forms `data-filters` (the search field's wrapper first) so phones collapse them. Phones use the app shell (top bar, bottom tabs, More sheet; D70); new top-level modules go in `Navigation`, and in `Navigation::TAB_PRIORITY` only if they deserve a tab. Check every page at 390px wide with no horizontal scroll, and at 1440px.
 - **PWA:** `public/sw.js` caches only `/build`, icons, `/images/brand` and `/offline`. Never cache HTML or JSON. Bump `VERSION` when the caching logic changes.

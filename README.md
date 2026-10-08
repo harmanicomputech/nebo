@@ -18,22 +18,23 @@ npm install
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite        # or set DB_* for MySQL
-php artisan migrate --seed            # roles, permissions, reference data and removable sample data
+php artisan migrate --seed            # roles, permissions, reference data and the real inventory
+php artisan nebo:create-admin         # your first Super Administrator
 npm run build                         # or: npm run dev
 php artisan serve
 ```
 
 Open <http://localhost:8000> for the public site and <http://localhost:8000/app> for the operations system.
 
-### Sample data (local only)
+### Data
 
-`DatabaseSeeder` adds Nebo Stage's real 2026 stage and LED screen inventory (27 items, 81 tagged units; `InitialInventory`, D73) and then, outside production, realistic sample data that uses it: a sign-in account per role (password `NeboStage@2026`, e.g. `ada.okafor@nebostage.com` as Super Administrator), about 40 production requests from 14 customers, 29 events (24 completed with load lists, trips, check-ins, damage and repairs), quotations in every state, upcoming bookings, maintenance and a fleet. It is built through the real services, so ledgers, timelines and audit history are consistent.
+The system ships with roles, permissions, reference data and Nebo Stage's real 2026 stage and LED screen inventory (27 items, 81 tagged units; `InitialInventory`, D73). There is no sample data (D74). Create the first administrator with `php artisan nebo:create-admin` (the web installer asks for one).
 
-Nothing in it is labelled "demo". Instead every row it creates is noted in `sample_records`, and **Settings → System → Clear sample data** removes exactly those rows (plus, if you confirm, records of yours that use them), restarts reference numbers, puts the real equipment back exactly as it was, and leaves everything else. **Load sample data** on the same page brings it back. Sample people and customers never receive email (D71).
+Installs from before going live may still hold sample records; **Settings → System → Clear sample data** removes them, restores the inventory and then disappears.
 
 ## Production setup
 
-**Shared hosting with no terminal (DirectAdmin, cPanel):** run `scripts/build-directadmin.sh` to build `nebo-stage-directadmin.zip`, extract it next to `public_html`, open the site and complete the browser installer (optionally with sample data you can clear later). Updates are applied from **Settings → System**. Step-by-step: `deploy/directadmin/INSTALL.txt`.
+**Shared hosting with no terminal (DirectAdmin, cPanel):** run `scripts/build-directadmin.sh` to build `nebo-stage-directadmin.zip`, extract it next to `public_html`, open the site and complete the browser installer. Updates are applied from **Settings → System**. Step-by-step: `deploy/directadmin/INSTALL.txt`.
 
 Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). With a terminal:
 
@@ -78,6 +79,6 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Hardening: strict security headers and CSP, an automated access audit of every route, WCAG AA colour contrast, tuned queries and a production readiness check.
 - On phones it works like an installed app: bottom tab bar with role-aware tabs, a More menu, full-screen search, list rows as cards, bottom-sheet dialogs. The desktop layout is unchanged.
 - Every tap shows feedback and can't be submitted twice.
-- Installs on shared hosting with no terminal: an upload zip, a browser installer with optional sample data (cleared with one button), updates from Settings → System, and background jobs without cron.
+- Installs on shared hosting with no terminal: an upload zip, a browser installer, updates from Settings → System, and background jobs without cron.
 
 The sidebar lists every module still to come under **Coming next**. Those modules are not active yet; see the roadmap.

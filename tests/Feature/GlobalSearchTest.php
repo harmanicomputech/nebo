@@ -9,7 +9,7 @@ class GlobalSearchTest extends TestCase
 {
     public function test_results_are_grouped_by_type(): void
     {
-        $admin = $this->superAdmin();
+        $admin = $this->superAdmin(['name' => 'Ada Admin']); // a fixed name, so a random one can't match the search
         User::factory()->create(['name' => 'Olumide Rigger']);
 
         $this->actingAs($admin)->getJson('/app/search?q=Olumide')

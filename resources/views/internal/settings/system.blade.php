@@ -48,13 +48,6 @@
                             confirm="Clear sample data" icon="trash-2">Clear sample data</x-ui.confirm>
                     @endif
                 </x-ui.card>
-            @else
-                <x-ui.card title="Sample data">
-                    <p class="text-sm text-ink-600">Load a year of realistic sample productions, customers, quotes, trips and repairs that use your own equipment, plus a sign-in account for every role, to try the system or train staff. Clear it all with one button when you are done; your equipment goes back exactly as it is now.</p>
-                    <x-ui.confirm class="mt-4 w-full" :action="route('app.settings.system.sample.load')" title="Load sample data?"
-                        message="This takes a minute or two; keep the page open. Sample people and customers never receive emails."
-                        confirm="Load sample data" variant="secondary" icon="flask-conical">Load sample data</x-ui.confirm>
-                </x-ui.card>
             @endif
 
             <x-ui.card title="Apply an update">

@@ -33,17 +33,11 @@ certificate (https) for the domain.
      and the email settings (an email account you created in DirectAdmin →
      E-mail Manager works: server mail.YOURDOMAIN.COM, port 587 or 465,
      the full email address and its password).
-   - Tick "Load sample data" to try the system with a year of realistic
-     productions, customers, equipment, quotes and trips. You can clear it
-     all later with one button (see "Sample data" below).
-   Keep the page open while it works (1–5 minutes). It ends at the
+   Keep the page open while it works (about a minute). It ends at the
    sign-in page.
 
 5. SIGN IN
    Use the administrator email and password you entered.
-   With sample data, every role also has a sample account (for example
-   ada.okafor@nebostage.com, Super Administrator). Settings → System lists
-   them all with their password.
    Then open Settings → General and enter the real company details.
    Settings → System shows a readiness check.
 
@@ -63,15 +57,9 @@ UPDATING TO A NEW VERSION
    3. Sign in and open Settings → System → Apply update.
 
 
-SAMPLE DATA
-   Settings → System → Clear sample data removes every sample record and
-   sample account in one go, and puts your equipment back exactly as it
-   was; anything you entered yourself stays. "Load sample data" on the same
-   page brings it back. Sample people and customers never receive emails.
-
 YOUR INVENTORY
    Your 2026 stage and LED screen inventory is installed automatically
-   (Inventory → Equipment). It is real data, not sample data.
+   (Inventory → Equipment).
 
 
 REINSTALLING (starting again with an empty database)

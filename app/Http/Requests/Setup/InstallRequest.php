@@ -33,7 +33,6 @@ class InstallRequest extends FormRequest
             'mail_username' => ['nullable', 'string', 'max:255'],
             'mail_password' => ['nullable', 'string', 'max:255'],
             'mail_from' => ['nullable', 'email', 'max:255'],
-            'demo' => ['boolean'],
         ];
     }
 

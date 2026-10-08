@@ -69,14 +69,4 @@ class InitialInventoryTest extends TestCase
         $this->assertNull($pins->fresh()->day_rate_kobo);
         $this->assertSame(0, DB::table('sample_snapshots')->count());
     }
-
-    public function test_sample_data_can_be_loaded_from_the_system_page(): void
-    {
-        $owner = $this->superAdmin();
-
-        $this->actingAs($owner)->post(route('app.settings.system.sample.load'))->assertRedirect(route('app.settings.system.sample.run'));
-        $this->get(route('app.settings.system.sample.run'))->assertOk()->assertSee('1 of');
-        $this->assertTrue(SampleData::exists());
-        $this->assertAuthenticatedAs($owner);
-    }
 }

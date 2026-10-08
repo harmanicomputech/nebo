@@ -45,7 +45,6 @@ class InstallerTest extends TestCase
             'db_host' => 'localhost', 'db_port' => 3306, 'db_database' => 'nebo', 'db_username' => 'nebo', 'db_password' => 'p@ss "$word',
             'admin_name' => 'Ada Obi', 'admin_email' => 'ada@example.ng', 'admin_password' => 'Stage-Lights-2026', 'admin_password_confirmation' => 'Stage-Lights-2026',
             'mail_mailer' => 'smtp', 'mail_host' => 'mail.example.ng', 'mail_port' => 465, 'mail_username' => 'bookings@example.ng', 'mail_password' => 'secret', 'mail_from' => '',
-            'demo' => 0,
         ], $overrides);
     }
 
@@ -61,7 +60,7 @@ class InstallerTest extends TestCase
 
         $this->get('/')->assertRedirect('/install');
         $this->get('/app')->assertRedirect('/install');
-        $this->get('/install')->assertOk()->assertSee('Install Nebo Stage')->assertSee('Server check')->assertSee('checks passed');
+        $this->get('/install')->assertOk()->assertSee('Install Nebo Stage')->assertSee('Server check')->assertDontSee('sample data')->assertSee('checks passed');
     }
 
     public function test_bad_database_details_are_reported(): void
@@ -78,7 +77,7 @@ class InstallerTest extends TestCase
         config(['nebo.installer' => true]);
         $this->app->bind(InstallRequest::class, ConnectingInstallRequest::class);
 
-        $this->post('/install', $this->payload(['demo' => 1]))->assertRedirect(route('install.run'));
+        $this->post('/install', $this->payload())->assertRedirect(route('install.run'));
 
         $env = Dotenv::parse(file_get_contents($this->dir.'/.env'));
         $this->assertSame('https://ops.example.ng', $env['APP_URL']);
@@ -91,7 +90,7 @@ class InstallerTest extends TestCase
 
         $install = session('install');
         $this->assertTrue(Hash::check('Stage-Lights-2026', $install['admin']['password_hash']));
-        $this->assertContains('history:0', array_column($install['steps'], 'key'));
+        $this->assertSame(['migrate', 'reference', 'inventory', 'admin'], array_column($install['steps'], 'key'));
     }
 
     public function test_email_can_be_left_for_later(): void
@@ -111,7 +110,7 @@ class InstallerTest extends TestCase
     {
         config(['nebo.installer' => true]);
         $session = ['install' => [
-            'steps' => app(InstallSteps::class)->plan(false), 'done' => 0, 'demo' => false,
+            'steps' => app(InstallSteps::class)->plan(), 'done' => 0,
             'admin' => ['name' => 'Ada Obi', 'email' => 'Ada@Example.ng', 'password_hash' => Hash::make('Stage-Lights-2026'), 'company' => 'Nebo Stage Ltd'],
         ]];
 

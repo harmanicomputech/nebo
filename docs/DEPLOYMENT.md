@@ -25,7 +25,7 @@ php artisan optimize
 php artisan nebo:check-production        # must end with "Ready for production."
 ```
 
-In production run only `db:seed --class=ReferenceDataSeeder`. Sample data (loaded by the default seeder outside production, or by the installer when ticked) is cleared from **Settings → System → Clear sample data**; `nebo:check-production` fails while it is loaded.
+`db:seed` adds roles, permissions, reference data and the real inventory (once); it is safe in production. There is no sample data (D74). Installs from before go-live that still hold sample records clear them from **Settings → System → Clear sample data**; `nebo:check-production` fails until they do.
 
 ## Environment
 
@@ -50,11 +50,11 @@ Then sign in and set the real company name, email, phone and address under **Set
 - `public_html/`: the web root. Its `index.php` finds the app at `../nebo` (edit `$appPath` for subdomains), shows a plain message if PHP is older than 8.3, and on the first visit writes `.env` with a fresh key;
 - `INSTALL.txt`: the owner's step-by-step guide.
 
-The browser installer (`/install`, D69) checks PHP and folders, tests the database login, writes `.env` (production, HTTPS cookies when the URL is https, mail settings), then runs migrations, reference data, the administrator account and, if ticked, the demo data, one short step per page load (the longest about 15 s on MariaDB). A failed step shows the error and a retry button. When it finishes it writes `storage/app/installed.lock` and turns itself off; to reinstall, empty the database and delete that file and `.env`.
+The browser installer (`/install`, D69) checks PHP and folders, tests the database login, writes `.env` (production, HTTPS cookies when the URL is https, mail settings), then runs migrations, reference data, the administrator account one short step per page load (the longest about 15 s on MariaDB). A failed step shows the error and a retry button. When it finishes it writes `storage/app/installed.lock` and turns itself off; to reinstall, empty the database and delete that file and `.env`.
 
 To update: back up the database, extract the new zip over the old files (`.env`, uploads and the lock are kept), then **Settings → System → Apply update**, which runs migrations and the reference seeder and clears compiled caches.
 
-Tested end to end on Apache 2.4 + mod_php 8.3 + MariaDB 10.11 with a DirectAdmin-style layout, including the sample data (20 steps, about 70 s).
+Tested end to end on Apache 2.4 + mod_php 8.3 + MariaDB 10.11 with a DirectAdmin-style layout. The install takes four steps and under a minute.
 
 ## Scheduler and queue (one cron line)
 
