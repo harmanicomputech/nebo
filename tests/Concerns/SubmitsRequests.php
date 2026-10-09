@@ -23,7 +23,7 @@ trait SubmitsRequests
             'venue' => 'Eko Hotel, Lagos',
             'phone' => '0803 123 4567',
             'email' => 'Jane@Example.com',
-            'services' => [(string) Service::where('slug', 'event-lighting')->value('id'), (string) Service::where('slug', 'stage-rigging')->value('id')],
+            'services' => [(string) Service::where('slug', 'event-lighting')->value('id'), (string) Service::where('slug', 'stage-staging')->value('id')],
             'requirements' => 'Stage 12m x 8m, two LED screens, wash lighting, PA for 500 guests.',
             'duration_days' => 1,
             'setup_at' => now($tz)->addDays(29)->setTime(10, 0)->format('Y-m-d\TH:i'),

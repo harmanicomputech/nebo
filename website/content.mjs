@@ -67,13 +67,15 @@ export const steps = [
 ];
 
 /**
- * Services. `slug` matches the app's service slugs so "Book this service"
- * opens the request form with it ticked.
+ * Services. "Book this service" opens the app's request form with the service
+ * ticked, using `bookingSlug` when the app's slug differs from `slug`.
  */
 export const services = [
     {
         slug: 'stage-rigging',
         name: 'Stage & Rigging',
+        // The booking app still lists this service under its original slug.
+        bookingSlug: 'stage-staging',
         short: 'Stages, risers, decks and catwalks of any size, with roofed outdoor stages rigged on truss.',
         tagline: 'The platform every great moment stands on.',
         hero: 'mobile-stage-roof',

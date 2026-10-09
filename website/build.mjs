@@ -403,7 +403,7 @@ function servicePage(s, i) {
     const body = `${pageHero({
         eyebrowText: `Service ${pad(i + 1)} / ${pad(services.length)}`, title: s.name, lead: s.tagline, image: s.hero,
         crumbs: [['/services/', 'Services'], [null, s.name]],
-        actions: button(requestUrl(s.slug), 'Book this service') + (items.length || work.length ? button('#work', 'See the work', { variant: 'ghost', ico: 'arrow-down' }) : button(waUrl(`Hello Nebo Stage, I would like to ask about ${s.name}.`), 'Ask on WhatsApp', { variant: 'ghost', ico: 'whatsapp', external: true })),
+        actions: button(requestUrl(s.bookingSlug ?? s.slug), 'Book this service') + (items.length || work.length ? button('#work', 'See the work', { variant: 'ghost', ico: 'arrow-down' }) : button(waUrl(`Hello Nebo Stage, I would like to ask about ${s.name}.`), 'Ask on WhatsApp', { variant: 'ghost', ico: 'whatsapp', external: true })),
     })}
 
 <section class="section">
@@ -417,7 +417,7 @@ function servicePage(s, i) {
             <div class="aside-card">
                 <h3>Perfect for</h3>
                 <ul class="checks">${s.perfectFor.map((t) => `<li>${icon('check')}${esc(t)}</li>`).join('')}</ul>
-                ${button(requestUrl(s.slug), 'Request a quotation', { cls: 'btn--block' })}
+                ${button(requestUrl(s.bookingSlug ?? s.slug), 'Request a quotation', { cls: 'btn--block' })}
                 <a href="${telUrl}" class="aside-card__phone">${icon('phone')} ${site.phone}</a>
             </div>
         </aside>

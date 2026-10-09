@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Production services (Stage & Rigging, LED Screens, …). Data, not code.
+        // Production services (Stage & Staging, LED Screens, …). Data, not code.
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('name', 120);

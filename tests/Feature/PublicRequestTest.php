@@ -36,10 +36,10 @@ class PublicRequestTest extends TestCase
 
     public function test_the_website_can_link_to_the_form_with_services_ticked(): void
     {
-        $stage = Service::where('slug', 'stage-rigging')->firstOrFail();
+        $stage = Service::where('slug', 'stage-staging')->firstOrFail();
         $screens = Service::where('slug', 'led-screens-displays')->firstOrFail();
 
-        $this->get('/request?service=stage-rigging,led-screens-displays,not-a-service')->assertOk()
+        $this->get('/request?service=stage-staging,led-screens-displays,not-a-service')->assertOk()
             ->assertViewHas('preselected', [(string) $stage->id, (string) $screens->id]);
         $this->get('/request')->assertOk()->assertViewHas('preselected', []);
     }

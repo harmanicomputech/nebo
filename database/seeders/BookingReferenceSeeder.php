@@ -16,7 +16,7 @@ class BookingReferenceSeeder extends Seeder
     public function run(): void
     {
         $services = [
-            ['Stage & Rigging', 'panels-top-left', 'Stages, risers, decks and catwalks of any size, rigged on truss.'],
+            ['Stage & Staging', 'panels-top-left', 'Stages, risers, decks and catwalks of any size.'],
             ['Trussing & Rigging', 'route', 'Ground support, flown truss and certified rigging.'],
             ['Barricades', 'shield', 'Front-of-stage and crowd-control barriers.'],
             ['Event Lighting', 'lightbulb', 'Moving lights, washes, followspots and lighting design.'],
@@ -26,9 +26,6 @@ class BookingReferenceSeeder extends Seeder
             ['Livestreaming', 'radio', 'Live broadcast to any platform.'],
             ['Full Event Production', 'sparkles', 'End-to-end technical production, planned and run by one team.'],
         ];
-
-        // The first service was renamed from "Stage & Staging"; rename it in place unless an admin already changed it.
-        Service::where('slug', 'stage-staging')->where('name', 'Stage & Staging')->update(['name' => 'Stage & Rigging', 'slug' => 'stage-rigging']);
 
         foreach ($services as $i => [$name, $icon, $description]) {
             Service::firstOrCreate(['slug' => Str::slug($name)], [
