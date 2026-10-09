@@ -420,6 +420,168 @@ window.addEventListener('pageshow', (e) => {
     if (e.persisted) resetBusy();
 });
 
+/*
+ | Real-time notifications (D75).
+ |
+ | - Open pages ask the server what's new every 15 seconds (and straight
+ |   away when the tab comes back into view): the bells update and each new
+ |   notification pops up as a card.
+ | - With notifications turned on for the device, the service worker shows
+ |   a system notification even when the app is closed; if a page is open
+ |   and in front, it shows the card instead.
+ */
+const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && window.isSecureContext;
+
+const keyBytes = (base64) => {
+    const padded = (base64 + '='.repeat((4 - (base64.length % 4)) % 4)).replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+};
+
+const popups = (() => {
+    const shown = new Set();
+    let stack;
+    const container = () => {
+        if (!stack) {
+            stack = document.createElement('div');
+            stack.className = 'notify-stack';
+            stack.setAttribute('aria-live', 'polite');
+            document.body.appendChild(stack);
+        }
+        return stack;
+    };
+    return {
+        show(item) {
+            if (!item?.id || shown.has(item.id)) return;
+            shown.add(item.id);
+            const card = document.createElement('a');
+            card.className = `notify-card notify-${item.level || 'info'}`;
+            card.href = item.url || '#';
+            const icon = document.createElement('span');
+            icon.className = 'notify-icon';
+            icon.innerHTML = '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>';
+            const text = document.createElement('span');
+            text.className = 'notify-text';
+            const title = document.createElement('strong');
+            title.textContent = item.title || 'Notification';
+            const body = document.createElement('span');
+            body.textContent = item.body || '';
+            text.append(title, body);
+            const close = document.createElement('button');
+            close.type = 'button';
+            close.className = 'notify-close';
+            close.setAttribute('aria-label', 'Dismiss');
+            close.textContent = '×';
+            close.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); remove(); });
+            card.append(icon, text, close);
+            const remove = () => { card.classList.add('notify-out'); setTimeout(() => card.remove(), 200); };
+            const box = container();
+            box.prepend(card);
+            [...box.children].slice(3).forEach((old) => old.remove());
+            setTimeout(remove, 9000);
+            if (navigator.vibrate && document.visibilityState === 'visible') navigator.vibrate(40);
+        },
+    };
+})();
+
+const notifier = (() => {
+    const body = document.body;
+    if (!body.dataset.pollUrl) return null;
+    let since = body.dataset.pollSince;
+    let stopped = false;
+
+    const setBadges = (count) => {
+        document.querySelectorAll('[data-unread-badge]').forEach((b) => {
+            b.textContent = b.hasAttribute('data-full') || count < 10 ? String(count) : '9+';
+            b.hidden = count === 0;
+        });
+    };
+
+    const poll = async () => {
+        if (stopped || document.visibilityState !== 'visible') return;
+        try {
+            const res = await fetch(`${body.dataset.pollUrl}?since=${encodeURIComponent(since)}`, { headers: { Accept: 'application/json' }, credentials: 'same-origin', cache: 'no-store' });
+            if (res.status === 401 || res.status === 419) { stopped = true; return; }
+            if (!res.ok) return;
+            const data = await res.json();
+            since = data.now;
+            setBadges(data.unread);
+            data.items.forEach((item) => popups.show(item));
+        } catch { /* offline: try again next time */ }
+    };
+
+    setInterval(poll, 15000);
+    document.addEventListener('visibilitychange', poll);
+    navigator.serviceWorker?.addEventListener('message', (e) => {
+        if (e.data?.type !== 'nebo:notification') return;
+        const item = e.data.item || {};
+        popups.show({ id: item.tag, title: item.title, body: item.body, url: item.url });
+        poll();
+    });
+    return { poll };
+})();
+
+Alpine.data('pushToggle', () => ({
+    state: 'checking', // checking | unsupported | ios-install | denied | off | on
+    busy: false,
+    dismissed: false,
+    get prompt() {
+        return !this.dismissed && (this.state === 'off' || this.state === 'ios-install');
+    },
+    async init() {
+        try { this.dismissed = localStorage.getItem('nebo.push.prompt') === 'dismissed'; } catch { /* storage blocked */ }
+        if (!pushSupported()) {
+            this.state = isIos() && !isStandalone() ? 'ios-install' : 'unsupported';
+            return;
+        }
+        if (Notification.permission === 'denied') { this.state = 'denied'; return; }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        this.state = sub && Notification.permission === 'granted' ? 'on' : 'off';
+        if (this.state === 'on') this.save(sub); // keeps the server's copy current for whoever is signed in
+    },
+    async save(sub) {
+        await fetch(document.body.dataset.pushUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf() }, credentials: 'same-origin', body: JSON.stringify(sub.toJSON()) });
+    },
+    async enable() {
+        this.busy = true;
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') { this.state = permission === 'denied' ? 'denied' : 'off'; return; }
+            const reg = await navigator.serviceWorker.ready;
+            const sub = (await reg.pushManager.getSubscription())
+                || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(document.body.dataset.pushKey) });
+            await this.save(sub);
+            this.state = 'on';
+            popups.show({ id: `enabled-${Date.now()}`, title: 'Notifications are on', body: 'You will get a pop-up on this device for every new notification.', level: 'success', url: '#' });
+        } catch {
+            this.state = 'off';
+        } finally {
+            this.busy = false;
+        }
+    },
+    async disable() {
+        this.busy = true;
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
+            if (sub) {
+                await fetch(document.body.dataset.pushUrl, { method: 'DELETE', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf() }, credentials: 'same-origin', body: JSON.stringify({ endpoint: sub.endpoint }) });
+                await sub.unsubscribe();
+            }
+            this.state = 'off';
+        } finally {
+            this.busy = false;
+        }
+    },
+    dismiss() {
+        this.dismissed = true;
+        try { localStorage.setItem('nebo.push.prompt', 'dismissed'); } catch { /* storage blocked */ }
+    },
+}));
+
 Alpine.start();
 
 if ('serviceWorker' in navigator && window.isSecureContext) {

@@ -9,6 +9,21 @@
         </x-slot:actions>
     </x-ui.page-header>
 
+    {{-- Pop-ups on this device (D75). --}}
+    <div x-data="pushToggle" class="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-card">
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl" :class="state === 'on' ? 'bg-emerald-600 text-white' : 'bg-ink-900 text-white'"><x-ui.icon name="bell-ring" class="size-5" /></span>
+        <div class="min-w-0 flex-1 text-sm">
+            <p class="font-semibold text-ink-900">Pop-up notifications on this device</p>
+            <p class="text-ink-500" x-show="state === 'on'">On. Every new notification pops up here, even when Nebo Stage is closed.</p>
+            <p class="text-ink-500" x-show="state === 'off'">Off. Turn on to get a pop-up for every new notification.</p>
+            <p class="text-ink-500" x-show="state === 'denied'">Blocked in this browser. Allow notifications for this site in the browser or phone settings, then reload.</p>
+            <p class="text-ink-500" x-show="state === 'ios-install'">On iPhone: tap Share → Add to Home Screen, open Nebo Stage from the home screen, then turn them on here.</p>
+            <p class="text-ink-500" x-show="state === 'unsupported'">This browser can't show pop-ups when the app is closed. New notifications still pop up while it is open.</p>
+        </div>
+        <x-ui.button size="sm" icon="bell" x-cloak x-show="state === 'off'" x-on:click="enable()" ::disabled="busy" class="max-sm:w-full">Turn on</x-ui.button>
+        <x-ui.button size="sm" variant="secondary" icon="bell-off" x-cloak x-show="state === 'on'" x-on:click="disable()" ::disabled="busy" class="max-sm:w-full">Turn off on this device</x-ui.button>
+    </div>
+
     <x-ui.card :padding="false">
         @forelse ($notifications as $n)
             @php $tones = ['success' => 'bg-emerald-50 text-emerald-700', 'warning' => 'bg-amber-50 text-amber-700', 'danger' => 'bg-brand-50 text-brand-700', 'info' => 'bg-ink-100 text-ink-700']; @endphp

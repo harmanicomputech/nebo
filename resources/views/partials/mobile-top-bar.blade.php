@@ -16,9 +16,7 @@
         <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-white/80 active:bg-white/10" x-on:click="search = true; $nextTick(() => document.getElementById('mobile-search')?.focus())" aria-label="Search"><x-ui.icon name="search" class="size-[22px]" /></button>
         <a href="{{ route('app.notifications.index') }}" class="relative grid size-11 shrink-0 place-items-center rounded-full text-white/80 active:bg-white/10" aria-label="Notifications ({{ $unreadCount }} unread)">
             <x-ui.icon name="bell" class="size-[22px]" />
-            @if ($unreadCount)
-                <span class="absolute top-1.5 right-1.5 grid min-w-[18px] place-items-center rounded-full bg-brand-600 px-1 text-[10px] leading-[18px] font-bold text-white ring-2 ring-ink-950">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-            @endif
+            <span data-unread-badge @if (! $unreadCount) hidden @endif class="absolute top-1.5 right-1.5 grid min-w-[18px] place-items-center rounded-full bg-brand-600 px-1 text-[10px] leading-[18px] font-bold text-white ring-2 ring-ink-950">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
         </a>
     </div>
 </header>

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Notifications\Channels\WebPushChannel;
+use App\Services\Notifications\WebPushSender;
 use App\Support\Lookups;
 use App\Support\Navigation;
 use App\Support\SampleData;
@@ -13,6 +15,7 @@ use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -51,6 +54,9 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::defaultView('components.ui.pagination');
 
+        // Pop-up notifications on phones and computers (D75).
+        Notification::extend('webpush', fn () => new WebPushChannel);
+
         // Sample data (D71): note what the sample loader creates, and never
         // email a sample person or customer (their addresses look real).
         Event::listen('eloquent.created: *', fn (string $event, array $payload) => SampleData::capture($payload[0]));
@@ -78,6 +84,7 @@ class AppServiceProvider extends ServiceProvider
                 'mobile' => Navigation::mobile($navigation),
                 'unreadCount' => $user->unreadNotifications()->count(),
                 'recentNotifications' => $user->notifications()->latest()->limit(6)->get(),
+                'pushKey' => rescue(fn () => app(WebPushSender::class)->publicKey(), '', false),
             ]);
         });
 

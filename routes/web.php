@@ -32,6 +32,7 @@ use App\Http\Controllers\Internal\Maintenance\MaintenanceController;
 use App\Http\Controllers\Internal\Maintenance\ScheduleController;
 use App\Http\Controllers\Internal\NotificationController;
 use App\Http\Controllers\Internal\ProfileController;
+use App\Http\Controllers\Internal\PushSubscriptionController;
 use App\Http\Controllers\Internal\ReportController;
 use App\Http\Controllers\Internal\RequestController as InternalRequestController;
 use App\Http\Controllers\Internal\RoleController;
@@ -94,6 +95,9 @@ Route::prefix('app')->name('app.')->middleware(['auth', 'auth.session', 'active'
     Route::put('/profile/password', [ProfileController::class, 'password'])->middleware('throttle:6,1')->name('profile.password');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/poll', [NotificationController::class, 'poll'])->middleware('throttle:30,1')->name('notifications.poll');
+    Route::post('/push-subscriptions', [PushSubscriptionController::class, 'store'])->middleware('throttle:20,1')->name('push.subscribe');
+    Route::delete('/push-subscriptions', [PushSubscriptionController::class, 'destroy'])->middleware('throttle:20,1')->name('push.unsubscribe');
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::get('/notifications/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
 

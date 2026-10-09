@@ -60,6 +60,7 @@ erDiagram
 | `sequences` **(P1)** | key, period, next_value; unique(key, period) | Row-locked by `ReferenceGenerator`. |
 | `sample_records` | table_name, key_name, record_key; index(table_name, record_key) | Every row created by the sample-data loader, in creation order; `SampleData::clear()` deletes them newest first, then empties this table (D71). |
 | `sample_snapshots` | table_name, record_key, data (JSON row) | Copy of `equipment`, `equipment_assets` and `stock_levels` taken before the first sample record; `SampleData::clear()` writes it back, then empties this table (D73). |
+| `push_subscriptions` | user_id (cascade), endpoint, endpoint_hash (unique sha256), public_key, auth_token, content_encoding, device, last_used_at | One row per device that turned on pop-up notifications; deleted when the push service reports it gone (D75). |
 | `lookups` **(P2)** | group, key, label, sort_order, is_active, is_system, meta json; unique(group, key) | Groups so far: `condition` (meta: blocks_allocation, sets_status), `location_type` (meta: is_storage), `unit`. Also `event_type`, `budget_range`, `document_category`, `staff_role`, `maintenance_type`, `vehicle_type`, `customer_type`. |
 | `status_changes` **(P3)** | statusable morph, from_status, to_status, user_id, note, created_at | Timeline for requests, events, quotations, load lists. |
 | `documents` **(P3)** | documentable morph, category (lookup key), original_name, disk, path, mime, size, checksum sha256, uploaded_by, visibility (`internal`/`customer`), soft deletes | Private disk only. |

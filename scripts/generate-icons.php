@@ -102,6 +102,17 @@ nebo_icon($whiteMark, 180, true, "$icons/apple-touch-icon.png"); // iOS rounds t
 nebo_icon($whiteMark, 32, false, "$icons/favicon-32.png");
 nebo_ico("$icons/favicon-32.png", "$root/public/favicon.ico", 32);
 
+// Android status-bar badge for notifications: the mark alone, white on transparent.
+$badge = imagecreatetruecolor(96, 96);
+imagesavealpha($badge, true);
+imagealphablending($badge, false);
+imagefill($badge, 0, 0, imagecolorallocatealpha($badge, 0, 0, 0, 127));
+imagealphablending($badge, true);
+$bw = 84;
+$bh = (int) round($bw * imagesy($whiteMark) / imagesx($whiteMark));
+imagecopyresampled($badge, $whiteMark, 6, (int) ((96 - $bh) / 2), 0, 0, $bw, $bh, imagesx($whiteMark), imagesy($whiteMark));
+imagepng($badge, "$icons/badge-96.png", 9);
+
 $brand = "$root/public/images/brand";
 @mkdir($brand, 0755, true);
 imagepng(nebo_recolour($art, INK), "$brand/nebo-stage.png", 9);

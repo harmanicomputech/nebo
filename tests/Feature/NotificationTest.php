@@ -52,9 +52,9 @@ class NotificationTest extends TestCase
     {
         $user = $this->userWithRole('Crew');
 
-        $this->assertSame(['database'], NotificationChannels::for($user, WelcomeToNebo::class));
+        $this->assertSame(['database', 'webpush'], NotificationChannels::for($user, WelcomeToNebo::class));
 
         Settings::set('notifications.channels', [WelcomeToNebo::class => ['mail', 'carrier-pigeon']]);
-        $this->assertSame(['database', 'mail'], NotificationChannels::for($user, WelcomeToNebo::class));
+        $this->assertSame(['database', 'webpush', 'mail'], NotificationChannels::for($user, WelcomeToNebo::class));
     }
 }

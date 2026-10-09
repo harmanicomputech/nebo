@@ -78,6 +78,7 @@ Then sign in. Go to **Settings** and enter the real company email and phone (the
 - Reports with charts and CSV export: utilisation, events and pipeline, maintenance, logistics, inventory and commercial; dashboard trends.
 - Hardening: strict security headers and CSP, an automated access audit of every route, WCAG AA colour contrast, tuned queries and a production readiness check.
 - On phones it works like an installed app: bottom tab bar with role-aware tabs, a More menu, full-screen search, list rows as cards, bottom-sheet dialogs. The desktop layout is unchanged.
+- Real-time notifications: the bell updates and a pop-up appears within seconds, and every notification also arrives as a phone or desktop notification when the app is closed (per-device opt-in; iPhone after Add to Home Screen).
 - Every tap shows feedback and can't be submitted twice.
 - Installs on shared hosting with no terminal: an upload zip, a browser installer, updates from Settings → System, and background jobs without cron.
 

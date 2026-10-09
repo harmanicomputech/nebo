@@ -57,6 +57,16 @@ UPDATING TO A NEW VERSION
    3. Sign in and open Settings → System → Apply update.
 
 
+NOTIFICATIONS ON PHONES AND COMPUTERS
+   Each person turns them on once per device: a "Turn on notifications"
+   banner appears after signing in (also under Notifications). The site
+   must use https.
+   - Android / Windows / Mac: tap Turn on and allow.
+   - iPhone / iPad (iOS 16.4 or newer): open the site in Safari, tap Share
+     → Add to Home Screen, open Nebo Stage from the home screen, then tap
+     Turn on and allow.
+   Every notification then pops up on that device, even with the app closed.
+
 YOUR INVENTORY
    Your 2026 stage and LED screen inventory is installed automatically
    (Inventory → Equipment).

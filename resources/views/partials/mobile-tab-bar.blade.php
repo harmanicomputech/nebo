@@ -68,7 +68,7 @@
             <div class="mt-5 divide-y divide-ink-100 overflow-hidden rounded-2xl bg-white shadow-card">
                 <a href="{{ route('app.notifications.index') }}" class="flex items-center gap-3 px-4 py-3.5 text-sm font-medium active:bg-ink-50">
                     <x-ui.icon name="bell" class="size-5 text-ink-500" /> Notifications
-                    @if ($unreadCount)<span class="ml-auto rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">{{ $unreadCount }}</span>@endif
+                    <span data-unread-badge data-full @if (! $unreadCount) hidden @endif class="ml-auto rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">{{ $unreadCount }}</span>
                 </a>
                 <div x-data="installApp" x-cloak x-show="deferred">
                     <button type="button" x-on:click="install()" class="flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm font-medium active:bg-ink-50"><x-ui.icon name="monitor-down" class="size-5 text-ink-500" /> Install the app on this phone</button>

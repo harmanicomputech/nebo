@@ -2,7 +2,7 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`). The logo is monochrome: always use `<x-ui.logo>` (`dark` for the white version on dark backgrounds, `compact` for the mark only); its artwork is `resources/brand/nebo-stage.png` and `php scripts/generate-icons.php` rebuilds the icons and email PNGs (D68).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D74), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D75), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
@@ -21,7 +21,7 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D74), `docs/DATABASE.md` and `docs/R
 - **Audit:** add `App\Support\Audit\Auditable` to models. For actions that aren't model diffs (status changes, allocation, sign-in), call `Audit::record()`. Audit logs are append-only. Passwords and tokens are never logged.
 - **Settings:** use `App\Support\Settings`. Defaults live in `config('nebo.defaults')`. Keys contain dots, so never read them with dot-notation `config()`.
 - **References** come from `ReferenceGenerator::next('request'|'event'|…)`. Formats are settings.
-- **Notifications** extend `App\Notifications\NeboNotification`. They are in-app by default; channels come from `NotificationChannels`.
+- **Notifications** extend `App\Notifications\NeboNotification`. Every one is in-app and pops up live (page polling and web push, D75); extra channels come from `NotificationChannels`. Keep `title()`/`body()` short: they are the pop-up text.
 - **Inventory changes go through services.** `AssetService` (register, status, move, condition, archive), `StockService` (receive, transfer, quarantine/release, write off, count) and `EquipmentService` write the ledger in the same transaction. Never update an asset's status, location or condition, or a stock quantity, directly. Asset behaviour comes from status `group`/`is_allocatable`/`is_manual` and condition `meta`, never from labels (D23–D25).
 - **Public portal:** `Public\*` controllers may read only `Service`, option lists, settings, and a customer's own `EventRequest` by its token. Never expose internal statuses, notes, staff or documents (D33). The one exception is a customer's own sent quotation at `/q/{token}` (D62). Public datetimes are Lagos time and are converted to UTC in the form request (D35).
 - **Workflow history** goes in `status_changes` (`HasStatusHistory`). Use `notes` and `documents` (`HasNotesAndDocuments`) for any record; register new document owners in `DocumentController::OWNERS`. Uploads are validated with `UploadRules` (content-sniffed).

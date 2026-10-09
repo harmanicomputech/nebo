@@ -15,7 +15,7 @@ use Tests\TestCase;
 class AccessAuditTest extends TestCase
 {
     /** Pages any signed-in user may open. */
-    private const OPEN = ['app', 'app/profile', 'app/notifications', 'app/search'];
+    private const OPEN = ['app', 'app/profile', 'app/notifications', 'app/notifications/poll', 'app/search'];
 
     /** @return list<Route> */
     private function appRoutes(): array

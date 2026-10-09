@@ -6,7 +6,8 @@
     @stack('head')
     <meta name="robots" content="noindex, nofollow">
 </head>
-<body class="has-tabbar h-full" x-data="{ more: false, search: false }" x-on:keydown.escape.window="more = false; search = false">
+<body class="has-tabbar h-full" x-data="{ more: false, search: false }" x-on:keydown.escape.window="more = false; search = false"
+      data-poll-url="{{ route('app.notifications.poll') }}" data-poll-since="{{ now()->subSeconds(3)->toIso8601String() }}" data-push-url="{{ route('app.push.subscribe') }}" data-push-key="{{ $pushKey }}">
 <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow">Skip to content</a>
 
 {{-- Sidebar (desktop; phones use the bottom tab bar, D70) --}}
@@ -106,9 +107,7 @@
                 <div x-data="{ open: false }" class="relative" x-on:click.outside="open = false">
                     <button type="button" class="relative rounded-lg p-2 text-ink-600 hover:bg-ink-100" x-on:click="open = !open" :aria-expanded="open" aria-label="Notifications ({{ $unreadCount }} unread)">
                         <x-ui.icon name="bell" />
-                        @if ($unreadCount)
-                            <span class="absolute top-1 right-1 grid min-w-4 place-items-center rounded-full bg-brand-600 px-1 text-[10px] leading-4 font-bold text-white ring-2 ring-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-                        @endif
+                        <span data-unread-badge @if (! $unreadCount) hidden @endif class="absolute top-1 right-1 grid min-w-4 place-items-center rounded-full bg-brand-600 px-1 text-[10px] leading-4 font-bold text-white ring-2 ring-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
                     </button>
                     <div x-cloak x-show="open" x-transition class="absolute right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-ink-100 bg-white shadow-lift">
                         <div class="flex items-center justify-between border-b border-ink-100 px-4 py-3">
@@ -154,6 +153,8 @@
             </div>
         </div>
     </header>
+
+    @include('partials.push-prompt')
 
     <main id="main" class="px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 lg:px-8 lg:py-8">
         <div class="mx-auto max-w-7xl">
