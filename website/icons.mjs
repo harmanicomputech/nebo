@@ -27,6 +27,15 @@ const icons = {
     tiktok: solid('<path d="M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.1a6.3 6.3 0 1 0 5.4 6.3V8.6a7.9 7.9 0 0 0 4.6 1.5V6.7a4.6 4.6 0 0 1-4.6-4.7Z"/>'),
     x: solid('<path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.2l-4.9-6.3L5.4 21H2.3l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/>'),
 
+    // Equipment page
+    'eq-roof': stroke('<path d="M2 9 12 4l10 5"/><path d="M4 8v13M20 8v13M4 13h16M2 21h20"/><path d="M9 21v-5h6v5"/>'),
+    'eq-hoist': stroke('<path d="M12 2v3"/><rect x="7" y="5" width="10" height="6" rx="2"/><path d="M10 11v3M14 11v3M12 14v4"/><path d="M9.5 18a2.5 2.5 0 1 0 5 0"/>'),
+    calendar: stroke('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M12 14h2M8 17h2"/>'),
+    'badge-check': stroke('<path d="M12 2l2.4 1.8 3 .2.9 2.8 2.3 2-1 2.8.4 3-2.6 1.5-1.3 2.7-3-.4L12 22l-2.4-1.6-3 .4-1.3-2.7-2.6-1.5.4-3-1-2.8 2.3-2 .9-2.8 3-.2L12 2Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'),
+    truck: stroke('<path d="M2 6h11v10H2zM13 9h5l3 3v4h-8"/><circle cx="6.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>'),
+    wrench: stroke('<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6Z"/>'),
+    sliders: stroke('<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'),
+
     // Event types
     'ev-concert': stroke('<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/>'),
     'ev-rally': stroke('<path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M14 8.5a5 5 0 0 1 0 7M17 6a8.5 8.5 0 0 1 0 12"/>'),

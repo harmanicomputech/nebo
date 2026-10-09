@@ -521,53 +521,80 @@ ${groups.map(({ s, items }) => `<section class="section gallery-group" id="${s.s
 }
 
 function equipmentPage() {
-    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens and rigging — delivered, installed and operated by the people who maintain it.', image: 'stage-deck-warm', crumbs: [[null, 'Equipment']], actions: button(requestUrl(), 'Request equipment') + button('#kit', 'Browse the kit', { variant: 'ghost', ico: 'arrow-down' }) })}
+    const show = { slug: 'lighting-sound-show', icon: 'eq-moving', tagline: 'Lighting, sound & effects', name: 'Lighting, Sound & Show', service: 'event-lighting', image: 'truss-red-beams',
+        text: 'Beyond our stages, truss and screens, we supply the lighting, sound and show equipment your event needs, with operators to run it.',
+        specs: ['Supplied with operators', 'Designed for your venue'], items: departments.map((d) => ({ name: d.name, icon: d.icon, text: d.text })) };
+    const groups = [...equipment.map((g) => ({ ...g, items: g.items.map((t) => ({ name: t, icon: g.icon })) })), show];
+    const steps = [
+        { icon: 'calendar', title: 'Share your dates', text: 'Tell us the event, venue and the equipment you have in mind, or send your stage plan.' },
+        { icon: 'badge-check', title: 'We confirm the kit', text: 'We check availability for your dates and send a clear rental quotation.' },
+        { icon: 'truck', title: 'Delivered & installed', text: 'Our crew delivers, builds and tests everything before your guests arrive.' },
+        { icon: 'sliders', title: 'Run & cleared', text: 'Operators run the show, then we dismantle and clear the venue.' },
+    ];
+    const why = [
+        { icon: 'wrench', title: 'Maintained in-house', text: 'Checked before it leaves and when it comes back.' },
+        { icon: 'team', title: 'Crew included', text: 'Installed and operated by people who know the kit.' },
+        { icon: 'truck', title: 'Delivered to you', text: 'Transport, setup and dismantling in one booking.' },
+        { icon: 'map', title: 'Nationwide', text: 'Our equipment travels to events in every state.' },
+    ];
 
-${marquee(equipment.flatMap((g) => g.items.slice(0, 2).map((t) => t.split(':')[0])), { cls: 'marquee--kit' })}
+    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens, rigging, lighting and sound — delivered, installed and operated by the people who maintain it.', image: 'stage-deck-warm', crumbs: [[null, 'Equipment']], actions: button('#catalogue', 'Browse the catalogue', { ico: 'arrow-down' }) + button(requestUrl(), 'Request a quote', { variant: 'ghost' }) })}
 
-<nav class="jump" aria-label="Equipment groups" data-jump>
-    <div class="container jump__inner">
-        ${equipment.map((g, i) => `<a href="#${g.slug}"><small>${pad(i + 1)}</small>${esc(g.name)}</a>`).join('')}
-        <a href="#also"><small>${pad(equipment.length + 1)}</small>Lighting, sound &amp; show</a>
-    </div>
-</nav>
-
-<section class="section kit-blocks" id="kit">
+<section class="section catalogue" id="catalogue">
     <div class="container">
-        <div class="section-head"><div>${eyebrow('Our own kit')}<h2 class="display" data-split>Owned, maintained, show-ready.</h2></div>
-        <p class="section-head__aside" data-reveal>Everything here is ours: checked before it leaves the warehouse and installed by our own crew. Tell us your dates and we will confirm what is available.</p></div>
-        ${equipment.map((g, i) => `<article class="kit-block${i % 2 ? ' kit-block--flip' : ''}" id="${g.slug}">
-            <div class="kit-block__media" data-reveal>
-                ${img(g.image, `${g.name}: ${g.items[0]}`, { sizes: '(min-width: 1024px) 50vw, 100vw' })}
-                <span class="kit-block__num" aria-hidden="true">${pad(i + 1)}</span>
-                <a href="/services/${g.service}/" class="kit-block__service">${icon(`svc-${g.service}`)}${esc(serviceBySlug[g.service].name)}</a>
+        <div class="section-head"><div>${eyebrow('The catalogue')}<h2 class="display" data-split>Choose a category.</h2></div>
+        <p class="section-head__aside" data-reveal>Everything here is our own, maintained in-house and sent out with our crew. Tell us your dates and we will confirm what is available.</p></div>
+        <div class="catalogue__layout" data-tabs>
+            <div class="catalogue__tabs" role="tablist" aria-label="Equipment categories" aria-orientation="vertical">
+                ${groups.map((g, i) => `<button type="button" role="tab" id="tab-${g.slug}" aria-controls="${g.slug}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" class="cat-tab">
+                    <span class="cat-tab__icon">${icon(g.icon)}</span>
+                    <span class="cat-tab__text"><strong>${esc(g.name)}</strong><small>${esc(g.tagline)}</small></span>
+                    <span class="cat-tab__arrow">${icon('arrow-right')}</span>
+                </button>`).join('')}
             </div>
-            <div class="kit-block__body" data-reveal style="--stagger:1">
-                <p class="eyebrow">${pad(i + 1)} / ${pad(equipment.length)}</p>
-                <h3 class="display display--md">${esc(g.name)}</h3>
-                <p class="prose">${esc(g.text)}</p>
-                <ul class="spec-pills">${g.specs.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
-                <ul class="kit-items">${g.items.map((t) => `<li>${icon('check')}<span>${esc(t)}</span></li>`).join('')}</ul>
-                <div class="btn-row">
-                    ${button(requestUrl(serviceBySlug[g.service].bookingSlug ?? g.service), 'Request a quote')}
-                    ${button(`/services/${g.service}/`, serviceBySlug[g.service].name, { variant: 'link' })}
-                </div>
+            <div class="catalogue__panels">
+                ${groups.map((g, i) => `<article class="cat-panel${i === 0 ? ' is-active' : ''}" role="tabpanel" id="${g.slug}" aria-labelledby="tab-${g.slug}" tabindex="0">
+                    <div class="cat-panel__hero">
+                        ${img(g.image, `${g.name}`, { sizes: '(min-width: 1024px) 60vw, 100vw' })}
+                        <div class="cat-panel__overlay">
+                            <p class="eyebrow eyebrow--light">${pad(i + 1)} — ${esc(g.tagline)}</p>
+                            <h3 class="display display--md">${esc(g.name)}</h3>
+                            <ul class="cat-panel__specs">${g.specs.map((t) => `<li>${icon('check')}${esc(t)}</li>`).join('')}</ul>
+                        </div>
+                        <span class="cat-panel__badge">${icon(g.icon)}</span>
+                    </div>
+                    <p class="cat-panel__text">${esc(g.text)}</p>
+                    <ul class="cat-items">${g.items.map((it, j) => `<li class="cat-item" style="--j:${j}">
+                        <span class="cat-item__icon">${icon(it.icon)}</span>
+                        <span class="cat-item__name">${esc(it.name)}</span>
+                        ${it.text ? `<span class="cat-item__text">${esc(it.text)}</span>` : ''}
+                    </li>`).join('')}</ul>
+                    <div class="cat-panel__actions">
+                        ${button(requestUrl(serviceBySlug[g.service].bookingSlug ?? g.service), 'Request a quote')}
+                        ${button(`/services/${g.service}/`, `About ${serviceBySlug[g.service].name}`, { variant: 'link' })}
+                    </div>
+                </article>`).join('')}
             </div>
-        </article>`).join('')}
+        </div>
     </div>
 </section>
 
-<section class="section section--dark" id="also">
+<section class="section section--dark rent-steps">
     <div class="beams beams--soft" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="container">
-        <div class="section-head"><div>${eyebrow('Also available')}<h2 class="display" data-split>Lighting, sound and show equipment.</h2></div>
-        <p class="section-head__aside" data-reveal>Tell us what your event needs and we will put together the right package, with crew to run it.</p></div>
-        <ul class="dept-grid">${departments.map((d, i) => `<li class="dept" data-reveal data-spotlight style="--stagger:${i % 5}"><span class="dept__icon">${icon(d.icon)}</span><strong>${esc(d.name)}</strong><span>${esc(d.text)}</span></li>`).join('')}</ul>
+        <div class="section-head"><div>${eyebrow('How renting works')}<h2 class="display" data-split>From enquiry to encore.</h2></div>
+        <p class="section-head__aside" data-reveal>One booking covers the equipment, transport, installation, operators and dismantling.</p></div>
+        <ol class="rent-steps__list">${steps.map((st, i) => `<li class="rent-step" data-reveal style="--stagger:${i}">
+            <span class="rent-step__icon">${icon(st.icon)}<b>${pad(i + 1)}</b></span>
+            <h3>${esc(st.title)}</h3>
+            <p>${esc(st.text)}</p>
+        </li>`).join('')}</ol>
     </div>
 </section>
 
-<section class="section kit-cta-wrap">
+<section class="section why-rent">
     <div class="container">
+        <ul class="why-rent__grid">${why.map((w, i) => `<li data-reveal style="--stagger:${i}"><span class="why-rent__icon">${icon(w.icon)}</span><span><strong>${esc(w.title)}</strong><small>${esc(w.text)}</small></span></li>`).join('')}</ul>
         <div class="kit-cta" data-reveal>
             <div>
                 <p class="eyebrow">Planning an event?</p>
@@ -581,7 +608,7 @@ ${marquee(equipment.flatMap((g) => g.items.slice(0, 2).map((t) => t.split(':')[0
         </div>
     </div>
 </section>`;
-    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists, stage decks, lighting and sound.`, image: 'stage-deck-warm', body });
+    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists, stage decks, lighting, sound and show equipment.`, image: 'stage-deck-warm', body });
 }
 
 function aboutPage() {

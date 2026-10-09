@@ -369,31 +369,31 @@ export const gallery = [
 /** Equipment we rent, by department. No quantities: availability is confirmed per booking. */
 export const equipment = [
     {
-        slug: 'led-screens', name: 'LED Screens', service: 'led-screens-displays', image: 'led-giant-screen',
+        slug: 'led-screens', icon: 'svc-led-screens-displays', tagline: 'Screens & video processing', name: 'LED Screens', service: 'led-screens-displays', image: 'led-giant-screen',
         text: 'Outdoor-rated P3.91 LED panels that build one large wall or a pair of side screens, driven by professional video processors.',
         specs: ['3.91 mm pixel pitch', 'Outdoor-rated, daylight bright', 'Flown or ground-stacked'],
         items: ['P3.91 outdoor LED panels, 0.5 × 0.5 m', 'P3.91 outdoor LED panels, 0.5 × 1 m', 'NovaStar VX600 Pro video processors', 'LED screen hanging hooks'],
     },
     {
-        slug: 'trussing', name: 'Trussing', service: 'trussing-rigging', image: 'truss-moving-heads',
+        slug: 'trussing', icon: 'svc-trussing-rigging', tagline: 'Spigot truss & connectors', name: 'Trussing', service: 'trussing-rigging', image: 'truss-moving-heads',
         text: 'Aluminium spigot truss for goalposts, towers, backdrops and lighting grids, with every connector, pin and clip it needs.',
         specs: ['400 × 600 and 400 × 400 profiles', 'Spigot connection', '1 m to 3 m lengths'],
         items: ['400 × 600 spigot truss: 1 m, 2 m and 3 m', '400 × 400 spigot truss: 1 m, 1.5 m, 2 m and 3 m', 'Egg-shaped spigot connectors', 'Pins with R-clips', 'Fasteners and joints'],
     },
     {
-        slug: 'roof-system', name: 'Roof System', service: 'stage-rigging', image: 'mobile-stage-roof',
+        slug: 'roof-system', icon: 'eq-roof', tagline: 'Covered outdoor stages', name: 'Roof System', service: 'stage-rigging', image: 'mobile-stage-roof',
         text: 'A tower-lifted truss roof that covers outdoor stages, with a sloped run-off so the show carries on in sun and rain.',
         specs: ['Tower-lifted roof grid', 'Sloped for rain run-off', 'Adjustable feet for uneven ground'],
         items: ['Top sections', 'Sleeve blocks', 'Hinges', 'Steel pipe bases with extension feet', 'Aluminium slant supports, 50 × 1800', 'Top multi-directional adapters', 'Customised downhill slopes'],
     },
     {
-        slug: 'rigging', name: 'Rigging', service: 'trussing-rigging', image: 'truss-pars-speakers',
+        slug: 'rigging', icon: 'eq-hoist', tagline: 'Hoists & lifting straps', name: 'Rigging', service: 'trussing-rigging', image: 'truss-pars-speakers',
         text: 'Hoists and rated straps to lift roof grids, flown truss and LED screens safely into position.',
         specs: ['Galvanised chain hoists', '2-tonne lifting straps'],
         items: ['Manual chain hoists (galvanised)', 'Lifting straps, 2 t × 3 m'],
     },
     {
-        slug: 'staging', name: 'Staging', service: 'stage-rigging', image: 'hall-stage-purple',
+        slug: 'staging', icon: 'svc-stage-rigging', tagline: 'Decks, steps & fittings', name: 'Staging', service: 'stage-rigging', image: 'hall-stage-purple',
         text: 'Modular stage decks that build any shape and size, with access steps and fittings for a safe, tidy finish.',
         specs: ['Modular decks', 'Any shape and size', 'Indoor and outdoor'],
         items: ['Stage panels', 'Staircases', 'Aluminium single buckles', 'Single racks, 300 mm wide'],

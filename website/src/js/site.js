@@ -209,19 +209,30 @@
     }));
     if (groups.length && location.hash) applyFilter(location.hash.slice(1), true);
 
-    /* ---------- equipment jump bar: highlight the group on screen */
-    const jumpLinks = $$('[data-jump] a');
-    if (jumpLinks.length) {
-        const jio = new IntersectionObserver((entries) => entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            jumpLinks.forEach((a) => {
-                const on = a.getAttribute('href') === `#${e.target.id}`;
-                a.classList.toggle('is-current', on);
-                if (on) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduced ? 'auto' : 'smooth' });
+    /* ---------- equipment catalogue tabs */
+    $$('[data-tabs]').forEach((root) => {
+        const tabs = $$('[role="tab"]', root);
+        const panels = $$('[role="tabpanel"]', root);
+        const select = (i, focus, scroll) => {
+            tabs.forEach((t, j) => { t.setAttribute('aria-selected', String(i === j)); t.tabIndex = i === j ? 0 : -1; });
+            panels.forEach((p, j) => p.classList.toggle('is-active', i === j));
+            if (focus) tabs[i].focus();
+            tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduced ? 'auto' : 'smooth' });
+            if (scroll && panels[i].getBoundingClientRect().top < 0) panels[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+            history.replaceState(null, '', `#${panels[i].id}`);
+        };
+        tabs.forEach((t, i) => {
+            t.addEventListener('click', () => select(i, false, true));
+            t.addEventListener('keydown', (e) => {
+                const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+                if (k) { e.preventDefault(); select((i + k + tabs.length) % tabs.length, true, false); }
+                if (e.key === 'Home') { e.preventDefault(); select(0, true, false); }
+                if (e.key === 'End') { e.preventDefault(); select(tabs.length - 1, true, false); }
             });
-        }), { rootMargin: '-45% 0px -50% 0px' });
-        jumpLinks.forEach((a) => { const t = document.getElementById(a.getAttribute('href').slice(1)); if (t) jio.observe(t); });
-    }
+        });
+        const fromHash = panels.findIndex((p) => `#${p.id}` === location.hash);
+        if (fromHash > 0) select(fromHash, false, false);
+    });
 
     /* ---------- lightbox for photos and videos */
     const lb = $('[data-lightbox]');
