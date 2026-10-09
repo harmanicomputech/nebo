@@ -1,6 +1,5 @@
 /* Fonts are bundled into /build (no third-party CDN), so they work offline in the PWA. */
 @import '@fontsource-variable/inter/wght.css';
-@import '@fontsource-variable/space-grotesk/wght.css';
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -16,7 +15,7 @@
  */
 @theme {
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Space Grotesk Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --color-brand-50: #fdf3f3;
