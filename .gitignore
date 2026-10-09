@@ -28,3 +28,4 @@ Thumbs.db
 
 # Upload packages (scripts/build-directadmin.sh)
 /nebo-stage-*.zip
+/website/dist

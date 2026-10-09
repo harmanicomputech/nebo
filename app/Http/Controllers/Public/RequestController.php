@@ -10,6 +10,7 @@ use App\Services\Booking\RequestIntake;
 use App\Services\Documents\UploadRules;
 use App\Support\Lookups;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -20,10 +21,15 @@ use Illuminate\View\View;
  */
 class RequestController extends Controller
 {
-    public function create(Lookups $lookups): View
+    public function create(Request $request, Lookups $lookups): View
     {
+        $services = Service::query()->offered()->get(['id', 'slug', 'name', 'icon', 'description']);
+        // The website's service pages link here with ?service=<slug>[,<slug>] to tick those services.
+        $slugs = explode(',', (string) $request->query('service', ''));
+
         return view('public.request.form', [
-            'services' => Service::query()->offered()->get(['id', 'name', 'icon', 'description']),
+            'services' => $services,
+            'preselected' => $services->whereIn('slug', $slugs)->pluck('id')->map(fn ($id) => (string) $id)->values()->all(),
             'eventTypes' => $lookups->options('event_type'),
             'budgets' => $lookups->options('budget_range'),
             'submissionKey' => old('submission_key', (string) Str::uuid()),

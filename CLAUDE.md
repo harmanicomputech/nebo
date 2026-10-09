@@ -2,7 +2,7 @@
 
 Operations platform for Nebo Stage, a **nationwide** Nigerian event production company. Never describe it as Ilorin-based. It has a public portal (`/`) and an internal system (`/app`), and it is a PWA. Laravel 13 on PHP 8.3+, MySQL in production, SQLite in-memory for tests. Brand colours: `#CC1F1F` (`brand-600`) and `#1A1A1A` (`ink-900`). The logo is monochrome: always use `<x-ui.logo>` (`dark` for the white version on dark backgrounds, `compact` for the mark only); its artwork is `resources/brand/nebo-stage.png` and `php scripts/generate-icons.php` rebuilds the icons and email PNGs (D68).
 
-Read `docs/ARCHITECTURE.md` (decisions D1–D75), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
+Read `docs/ARCHITECTURE.md` (decisions D1–D76), `docs/DATABASE.md` and `docs/ROADMAP.md` before starting a new phase. Update them when a decision or the schema changes.
 
 ## Commands
 
@@ -12,6 +12,7 @@ Read `docs/ARCHITECTURE.md` (decisions D1–D75), `docs/DATABASE.md` and `docs/R
 - `php artisan migrate:fresh --seed` then `php artisan nebo:create-admin`: reset local data (reference data and the real inventory; there is no sample data, D74).
 - `php artisan nebo:check-production`: pre-flight check for a live server. Deployment steps are in `docs/DEPLOYMENT.md`.
 - `scripts/build-directadmin.sh`: build the no-terminal upload zip (browser installer at `/install`, D69). Never commit the zip.
+- `scripts/build-website.sh`: build the brand website (`website/`, static, for nebostage.com.ng, D76) into `nebo-stage-website.zip`. Edit words in `website/content.mjs`; service slugs must match the app's services. Never commit `website/dist` or the zip.
 
 ## Conventions
 

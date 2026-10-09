@@ -2,7 +2,7 @@
     $tz = config('nebo.display_timezone');
     // Old datetime values come back in UTC (see PublicEventRequest); show them in Lagos time.
     $local = fn ($v) => filled($v) && strtotime($v) ? \Carbon\Carbon::parse($v, 'UTC')->setTimezone($tz)->format('Y-m-d\TH:i') : '';
-    $oldServices = array_map('strval', (array) old('services', []));
+    $oldServices = array_map('strval', (array) old('services', $preselected));
     $sections = ['event' => 'Your event', 'services' => 'Services', 'requirements' => 'Requirements', 'logistics' => 'Logistics', 'budget' => 'Budget', 'contact' => 'Contact'];
 @endphp
 <x-layouts.public title="Request a Production" description="Request event production or equipment rental from Nebo Stage: stages, truss and roof systems, LED screens, rigging, lighting, sound and crew, anywhere in Nigeria.">

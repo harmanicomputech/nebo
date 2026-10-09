@@ -25,7 +25,7 @@ echo "→ Copying the application"
 APP="$STAGE/nebo"
 mkdir -p "$APP"
 git ls-files -z --cached --others --exclude-standard \
-  | grep -zv -E '^(tests/|node_modules/|\.github/|deploy/|scripts/|docs/|public/build/|\.env|phpunit\.xml|\.editorconfig|\.gitattributes|\.gitignore|vite\.config\.js|package(-lock)?\.json|nebo-stage-.*\.zip)' \
+  | grep -zv -E '^(tests/|website/|node_modules/|\.github/|deploy/|scripts/|docs/|public/build/|\.env|phpunit\.xml|\.editorconfig|\.gitattributes|\.gitignore|vite\.config\.js|package(-lock)?\.json|nebo-stage-.*\.zip)' \
   | xargs -0 -I{} cp --parents {} "$APP/"
 mkdir -p "$APP/public"
 cp -r public/build "$APP/public/build"
