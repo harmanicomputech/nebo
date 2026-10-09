@@ -169,7 +169,7 @@ function layout({ path, title, description = site.description, image = 'mobile-s
 <link rel="icon" href="/brand/nebo-stage-mark.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/site.css?v=${assets.css}">
 <script src="/js/boot.js"></script>
 <script src="/js/site.js?v=${assets.js}" defer></script>
