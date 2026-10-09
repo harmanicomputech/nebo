@@ -14,6 +14,7 @@ export const site = {
         { name: 'Instagram', handle: '@nebostage', url: 'https://www.instagram.com/nebostage' },
         { name: 'Facebook', handle: 'Nebo Stage', url: 'https://www.facebook.com/profile.php?id=61592085886636' },
         { name: 'X', handle: '@nebostage', url: 'https://x.com/nebostage' },
+        { name: 'TikTok', handle: '@nebostage', url: 'https://www.tiktok.com/@nebostage' },
     ],
     // From the previous website.
     stats: [
