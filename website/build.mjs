@@ -167,8 +167,8 @@ function layout({ path, title, description = site.description, image = 'mobile-s
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/brand/nebo-stage-mark.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/site.css?v=${assets.css}">
 <script src="/js/boot.js"></script>
 <script src="/js/site.js?v=${assets.js}" defer></script>
@@ -246,7 +246,7 @@ const marquee = (items, { reverse = false, cls = '' } = {}) => `<div class="marq
 // ---------------------------------------------------------------- pages
 
 function home() {
-    const heroSlides = ['truss-red-beams', 'mobile-stage-roof', 'production-concert-dancers', 'led-giant-screen'];
+    const heroSlides = ['production-concert-dancers', 'truss-red-beams', 'mobile-stage-roof', 'lighting-green-tubes', 'sound-dj-led-wall'];
     const kit = [
         { value: 24, suffix: ' m²', label: 'P3.91 outdoor LED screen', text: '72 panels and 3 NovaStar VX600 Pro processors', href: '/services/led-screens-displays/' },
         { value: 178, suffix: ' m', label: 'Aluminium spigot truss', text: '400 × 600 and 400 × 400, with 350 connectors and 900 pins', href: '/services/trussing-rigging/' },
@@ -258,32 +258,38 @@ function home() {
     const strip = [...realStills, ...gallery.filter((g) => !g.project).slice(0, 8)];
 
     const body = `
-<section class="hero">
-    <div class="hero__slides" aria-hidden="true" data-slides>
-        ${heroSlides.map((name, i) => `<div class="hero__slide${i === 0 ? ' is-active' : ''}">${img(name, '', { eager: i === 0, cls: 'kenburns' })}</div>`).join('')}
+<section class="stage-hero">
+    <div class="stage-hero__haze" aria-hidden="true"></div>
+    <div class="rig" aria-hidden="true">
+        <div class="rig__truss"></div>
+        ${[8, 22, 36, 50, 64, 78, 92].map((x, i) => `<span class="fixture fixture--${['red', 'white', 'amber', 'red', 'amber', 'white', 'red'][i]}" style="--x:${x}%;--i:${i}"><i></i></span>`).join('')}
     </div>
-    <div class="hero__shade"></div>
-    <div class="beams" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <div class="grain" aria-hidden="true"></div>
-    <div class="container hero__inner">
-        <div class="hero__copy">
-            <p class="eyebrow eyebrow--light hero-in" style="--d:.1s"><span class="dot"></span>Available nationwide</p>
-            <h1 class="display display--hero"><span class="line"><span style="--d:.2s">We build</span></span> <span class="line"><span style="--d:.32s">the <em>stage.</em></span></span> <span class="line"><span style="--d:.44s">You own</span></span> <span class="line"><span style="--d:.56s">the moment.</span></span></h1>
-            <p class="lead hero-in" style="--d:.75s">From electrifying concerts to high-impact political rallies, Nebo Stage delivers world-class stage setups, trussing systems, LED screens, lighting and sound — installed and run by one team, anywhere in Nigeria.</p>
-            <div class="btn-row hero-in" style="--d:.9s">
+    <div class="stage-hero__wall">
+        <div class="screens">
+            ${projects.map((p, i) => {
+                const side = `<button type="button" class="screen screen--side" style="--d:${i ? '.55s' : '.35s'}" data-lb-item data-lb-group="hero" data-lb-type="video" data-lb-src="/media/${p.video}.mp4" data-lb-poster="/images/${p.poster}.webp" data-lb-caption="${esc(`${p.name} — ${p.kind}`)}" aria-label="Play the ${esc(p.name)} video with sound">
+                <video src="/media/${p.video}.mp4" poster="/images/${p.poster}.webp" muted loop playsinline preload="metadata" data-autoplay></video>
+                <span class="screen__tag"><i></i>${esc(p.name)}</span>
+                <span class="screen__play">${icon('play')}</span>
+            </button>`;
+                const main = `<div class="screen screen--main" style="--d:.15s" data-slides>
+                ${heroSlides.map((name, j) => `<div class="hero__slide${j === 0 ? ' is-active' : ''}">${img(name, '', { eager: j === 0, cls: 'kenburns', sizes: '(min-width: 860px) 60vw, 100vw' })}</div>`).join('')}
+                <span class="screen__tag screen__tag--live"><i></i>Live · P3.91 LED wall</span>
+            </div>`;
+                return i === 0 ? side + main : side;
+            }).join('\n            ')}
+        </div>
+    </div>
+    <div class="container stage-hero__copy">
+        <h1 class="hero-title"><span class="line"><span style="--d:.9s">We build</span></span> <span class="line"><span style="--d:1.02s">the <em>stage.</em></span></span></h1>
+        <div class="stage-hero__foot">
+            <p class="hero-in" style="--d:1.25s"><strong>You own the moment.</strong> Stages, truss and roof systems, LED screens, lighting and sound for concerts, rallies, churches, weddings and corporate events — installed and run by one team, anywhere in Nigeria.</p>
+            <div class="btn-row hero-in" style="--d:1.4s">
                 ${button(requestUrl(), 'Book now')}
                 ${button('/services/', 'Explore services', { variant: 'ghost', ico: 'arrow-down-right' })}
             </div>
         </div>
-        <div class="hero__reel hero-in" style="--d:1s">
-            <div class="phone" data-reel>
-                ${projects.map((p, i) => `<video src="/media/${p.video}.mp4" poster="/images/${p.poster}.webp" muted playsinline preload="${i === 0 ? 'auto' : 'none'}" data-reel-video data-name="${esc(p.name)}"${i === 0 ? ' class="is-active"' : ''}></video>`).join('')}
-                <span class="phone__label"><i></i><b data-reel-name>${esc(projects[0].name)}</b> · our work</span>
-            </div>
-            <button type="button" class="hero__play" data-lb-open="work">${icon('play')}<span>Watch with sound</span></button>
-        </div>
     </div>
-    <a href="#statement" class="scroll-cue" aria-label="Scroll down"><span></span></a>
     ${marquee(['Reliable', 'Professional', 'Stunning', 'Nationwide', 'Show-ready'], { cls: 'marquee--hero' })}
 </section>
 
@@ -626,14 +632,11 @@ cpSync(join(src, 'css'), join(dist, 'css'), { recursive: true });
 cpSync(join(src, 'js'), join(dist, 'js'), { recursive: true });
 cpSync(join(src, 'static'), dist, { recursive: true });
 
-// Brand and fonts come from the app so there is one copy of each.
+// Brand files come from the app so there is one copy of each; fonts are in src/static/fonts.
 mkdirSync(join(dist, 'brand'), { recursive: true });
 for (const f of ['nebo-stage-white.svg', 'nebo-stage.svg', 'nebo-stage-mark.svg', 'nebo-stage.png']) cpSync(join(repo, 'public/images/brand', f), join(dist, 'brand', f));
 cpSync(join(repo, 'public/favicon.ico'), join(dist, 'favicon.ico'));
 cpSync(join(repo, 'public/app-icons/apple-touch-icon.png'), join(dist, 'apple-touch-icon.png'));
-mkdirSync(join(dist, 'fonts'), { recursive: true });
-cpSync(join(repo, 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'), join(dist, 'fonts/inter.woff2'));
-cpSync(join(repo, 'node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2'), join(dist, 'fonts/space-grotesk.woff2'));
 
 assets = { css: hash(join(src, 'css/site.css')), js: hash(join(src, 'js/site.js')) };
 
