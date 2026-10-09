@@ -13,6 +13,7 @@ use App\Models\Staff;
 use App\Models\Vehicle;
 use App\Services\Logistics\TripService;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,7 @@ class TripController extends Controller
                 : [$event->setup_starts_at->copy()->subHours(3), $event->setup_starts_at];
         }
 
-        $candidates = $event ? $this->trips->manifestCandidates($event, $direction) : collect();
+        $candidates = $event ? $this->trips->manifestCandidates($event, $direction) : new EloquentCollection;
         $onTrips = $this->onOtherTrips($candidates->modelKeys(), $direction);
 
         return view('internal.logistics.trips.form', $this->formData($trip) + [
@@ -112,7 +113,7 @@ class TripController extends Controller
     {
         $this->authorize('update', $trip);
         $trip->load(['event', 'crew', 'items']);
-        $candidates = $trip->event ? $this->trips->manifestCandidates($trip->event, $trip->direction) : collect();
+        $candidates = $trip->event ? $this->trips->manifestCandidates($trip->event, $trip->direction) : new EloquentCollection;
 
         return view('internal.logistics.trips.form', $this->formData($trip) + [
             'event' => $trip->event,

@@ -91,6 +91,29 @@ class LogisticsTest extends TestCase
         $this->actingAs($manager)->get('/app/logistics')->assertOk()->assertSee($trip->reference);
     }
 
+    public function test_a_transfer_trip_between_warehouses_is_planned_without_an_event(): void
+    {
+        $admin = $this->superAdmin();
+        $truck = $this->vehicle();
+
+        $this->actingAs($admin)->get(route('app.logistics.trips.create', ['direction' => 'transfer']))->assertOk()->assertSee('Plan a transfer');
+        $this->actingAs($admin)->get(route('app.logistics.trips.create'))->assertOk();
+
+        $departs = now(config('nebo.display_timezone'))->addDay()->setTime(8, 0);
+        $this->actingAs($admin)->post(route('app.logistics.trips.store'), [
+            'direction' => 'transfer', 'vehicle_id' => $truck->id, 'origin' => 'Main Warehouse, Lagos', 'destination' => 'Abuja Store',
+            'departs_at' => $departs->format('Y-m-d\TH:i'), 'arrives_at' => $departs->addHours(9)->format('Y-m-d\TH:i'),
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+        $trip = LogisticsTrip::firstOrFail();
+        $this->assertSame(TripDirection::Transfer, $trip->direction);
+        $this->assertNull($trip->event_id);
+
+        foreach ([route('app.logistics.trips.show', $trip), route('app.logistics.trips.edit', $trip), route('app.logistics.index'), route('app.calendar'), route('app.dashboard')] as $url) {
+            $this->actingAs($admin)->get($url)->assertOk();
+        }
+    }
+
     public function test_a_vehicle_cannot_be_on_two_overlapping_trips_or_out_of_service(): void
     {
         $admin = $this->superAdmin();
