@@ -5,14 +5,14 @@
     $oldServices = array_map('strval', (array) old('services', []));
     $sections = ['event' => 'Your event', 'services' => 'Services', 'requirements' => 'Requirements', 'logistics' => 'Logistics', 'budget' => 'Budget', 'contact' => 'Contact'];
 @endphp
-<x-layouts.public title="Event Production Request" description="Request event production from Nebo Stage: staging, rigging, lighting, LED screens, sound, video and livestreaming, anywhere in Nigeria.">
+<x-layouts.public title="Request a Production" description="Request event production or equipment rental from Nebo Stage: stages, truss and roof systems, LED screens, rigging, lighting, sound and crew, anywhere in Nigeria.">
     <section class="relative isolate overflow-hidden bg-ink-950 pt-32 pb-16 text-white sm:pt-40 sm:pb-24">
         <div class="stage-grid absolute inset-0 -z-10"></div>
         <div class="stage-beam absolute inset-0 -z-10"></div>
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <p class="text-xs font-semibold tracking-[0.3em] text-brand-400 uppercase">Event Production Request</p>
-            <h1 class="mt-4 text-4xl leading-tight font-bold sm:text-6xl">LET’S PLAN YOUR EVENT</h1>
-            <p class="mt-5 max-w-2xl text-lg text-ink-300">Tell us about your event and production requirements. Our team will review your request and contact you with a tailored production solution and quotation.</p>
+            <p class="text-xs font-semibold tracking-[0.3em] text-brand-400 uppercase">Production &amp; Equipment Request</p>
+            <h1 class="mt-4 text-4xl leading-tight font-bold sm:text-6xl">LET’S BUILD YOUR STAGE</h1>
+            <p class="mt-5 max-w-2xl text-lg text-ink-300">Tell us about your event and the stage, screens, equipment and crew you need. Our team will review your request and send you a tailored production and equipment rental quotation.</p>
         </div>
     </section>
 

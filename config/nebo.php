@@ -7,7 +7,7 @@ return [
     */
     'brand' => [
         'name' => env('APP_NAME', 'Nebo Stage'),
-        'tagline' => 'Event production & technical services — nationwide',
+        'tagline' => 'Event production & equipment rental — nationwide',
         'primary' => '#CC1F1F',
         'dark' => '#1A1A1A',
     ],

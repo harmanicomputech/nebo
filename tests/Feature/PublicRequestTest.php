@@ -29,7 +29,7 @@ class PublicRequestTest extends TestCase
         $this->serializedItem(['name' => 'Secret Internal Fixture']);
 
         $this->get('/request')->assertOk()
-            ->assertSee('LET’S PLAN YOUR EVENT')->assertSee('SUBMIT YOUR REQUEST')
+            ->assertSee('LET’S BUILD YOUR STAGE')->assertSee('SUBMIT YOUR REQUEST')
             ->assertSee('LED Screens &amp; Displays', false)->assertSee('Award Ceremony')->assertSee('Prefer to discuss')
             ->assertDontSee('Secret Internal Fixture');
     }

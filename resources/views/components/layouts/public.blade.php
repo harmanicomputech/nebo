@@ -3,7 +3,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     @include('partials.head', ['title' => $title])
-    <meta name="description" content="{{ $description ?? 'Nebo Stage — nationwide event production and technical services in Nigeria: staging, rigging, lighting, LED screens, sound, video and livestreaming.' }}">
+    <meta name="description" content="{{ $description ?? 'Nebo Stage — nationwide event production and equipment rental in Nigeria: stages, truss and roof systems, LED screens, rigging, lighting, sound and crew.' }}">
 </head>
 <body class="bg-white">
 <header class="absolute inset-x-0 top-0 z-30" x-data="{ open: false }">
@@ -30,7 +30,7 @@
 <footer class="bg-ink-950 text-white/60">
     <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <x-ui.logo dark />
-        <p class="text-sm">&copy; {{ date('Y') }} {{ config('nebo.brand.name') }}. Event production &amp; technical services — nationwide.</p>
+        <p class="text-sm">&copy; {{ date('Y') }} {{ config('nebo.brand.name') }}. Event production &amp; equipment rental — nationwide.</p>
         <a href="{{ route('login') }}" class="text-xs text-white/60 hover:text-white">Staff sign in</a>
     </div>
 </footer>

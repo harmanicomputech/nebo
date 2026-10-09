@@ -26,7 +26,7 @@
             <div class="max-w-2xl">
                 <p class="text-xs font-semibold tracking-[0.25em] text-brand-600 uppercase">What we do</p>
                 <h2 class="mt-3 text-3xl font-semibold sm:text-4xl">Every technical layer of your event</h2>
-                <p class="mt-4 text-ink-500">From a single conference room to a festival main stage, we plan, supply, install and operate the production.</p>
+                <p class="mt-4 text-ink-500">From a single conference room to a festival main stage, we supply, install and operate the stage, screens and production equipment.</p>
             </div>
             <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($services as $service)
@@ -67,7 +67,7 @@
                 <div class="stage-beam absolute inset-0 opacity-70"></div>
                 <div class="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h2 class="text-3xl font-semibold">Let's plan your event</h2>
+                        <h2 class="text-3xl font-semibold">Let's build your stage</h2>
                         <p class="mt-2 text-ink-300">Talk to the {{ $company['name'] }} production team.</p>
                     </div>
                     <div class="flex flex-col gap-3 sm:flex-row">
