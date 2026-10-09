@@ -24,6 +24,9 @@ ErrorDocument 404 /404.html
     RewriteRule ^index\.php(/.*)?$ / [L,R=301]
     RewriteRule ^wp-(admin|login\.php|content|includes)(/.*)?$ / [L,R=301]
 
+    # Renamed service.
+    RewriteRule ^services/stage-staging/?$ /services/stage-rigging/ [L,R=301]
+
     # Folder addresses always end with a slash.
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^(.*[^/])$ /$1/ [L,R=301]

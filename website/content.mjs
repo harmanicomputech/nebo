@@ -72,9 +72,9 @@ export const steps = [
  */
 export const services = [
     {
-        slug: 'stage-staging',
-        name: 'Stage & Staging',
-        short: 'Stages, risers, decks and catwalks of any size, with roofed outdoor stages.',
+        slug: 'stage-rigging',
+        name: 'Stage & Rigging',
+        short: 'Stages, risers, decks and catwalks of any size, with roofed outdoor stages rigged on truss.',
         tagline: 'The platform every great moment stands on.',
         hero: 'mobile-stage-roof',
         intro: [
@@ -314,10 +314,10 @@ export const gallery = [
     { image: 'zamar-violin-beams', service: 'event-lighting', project: 'zamar-7', alt: 'Zamar 7.0: white beams sweeping over the violin section' },
     { image: 'zamar-beams-crowd', service: 'full-event-production', project: 'zamar-7', alt: 'Zamar 7.0: the audience in front of a stage full of beams' },
     { image: 'zamar-lighting-desk', service: 'event-lighting', project: 'zamar-7', alt: 'Zamar 7.0: the lighting desk running the show' },
-    { image: 'mobile-stage-roof', service: 'stage-staging', alt: 'Outdoor stage with truss roof, side towers and line-array speakers' },
-    { image: 'hall-stage-purple', service: 'stage-staging', alt: 'Hall stage washed in purple and pink light' },
-    { image: 'choir-on-stage', service: 'stage-staging', alt: 'Choir and cast on a stage in front of a painted backdrop' },
-    { image: 'stage-deck-warm', service: 'stage-staging', alt: 'Stage deck lit with warm white spotlights and a lighting desk' },
+    { image: 'mobile-stage-roof', service: 'stage-rigging', alt: 'Outdoor stage with truss roof, side towers and line-array speakers' },
+    { image: 'hall-stage-purple', service: 'stage-rigging', alt: 'Hall stage washed in purple and pink light' },
+    { image: 'choir-on-stage', service: 'stage-rigging', alt: 'Choir and cast on a stage in front of a painted backdrop' },
+    { image: 'stage-deck-warm', service: 'stage-rigging', alt: 'Stage deck lit with warm white spotlights and a lighting desk' },
 
     { image: 'truss-moving-heads', service: 'trussing-rigging', alt: 'Moving head lights rigged on black truss' },
     { image: 'truss-beams-violet', service: 'trussing-rigging', alt: 'Truss towers with PAR cans and speakers in violet light' },
@@ -371,7 +371,7 @@ export const equipment = [
         ],
     },
     {
-        name: 'Roof System', service: 'stage-staging',
+        name: 'Roof System', service: 'stage-rigging',
         items: [
             ['Top section', '6'], ['Sleeve block', '6'], ['Hinge', '24'], ['Steel pipe base with extension feet', '6'],
             ['Aluminium slant support 50 × 1800', '12'], ['Top multi-directional adapter', '2'], ['Customised downhill slope', '4'],
@@ -382,7 +382,7 @@ export const equipment = [
         items: [['Manual chain hoist (galvanised)', '6'], ['Lifting strap 2 t × 3 m', '6']],
     },
     {
-        name: 'Staging', service: 'stage-staging',
+        name: 'Staging', service: 'stage-rigging',
         items: [['Stage panel', '50'], ['Staircase', '2'], ['Aluminium single buckle', '24'], ['Single rack 300 mm wide', '1']],
     },
 ];

@@ -127,6 +127,7 @@ function footer() {
     <div class="container footer-bottom">
         <p>© ${new Date().getFullYear()} ${site.name}. All rights reserved.</p>
         <p>Reliable. Professional. Stunning.</p>
+        <p>Website by <a href="https://techatronagency.com" target="_blank" rel="noopener">Techatron Consulting Limited</a></p>
     </div>
 </footer>
 <a href="${waUrl()}" class="wa-float" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">${icon('whatsapp')}</a>
@@ -250,7 +251,7 @@ function home() {
     const kit = [
         { value: 24, suffix: ' m²', label: 'P3.91 outdoor LED screen', text: '72 panels and 3 NovaStar VX600 Pro processors', href: '/services/led-screens-displays/' },
         { value: 178, suffix: ' m', label: 'Aluminium spigot truss', text: '400 × 600 and 400 × 400, with 350 connectors and 900 pins', href: '/services/trussing-rigging/' },
-        { value: 50, suffix: '', label: 'Stage deck panels', text: 'With staircases and a 6-tower roof system for outdoor stages', href: '/services/stage-staging/' },
+        { value: 50, suffix: '', label: 'Stage deck panels', text: 'With staircases and a 6-tower roof system for outdoor stages', href: '/services/stage-rigging/' },
         { value: 6, suffix: '', label: 'Galvanised chain hoists', text: 'With 2-tonne lifting straps for roofs, screens and flown truss', href: '/services/trussing-rigging/' },
     ];
     const statement = 'At Nebo Stage, we don’t just provide event equipment — we create powerful visual experiences that command attention and leave lasting impressions.';

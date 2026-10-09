@@ -27,7 +27,7 @@ const icons = {
     x: solid('<path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.2l-4.9-6.3L5.4 21H2.3l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/>'),
 
     // Services
-    'svc-stage-staging': stroke('<path d="M2 14h20M4 14v6M20 14v6M12 14v6M3 10l9-6 9 6"/>'),
+    'svc-stage-rigging': stroke('<path d="M2 14h20M4 14v6M20 14v6M12 14v6M3 10l9-6 9 6"/>'),
     'svc-trussing-rigging': stroke('<path d="M3 6h18M3 12h18M3 6l3 6 3-6 3 6 3-6 3 6 3-6M6 12v9M18 12v9"/>'),
     'svc-barricades': stroke('<rect x="3" y="7" width="18" height="8" rx="1"/><path d="M7 7v8M11 7v8M15 7v8M19 7v8M5 15v5M19 15v5"/>'),
     'svc-event-lighting': stroke('<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'),
