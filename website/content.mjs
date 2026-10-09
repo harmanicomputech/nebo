@@ -54,6 +54,18 @@ export const eventTypes = [
     'Festivals & outdoor events', 'Award ceremonies', 'Product launches',
 ];
 
+/** "Equipment for All Events": the kinds of events we equip, shown with icons on the home page. */
+export const eventsWeEquip = [
+    { name: 'Concerts', icon: 'ev-concert', text: 'Main stages, LED walls, beams and sound for live music.' },
+    { name: 'Political Rallies', icon: 'ev-rally', text: 'Big roofed stages and screens the back of the crowd can read.' },
+    { name: 'Church Programmes', icon: 'ev-church', text: 'Crusades, conventions and services, indoors or outdoors.' },
+    { name: 'Corporate', icon: 'ev-corporate', text: 'Conferences, launches and dinners that look sharp on stage and on camera.' },
+    { name: 'Theatre', icon: 'ev-theatre', text: 'Stages, risers and lighting for plays, musicals and school productions.' },
+    { name: 'TV & Films', icon: 'ev-film', text: 'Set lighting, LED backdrops and power for shoots and broadcasts.' },
+    { name: 'Tradeshows', icon: 'ev-tradeshow', text: 'Truss booths, branding frames, displays and lighting.' },
+    { name: 'Special Events', icon: 'ev-special', text: 'Weddings, birthdays, award nights and festivals.' },
+];
+
 export const promise = [
     { icon: 'quality', title: 'Quality', text: 'Reliable, modern and well-maintained equipment, checked before it leaves the warehouse and when it comes back.' },
     { icon: 'safety', title: 'Safety', text: 'Secure installations you can trust: rigging sized for the load, pinned and clipped truss, and stages built on level, supported ground.' },

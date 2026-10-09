@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { departments, equipment, eventTypes, gallery, projects, promise, services, site, steps } from './content.mjs';
+import { departments, equipment, eventsWeEquip, eventTypes, gallery, projects, promise, services, site, steps } from './content.mjs';
 import { icon } from './icons.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -303,6 +303,26 @@ function home() {
     </div>
 </section>
 
+<section class="section events-equip" id="events">
+    <div class="events-equip__glow" aria-hidden="true"></div>
+    <div class="container">
+        <div class="events-equip__head">
+            <p class="eyebrow eyebrow--light" data-reveal>Whatever you're planning</p>
+            <h2 class="display display--xl" data-split>Equipment for All Events.</h2>
+            <p class="lead" data-reveal>From a hall to an open field, we bring the stage, screens, lighting and sound your event needs, with the crew to run it.</p>
+        </div>
+        <ul class="events-equip__grid">${eventsWeEquip.map((e, i) => `<li class="ev-tile" data-reveal style="--stagger:${i % 4}">
+            <span class="ev-tile__icon">${icon(e.icon)}</span>
+            <h3>${esc(e.name)}</h3>
+            <p>${esc(e.text)}</p>
+        </li>`).join('')}</ul>
+        <div class="events-equip__foot" data-reveal>
+            <p>Don't see your event? We equip it too.</p>
+            ${button(requestUrl(), 'Tell us about your event', { variant: 'light' })}
+        </div>
+    </div>
+</section>
+
 <section class="section section--dark" id="services">
     <div class="container">
         <div class="section-head">
@@ -328,7 +348,7 @@ function home() {
 </section>
 
 <section class="section section--tight events">
-    <div class="container">${eyebrow('Equipment for every event')}</div>
+    <div class="container">${eyebrow('Who we work for')}</div>
     ${marquee(eventTypes.slice(0, 6), { cls: 'marquee--big' })}
     ${marquee(eventTypes.slice(5), { reverse: true, cls: 'marquee--big marquee--outline' })}
 </section>

@@ -27,6 +27,16 @@ const icons = {
     tiktok: solid('<path d="M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.1a6.3 6.3 0 1 0 5.4 6.3V8.6a7.9 7.9 0 0 0 4.6 1.5V6.7a4.6 4.6 0 0 1-4.6-4.7Z"/>'),
     x: solid('<path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.2l-4.9-6.3L5.4 21H2.3l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/>'),
 
+    // Event types
+    'ev-concert': stroke('<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/>'),
+    'ev-rally': stroke('<path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M14 8.5a5 5 0 0 1 0 7M17 6a8.5 8.5 0 0 1 0 12"/>'),
+    'ev-church': stroke('<path d="M12 2v4M10 4h4M6 22V11l6-4 6 4v11"/><path d="M3 22h18M10 22v-4a2 2 0 0 1 4 0v4M9.5 12.5h5"/>'),
+    'ev-corporate': stroke('<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20M12 12v2"/>'),
+    'ev-theatre': stroke('<path d="M3 4h8v6a4 4 0 0 1-8 0V4Z"/><path d="M5.5 7.5h.01M8.5 7.5h.01M5.5 11a2 2 0 0 0 3 0"/><path d="M13 9h8v6a4 4 0 0 1-8 0V9Z"/><path d="M15.5 12.5h.01M18.5 12.5h.01M15.5 16.5a2 2 0 0 1 3 0"/>'),
+    'ev-film': stroke('<rect x="2" y="8" width="20" height="13" rx="2"/><path d="M2 8l3-5h4l-3 5M9 8l3-5h4l-3 5M16 8l3-5h3"/>'),
+    'ev-tradeshow': stroke('<path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18M7 21v-7h10v7M7 17h10"/>'),
+    'ev-special': stroke('<path d="m12 2 2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 7.3l5-.7L12 2Z"/><path d="M5 21l2-3M19 21l-2-3M12 21v-3"/>'),
+
     // Equipment departments
     'eq-moving': stroke('<rect x="8" y="2" width="8" height="5" rx="1"/><path d="M6 7h12l-2 6H8L6 7Z"/><circle cx="12" cy="10" r="1.5"/><path d="M10 13l-4 9M14 13l4 9"/>'),
     'eq-par': stroke('<circle cx="12" cy="11" r="7"/><circle cx="12" cy="11" r="3"/><path d="M8 21h8M12 18v3"/>'),
