@@ -39,10 +39,11 @@ const eyebrow = (text) => `<p class="eyebrow" data-reveal>${text}</p>`;
 // ---------------------------------------------------------------- layout
 
 const nav = [
-    { href: '/services/', label: 'Services', mega: true },
-    { href: '/gallery/', label: 'Gallery' },
-    { href: '/equipment/', label: 'Equipment' },
+    { href: '/', label: 'Home' },
     { href: '/about/', label: 'About' },
+    { href: '/services/', label: 'Services', mega: true },
+    { href: '/equipment/', label: 'Equipment' },
+    { href: '/gallery/', label: 'Gallery' },
     { href: '/contact/', label: 'Contact' },
 ];
 
@@ -68,8 +69,7 @@ function header(path) {
 </header>
 <div class="mobile-menu" id="mobile-menu" data-menu hidden>
     <nav aria-label="Mobile">
-        <a href="/" style="--i:0">Home</a>
-        ${nav.map((n, i) => `<a href="${n.href}" style="--i:${i + 1}"${active(n.href)}>${n.label}</a>`).join('')}
+        ${nav.map((n, i) => `<a href="${n.href}" style="--i:${i}"${active(n.href)}>${n.label}</a>`).join('')}
     </nav>
     <div class="mobile-menu__services">${services.map((s) => `<a href="/services/${s.slug}/">${esc(s.name)}</a>`).join('')}</div>
     <div class="mobile-menu__cta">
