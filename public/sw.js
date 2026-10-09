@@ -7,7 +7,7 @@
  | Only static, fingerprinted assets (/build), icons, the brand logo files and
  | the offline page are cached. Bump VERSION whenever icons or logos change.
  */
-const VERSION = 'nebo-v3'; // v3: push notifications (D75)
+const VERSION = 'nebo-v3'; // v3: push notifications (D75); icons moved to /app-icons (Apache reserves /icons/)
 const STATIC_CACHE = `${VERSION}-static`;
 const OFFLINE_URL = '/offline';
 const MAX_ASSETS = 80;
@@ -15,7 +15,7 @@ const MAX_ASSETS = 80;
 self.addEventListener('install', (event) => {
     event.waitUntil((async () => {
         const cache = await caches.open(STATIC_CACHE);
-        await cache.addAll(['/icons/icon-192.png', '/favicon.svg', '/manifest.webmanifest', '/images/brand/nebo-stage-white.svg']);
+        await cache.addAll(['/app-icons/icon-192.png', '/favicon.svg', '/manifest.webmanifest', '/images/brand/nebo-stage-white.svg']);
 
         // Cache the offline page and the CSS/JS/fonts it needs to render.
         const res = await fetch(OFFLINE_URL, { cache: 'no-store', credentials: 'omit' });
@@ -37,7 +37,7 @@ self.addEventListener('activate', (event) => {
     })());
 });
 
-const isStatic = (url) => url.pathname.startsWith('/build/') || url.pathname.startsWith('/icons/') || url.pathname.startsWith('/images/brand/') || url.pathname === '/favicon.svg';
+const isStatic = (url) => url.pathname.startsWith('/build/') || url.pathname.startsWith('/app-icons/') || url.pathname.startsWith('/images/brand/') || url.pathname === '/favicon.svg';
 
 async function trim(cache) {
     const keys = await cache.keys();
@@ -99,8 +99,8 @@ self.addEventListener('push', (event) => {
 
         await self.registration.showNotification(item.title || 'Nebo Stage', {
             body: item.body || '',
-            icon: '/icons/icon-192.png',
-            badge: '/icons/badge-96.png',
+            icon: '/app-icons/icon-192.png',
+            badge: '/app-icons/badge-96.png',
             tag: item.tag || undefined,
             renotify: Boolean(item.tag),
             data: { url: item.url || '/app/notifications' },

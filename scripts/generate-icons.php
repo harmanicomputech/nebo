@@ -4,7 +4,7 @@
  | Generates the brand images from the logo artwork in resources/brand/nebo-stage.png
  | (black ink on transparent, 784×212; the mark is columns 0–319).
  |
- |   public/icons/*.png          PWA, Apple touch and favicon icons: white mark on ink (#1A1A1A)
+ |   public/app-icons/*.png          PWA, Apple touch and favicon icons: white mark on ink (#1A1A1A)
  |   public/favicon.ico          32 px icon for old browsers
  |   public/images/brand/*.png   full logo in ink and in white, for emails (no SVG support)
  |
@@ -93,7 +93,7 @@ $art = imagecreatefrompng("$root/resources/brand/nebo-stage.png");
 imagesavealpha($art, true);
 
 $whiteMark = nebo_crop(nebo_recolour($art, [255, 255, 255]), MARK_WIDTH);
-$icons = "$root/public/icons";
+$icons = "$root/public/app-icons";
 nebo_icon($whiteMark, 192, false, "$icons/icon-192.png");
 nebo_icon($whiteMark, 512, false, "$icons/icon-512.png");
 nebo_icon($whiteMark, 192, true, "$icons/maskable-192.png");

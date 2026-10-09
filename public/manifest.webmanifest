@@ -13,13 +13,13 @@
     "lang": "en-NG",
     "categories": ["business", "productivity"],
     "icons": [
-        { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-        { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-        { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+        { "src": "/app-icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/app-icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/app-icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "/app-icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
     ],
     "shortcuts": [
-        { "name": "Dashboard", "url": "/app", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-        { "name": "Notifications", "url": "/app/notifications", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+        { "name": "Dashboard", "url": "/app", "icons": [{ "src": "/app-icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Notifications", "url": "/app/notifications", "icons": [{ "src": "/app-icons/icon-192.png", "sizes": "192x192" }] }
     ]
 }
