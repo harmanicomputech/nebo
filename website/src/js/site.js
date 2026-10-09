@@ -209,6 +209,20 @@
     }));
     if (groups.length && location.hash) applyFilter(location.hash.slice(1), true);
 
+    /* ---------- equipment jump bar: highlight the group on screen */
+    const jumpLinks = $$('[data-jump] a');
+    if (jumpLinks.length) {
+        const jio = new IntersectionObserver((entries) => entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            jumpLinks.forEach((a) => {
+                const on = a.getAttribute('href') === `#${e.target.id}`;
+                a.classList.toggle('is-current', on);
+                if (on) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduced ? 'auto' : 'smooth' });
+            });
+        }), { rootMargin: '-45% 0px -50% 0px' });
+        jumpLinks.forEach((a) => { const t = document.getElementById(a.getAttribute('href').slice(1)); if (t) jio.observe(t); });
+    }
+
     /* ---------- lightbox for photos and videos */
     const lb = $('[data-lightbox]');
     const stage = $('[data-lb-stage]', lb);

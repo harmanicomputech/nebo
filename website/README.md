@@ -20,7 +20,7 @@ Everything the site says is in `content.mjs`:
 - **`services`**: one entry per service: name, intro, what's included, kit from our inventory, "perfect for" and FAQs. Each `slug` should match the app's service slug so "Book this service" ticks the right box; where it differs, set `bookingSlug` to the app's slug.
 - **`projects`**: our own filmed jobs (videos in `src/media`, posters in `src/images`).
 - **`gallery`**: each photo and the service it belongs to. Photos with a `project` are from our own jobs; they are badged and shown first.
-- **`equipment`**: the counted inventory, copied from `app/Services/Inventory/InitialInventory.php`. Keep the two in step.
+- **`equipment`**: the equipment page: each group's photo, description, key specs and item names (no quantities). `departments` are the other equipment types, with icons.
 
 ### Adding a photo
 

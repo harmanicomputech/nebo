@@ -354,44 +354,50 @@ export const gallery = [
     { image: 'production-banquet', service: 'full-event-production', alt: 'Banquet hall dressed for a corporate dinner with stage screens' },
 ];
 
-/** Equipment we rent, by department. Quantities are our own inventory (2026). */
+/** Equipment we rent, by department. No quantities: availability is confirmed per booking. */
 export const equipment = [
     {
-        name: 'LED Screens', service: 'led-screens-displays',
-        items: [
-            ['P3.91 outdoor LED panel, 0.5 × 0.5 m', '48'],
-            ['P3.91 outdoor LED panel, 0.5 × 1 m', '24'],
-            ['NovaStar VX600 Pro video processor', '3'],
-            ['LED screen hanging hook', '18'],
-        ],
+        slug: 'led-screens', name: 'LED Screens', service: 'led-screens-displays', image: 'led-giant-screen',
+        text: 'Outdoor-rated P3.91 LED panels that build one large wall or a pair of side screens, driven by professional video processors.',
+        specs: ['3.91 mm pixel pitch', 'Outdoor-rated, daylight bright', 'Flown or ground-stacked'],
+        items: ['P3.91 outdoor LED panels, 0.5 × 0.5 m', 'P3.91 outdoor LED panels, 0.5 × 1 m', 'NovaStar VX600 Pro video processors', 'LED screen hanging hooks'],
     },
     {
-        name: 'Trussing', service: 'trussing-rigging',
-        items: [
-            ['Truss 400 × 600, 3 m', '20'], ['Truss 400 × 600, 2 m', '2'], ['Truss 400 × 600, 1 m', '2'],
-            ['Truss 400 × 400, 3 m', '20'], ['Truss 400 × 400, 2 m', '21'], ['Truss 400 × 400, 1.5 m', '2'], ['Truss 400 × 400, 1 m', '7'],
-            ['Egg-shaped connector', '350'], ['Pin with R-clip', '900'], ['Fasteners and joints', '8'],
-        ],
+        slug: 'trussing', name: 'Trussing', service: 'trussing-rigging', image: 'truss-moving-heads',
+        text: 'Aluminium spigot truss for goalposts, towers, backdrops and lighting grids, with every connector, pin and clip it needs.',
+        specs: ['400 × 600 and 400 × 400 profiles', 'Spigot connection', '1 m to 3 m lengths'],
+        items: ['400 × 600 spigot truss: 1 m, 2 m and 3 m', '400 × 400 spigot truss: 1 m, 1.5 m, 2 m and 3 m', 'Egg-shaped spigot connectors', 'Pins with R-clips', 'Fasteners and joints'],
     },
     {
-        name: 'Roof System', service: 'stage-rigging',
-        items: [
-            ['Top section', '6'], ['Sleeve block', '6'], ['Hinge', '24'], ['Steel pipe base with extension feet', '6'],
-            ['Aluminium slant support 50 × 1800', '12'], ['Top multi-directional adapter', '2'], ['Customised downhill slope', '4'],
-        ],
+        slug: 'roof-system', name: 'Roof System', service: 'stage-rigging', image: 'mobile-stage-roof',
+        text: 'A tower-lifted truss roof that covers outdoor stages, with a sloped run-off so the show carries on in sun and rain.',
+        specs: ['Tower-lifted roof grid', 'Sloped for rain run-off', 'Adjustable feet for uneven ground'],
+        items: ['Top sections', 'Sleeve blocks', 'Hinges', 'Steel pipe bases with extension feet', 'Aluminium slant supports, 50 × 1800', 'Top multi-directional adapters', 'Customised downhill slopes'],
     },
     {
-        name: 'Rigging', service: 'trussing-rigging',
-        items: [['Manual chain hoist (galvanised)', '6'], ['Lifting strap 2 t × 3 m', '6']],
+        slug: 'rigging', name: 'Rigging', service: 'trussing-rigging', image: 'truss-pars-speakers',
+        text: 'Hoists and rated straps to lift roof grids, flown truss and LED screens safely into position.',
+        specs: ['Galvanised chain hoists', '2-tonne lifting straps'],
+        items: ['Manual chain hoists (galvanised)', 'Lifting straps, 2 t × 3 m'],
     },
     {
-        name: 'Staging', service: 'stage-rigging',
-        items: [['Stage panel', '50'], ['Staircase', '2'], ['Aluminium single buckle', '24'], ['Single rack 300 mm wide', '1']],
+        slug: 'staging', name: 'Staging', service: 'stage-rigging', image: 'hall-stage-purple',
+        text: 'Modular stage decks that build any shape and size, with access steps and fittings for a safe, tidy finish.',
+        specs: ['Modular decks', 'Any shape and size', 'Indoor and outdoor'],
+        items: ['Stage panels', 'Staircases', 'Aluminium single buckles', 'Single racks, 300 mm wide'],
     },
 ];
 
-/** Departments we supply beyond the counted inventory above (from our equipment list). */
+/** Departments we also supply (from our equipment list), with an icon each. */
 export const departments = [
-    'Moving lights', 'Conventionals & LEDs', 'Followspots', 'Consoles', 'Special FX', 'Dimmers',
-    'Power distribution', 'Cables', 'Road cases', 'Communications',
+    { name: 'Moving lights', icon: 'eq-moving', text: 'Beams, spots and washes that move and change colour.' },
+    { name: 'Conventionals & LEDs', icon: 'eq-par', text: 'Front light, stage washes and audience light.' },
+    { name: 'Followspots', icon: 'eq-spot', text: 'Keep the light on the speaker or headline act.' },
+    { name: 'Consoles', icon: 'eq-console', text: 'Lighting and sound desks, with operators.' },
+    { name: 'Special FX', icon: 'eq-fx', text: 'Haze, lasers and effects where the venue allows.' },
+    { name: 'Dimmers', icon: 'eq-dimmer', text: 'Smooth control for conventional fixtures.' },
+    { name: 'Power distribution', icon: 'eq-power', text: 'Distro planned for the load of the show.' },
+    { name: 'Cables', icon: 'eq-cable', text: 'Power, data and signal runs, neatly routed.' },
+    { name: 'Road cases', icon: 'eq-case', text: 'Equipment that travels protected, state to state.' },
+    { name: 'Communications', icon: 'eq-comms', text: 'Crew talkback so every cue lands on time.' },
 ];

@@ -27,6 +27,19 @@ const icons = {
     tiktok: solid('<path d="M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.1a6.3 6.3 0 1 0 5.4 6.3V8.6a7.9 7.9 0 0 0 4.6 1.5V6.7a4.6 4.6 0 0 1-4.6-4.7Z"/>'),
     x: solid('<path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.2l-4.9-6.3L5.4 21H2.3l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/>'),
 
+    // Equipment departments
+    'eq-moving': stroke('<rect x="8" y="2" width="8" height="5" rx="1"/><path d="M6 7h12l-2 6H8L6 7Z"/><circle cx="12" cy="10" r="1.5"/><path d="M10 13l-4 9M14 13l4 9"/>'),
+    'eq-par': stroke('<circle cx="12" cy="11" r="7"/><circle cx="12" cy="11" r="3"/><path d="M8 21h8M12 18v3"/>'),
+    'eq-spot': stroke('<path d="M3 9l7-3v10l-7-3V9Z"/><path d="M10 8l11-4v14l-11-4"/>'),
+    'eq-console': stroke('<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10v5M10 9v6M14 11v4M18 9v6"/><path d="M5 12h2M9 11h2M13 13h2M17 10h2"/>'),
+    'eq-fx': stroke('<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.5"/>'),
+    'eq-dimmer': stroke('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8v8M12 8v8M16 8v8"/><path d="M6.5 13h3M10.5 10h3M14.5 14h3"/>'),
+    'eq-power': stroke('<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>'),
+    'eq-cable': stroke('<path d="M4 4v4a4 4 0 0 0 4 4h8a4 4 0 0 1 4 4v4"/><rect x="2" y="2" width="4" height="3" rx="1"/><rect x="18" y="19" width="4" height="3" rx="1"/>'),
+    'eq-case': stroke('<rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M2 12h20M7 12v3M17 12v3"/>'),
+    'eq-comms': stroke('<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="14" width="5" height="6" rx="2"/><rect x="17" y="14" width="5" height="6" rx="2"/><path d="M19 20a4 4 0 0 1-4 2h-2"/>'),
+    'grid': stroke('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'),
+
     // Services
     'svc-stage-rigging': stroke('<path d="M2 14h20M4 14v6M20 14v6M12 14v6M3 10l9-6 9 6"/>'),
     'svc-trussing-rigging': stroke('<path d="M3 6h18M3 12h18M3 6l3 6 3-6 3 6 3-6 3 6 3-6M6 12v9M18 12v9"/>'),

@@ -501,28 +501,67 @@ ${groups.map(({ s, items }) => `<section class="section gallery-group" id="${s.s
 }
 
 function equipmentPage() {
-    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens and rigging — delivered, installed and operated by the people who maintain it.', image: 'stage-deck-warm', crumbs: [[null, 'Equipment']], actions: button(requestUrl(), 'Request equipment') })}
+    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens and rigging — delivered, installed and operated by the people who maintain it.', image: 'stage-deck-warm', crumbs: [[null, 'Equipment']], actions: button(requestUrl(), 'Request equipment') + button('#kit', 'Browse the kit', { variant: 'ghost', ico: 'arrow-down' }) })}
 
-<section class="section">
+${marquee(equipment.flatMap((g) => g.items.slice(0, 2).map((t) => t.split(':')[0])), { cls: 'marquee--kit' })}
+
+<nav class="jump" aria-label="Equipment groups" data-jump>
+    <div class="container jump__inner">
+        ${equipment.map((g, i) => `<a href="#${g.slug}"><small>${pad(i + 1)}</small>${esc(g.name)}</a>`).join('')}
+        <a href="#also"><small>${pad(equipment.length + 1)}</small>Lighting, sound &amp; show</a>
+    </div>
+</nav>
+
+<section class="section kit-blocks" id="kit">
     <div class="container">
-        <div class="section-head"><div>${eyebrow('2026 inventory')}<h2 class="display" data-split>Counted, checked, ready.</h2></div>
-        <p class="section-head__aside" data-reveal>Quantities below are our own stock. Ask for what you need and we will confirm availability for your dates.</p></div>
-        <div class="inventory">${equipment.map((g, i) => `<article class="inventory__group" data-reveal style="--stagger:${i % 3}">
-            <header><h3>${esc(g.name)}</h3><a href="/services/${g.service}/">${esc(serviceBySlug[g.service].name)} ${icon('arrow-right')}</a></header>
-            <table><thead><tr><th scope="col">Item</th><th scope="col">Qty</th></tr></thead><tbody>${g.items.map(([n, q]) => `<tr><td>${esc(n)}</td><td>${esc(q)}</td></tr>`).join('')}</tbody></table>
-        </article>`).join('')}</div>
+        <div class="section-head"><div>${eyebrow('Our own kit')}<h2 class="display" data-split>Owned, maintained, show-ready.</h2></div>
+        <p class="section-head__aside" data-reveal>Everything here is ours: checked before it leaves the warehouse and installed by our own crew. Tell us your dates and we will confirm what is available.</p></div>
+        ${equipment.map((g, i) => `<article class="kit-block${i % 2 ? ' kit-block--flip' : ''}" id="${g.slug}">
+            <div class="kit-block__media" data-reveal>
+                ${img(g.image, `${g.name}: ${g.items[0]}`, { sizes: '(min-width: 1024px) 50vw, 100vw' })}
+                <span class="kit-block__num" aria-hidden="true">${pad(i + 1)}</span>
+                <a href="/services/${g.service}/" class="kit-block__service">${icon(`svc-${g.service}`)}${esc(serviceBySlug[g.service].name)}</a>
+            </div>
+            <div class="kit-block__body" data-reveal style="--stagger:1">
+                <p class="eyebrow">${pad(i + 1)} / ${pad(equipment.length)}</p>
+                <h3 class="display display--md">${esc(g.name)}</h3>
+                <p class="prose">${esc(g.text)}</p>
+                <ul class="spec-pills">${g.specs.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+                <ul class="kit-items">${g.items.map((t) => `<li>${icon('check')}<span>${esc(t)}</span></li>`).join('')}</ul>
+                <div class="btn-row">
+                    ${button(requestUrl(serviceBySlug[g.service].bookingSlug ?? g.service), 'Request a quote')}
+                    ${button(`/services/${g.service}/`, serviceBySlug[g.service].name, { variant: 'link' })}
+                </div>
+            </div>
+        </article>`).join('')}
     </div>
 </section>
 
-<section class="section section--dark">
+<section class="section section--dark" id="also">
+    <div class="beams beams--soft" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="container">
         <div class="section-head"><div>${eyebrow('Also available')}<h2 class="display" data-split>Lighting, sound and show equipment.</h2></div>
-        <p class="section-head__aside" data-reveal>Tell us what your event needs and we will put together the right package with crew.</p></div>
-        <ul class="chips" data-reveal>${departments.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
-        <div class="center" data-reveal>${button(requestUrl(), 'Request a quotation')}</div>
+        <p class="section-head__aside" data-reveal>Tell us what your event needs and we will put together the right package, with crew to run it.</p></div>
+        <ul class="dept-grid">${departments.map((d, i) => `<li class="dept" data-reveal data-spotlight style="--stagger:${i % 5}"><span class="dept__icon">${icon(d.icon)}</span><strong>${esc(d.name)}</strong><span>${esc(d.text)}</span></li>`).join('')}</ul>
+    </div>
+</section>
+
+<section class="section kit-cta-wrap">
+    <div class="container">
+        <div class="kit-cta" data-reveal>
+            <div>
+                <p class="eyebrow">Planning an event?</p>
+                <h2 class="display display--md">Send us your stage plan or technical rider.</h2>
+                <p>We will match it to our kit, confirm availability for your dates and send a clear rental quotation, with delivery, installation and crew included.</p>
+            </div>
+            <div class="btn-row">
+                ${button(requestUrl(), 'Request a quotation')}
+                ${button(waUrl('Hello Nebo Stage, I would like to rent equipment for an event.'), 'Ask on WhatsApp', { variant: 'ghost', ico: 'whatsapp', external: true })}
+            </div>
+        </div>
     </div>
 </section>`;
-    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists and stage decks.`, image: 'stage-deck-warm', body });
+    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists, stage decks, lighting and sound.`, image: 'stage-deck-warm', body });
 }
 
 function aboutPage() {
