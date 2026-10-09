@@ -223,7 +223,7 @@ function projectCard(p) {
     <button type="button" class="project__video" data-lb-item data-lb-group="work" data-lb-type="video" data-lb-src="/media/${p.video}.mp4" data-lb-poster="/images/${p.poster}.webp" data-lb-caption="${esc(`${p.name} — ${p.kind}`)}" aria-label="Play the ${esc(p.name)} video">
         <video src="/media/${p.video}.mp4#t=0.1" poster="/images/${p.poster}.webp" muted loop playsinline preload="none" data-autoplay></video>
         <span class="project__play">${icon('play')}</span>
-        <span class="project__live"><i></i>Filmed on the night</span>
+        <span class="project__live"><i></i>Live event footage</span>
     </button>
     <div class="project__body">
         <p class="eyebrow">${esc(p.kind)}</p>
@@ -316,7 +316,7 @@ function home() {
 <section class="section" id="work">
     <div class="container">
         <div class="section-head">
-            <div>${eyebrow('Recent work')}<h2 class="display" data-split>Filmed on the night.</h2></div>
+            <div>${eyebrow('Recent work')}<h2 class="display" data-split>See our work in action.</h2></div>
             <p class="section-head__aside" data-reveal>No stock footage: these are our own shows, shot from the floor while the lights were running.</p>
         </div>
         <div class="projects">${projects.map(projectCard).join('')}</div>
@@ -474,7 +474,7 @@ function galleryPage() {
 
 <section class="section">
     <div class="container">
-        <div class="section-head"><div>${eyebrow('Recent work')}<h2 class="display" data-split>Filmed on the night.</h2></div></div>
+        <div class="section-head"><div>${eyebrow('Recent work')}<h2 class="display" data-split>See our work in action.</h2></div></div>
         <div class="projects">${projects.map(projectCard).join('')}</div>
     </div>
 </section>
@@ -605,7 +605,7 @@ function aboutPage() {
 
 <section class="section">
     <div class="container">
-        <div class="section-head"><div>${eyebrow('Recent work')}<h2 class="display" data-split>Filmed on the night.</h2></div></div>
+        <div class="section-head"><div>${eyebrow('Recent work')}<h2 class="display" data-split>See our work in action.</h2></div></div>
         <div class="projects">${projects.map(projectCard).join('')}</div>
     </div>
 </section>`;

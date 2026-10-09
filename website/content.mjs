@@ -25,7 +25,7 @@ export const site = {
     ],
 };
 
-/** Our own jobs, filmed on the night. Stills from them lead the gallery. */
+/** Our own jobs, filmed live at the event. Stills from them lead the gallery. */
 export const projects = [
     {
         slug: 'comedy-ward',
