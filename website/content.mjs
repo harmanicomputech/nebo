@@ -92,7 +92,7 @@ export const services = [
         bookingSlug: 'stage-staging',
         short: 'Stages, risers, decks and catwalks of any size, with roofed outdoor stages rigged on truss.',
         tagline: 'The platform every great moment stands on.',
-        hero: 'mobile-stage-roof',
+        hero: 'stage-roof-night',
         intro: [
             'A stage is the first thing your audience sees and the last thing they forget. We build stages that are level, solid and safe under performers, choirs, bands and dignitaries, and that look clean from every seat.',
             'From a low platform for a conference speaker to a roofed outdoor stage for a rally or crusade, we design the size and height around your venue, your programme and your audience.',
@@ -122,7 +122,7 @@ export const services = [
         name: 'Trussing & Rigging',
         short: 'Ground support, flown truss, roof grids and rigging for lights and screens.',
         tagline: 'Strong lines. Safe loads. Clean looks.',
-        hero: 'truss-moving-heads',
+        hero: 'truss-led-columns',
         intro: [
             'Truss is the skeleton of your production: it carries the lights, the LED screens, the speakers and the roof. We plan every structure around the load it will hold and build it with the right connectors, pins and clips — every time.',
             'Our 400 × 600 and 400 × 400 aluminium spigot truss builds goalposts, totems, ground-supported towers, roof grids and backdrops, lifted on galvanised chain hoists.',
@@ -174,7 +174,7 @@ export const services = [
         name: 'Event Lighting',
         short: 'Moving lights, washes, followspots and lighting design.',
         tagline: 'Light that sets the mood and steers every eye.',
-        hero: 'truss-red-beams',
+        hero: 'lights-columns-beams',
         intro: [
             'Lighting decides how your event feels and how it looks on camera. We design and run lighting that makes performers pop, keeps faces clear for photos and livestreams, and turns a hall or open field into a show.',
             'Our lighting team plans fixtures, positions and cues around your programme, rigs them on truss and operates them live from the console.',
@@ -199,7 +199,7 @@ export const services = [
         name: 'LED Screens & Displays',
         short: 'Indoor and outdoor LED walls and displays.',
         tagline: 'Bright, sharp screens that the back row can read.',
-        hero: 'led-giant-screen',
+        hero: 'led-wall-hall-beams',
         intro: [
             'LED screens put your speakers, performers, sponsors and content in front of everyone, from the front row to the back of the field. Our P3.91 outdoor panels stay bright in daylight and sharp up close.',
             'We build one large wall or split the panels into side screens, hang them from truss or stack them on ground support, and run them through NovaStar VX600 Pro processors with an operator for your videos, slides and live camera feeds.',
@@ -228,7 +228,7 @@ export const services = [
         name: 'Sound & Audio Production',
         short: 'PA systems, monitoring, mixing and engineers.',
         tagline: 'Every word heard. Every beat felt.',
-        hero: 'sound-dj-led-wall',
+        hero: 'stage-purple-band',
         intro: [
             'If the audience can’t hear it, it didn’t happen. We size the sound system to your venue and crowd so speeches are clear and music hits hard, without feedback or dead spots.',
             'Our engineers set up, tune and mix the system live, with stage monitors for performers and microphones for every speaker, choir and band.',
@@ -296,7 +296,7 @@ export const services = [
         name: 'Full Event Production',
         short: 'End-to-end technical production, planned and run by one team.',
         tagline: 'One team. Every technical layer. Show-ready.',
-        hero: 'production-concert-dancers',
+        hero: 'production-outdoor-screens',
         intro: [
             'Hand us the whole technical side of your event. We plan and deliver the stage, truss and roof, LED screens, lighting, sound, video, livestreaming and barricades as one production — with one point of contact from the first call to the last truck out.',
             'One team means the screen fits the truss, the lights suit the cameras and the sound is checked before your guests arrive. You focus on your programme and your guests; we make it look and sound right.',
@@ -317,8 +317,9 @@ export const services = [
 ];
 
 /**
- * Gallery photos, grouped by service. `service` is the service slug; the first
- * group a photo appears in is its home on the gallery page.
+ * Gallery photos, grouped by service. `real` marks photos from our own events
+ * (`project` links one to a filmed job); they are badged and shown first.
+ * Stock photos remain only for services we have no event photos of yet.
  */
 export const gallery = [
     { image: 'comedy-ward-led-screen', service: 'led-screens-displays', project: 'comedy-ward', alt: 'Comedy Ward: LED screen wall behind the stage with the crowd in front' },
@@ -330,71 +331,91 @@ export const gallery = [
     { image: 'zamar-violin-beams', service: 'event-lighting', project: 'zamar-7', alt: 'Zamar 7.0: white beams sweeping over the violin section' },
     { image: 'zamar-beams-crowd', service: 'full-event-production', project: 'zamar-7', alt: 'Zamar 7.0: the audience in front of a stage full of beams' },
     { image: 'zamar-lighting-desk', service: 'event-lighting', project: 'zamar-7', alt: 'Zamar 7.0: the lighting desk running the show' },
-    { image: 'mobile-stage-roof', service: 'stage-rigging', alt: 'Outdoor stage with truss roof, side towers and line-array speakers' },
-    { image: 'hall-stage-purple', service: 'stage-rigging', alt: 'Hall stage washed in purple and pink light' },
-    { image: 'choir-on-stage', service: 'stage-rigging', alt: 'Choir and cast on a stage in front of a painted backdrop' },
-    { image: 'stage-deck-warm', service: 'stage-rigging', alt: 'Stage deck lit with warm white spotlights and a lighting desk' },
 
-    { image: 'truss-moving-heads', service: 'trussing-rigging', alt: 'Moving head lights rigged on black truss' },
-    { image: 'truss-beams-violet', service: 'trussing-rigging', alt: 'Truss towers with PAR cans and speakers in violet light' },
-    { image: 'truss-red-beams', service: 'trussing-rigging', alt: 'Red light beams cutting through haze under a truss grid' },
-    { image: 'truss-blue-beams', service: 'trussing-rigging', alt: 'Blue and violet beams from lights on a truss grid' },
-    { image: 'truss-pars-speakers', service: 'trussing-rigging', alt: 'Moving lights hanging from truss above a stage' },
-
-    { image: 'lighting-green-tubes', service: 'event-lighting', alt: 'Green beams and LED tubes over a stage' },
-    { image: 'lighting-red-bars', service: 'event-lighting', alt: 'Red LED light bars hanging in a dark venue' },
-    { image: 'lighting-colour-path', service: 'event-lighting', alt: 'Walkway lit with colourful gobo projections at night' },
-    { image: 'lighting-light-stairs', service: 'event-lighting', alt: 'Illuminated steps leading to a wall of lights' },
-    { image: 'lighting-fresnel-blue', service: 'event-lighting', alt: 'Fresnel stage light with barn doors' },
-
-    { image: 'led-giant-screen', service: 'led-screens-displays', alt: 'Large screen in front of a seated audience' },
-    { image: 'led-banquet-screens', service: 'led-screens-displays', alt: 'Banquet hall with screens on both sides of the stage' },
-    { image: 'led-screen-corridor', service: 'led-screens-displays', alt: 'Corridor lined with display screens' },
-    { image: 'led-touch-kiosk', service: 'led-screens-displays', alt: 'Visitor using an interactive display screen' },
-
-    { image: 'sound-dj-led-wall', service: 'sound-audio-production', alt: 'DJ booth with speakers, truss lighting and an LED wall' },
-    { image: 'sound-consoles', service: 'sound-audio-production', alt: 'Mixing and lighting consoles in front of a lit stage' },
+    { image: 'stage-roof-day', service: 'stage-rigging', real: true, alt: 'Our roofed outdoor stage with truss towers and line-array speakers, set up in daylight' },
+    { image: 'stage-roof-night', service: 'stage-rigging', real: true, alt: 'Roofed outdoor stage lit at night for a praise concert, with screens on both sides' },
+    { image: 'stage-outdoor-choir', service: 'stage-rigging', real: true, alt: 'Choir on one of our outdoor stages at night under truss lighting' },
+    { image: 'stage-choir-aerial', service: 'stage-rigging', real: true, alt: 'Aerial view of a choir on stage under our truss rig and LED towers' },
+    { image: 'truss-led-columns', service: 'trussing-rigging', real: true, alt: 'Truss rig with LED columns and beams over a hall stage' },
+    { image: 'crew-truss-led-build', service: 'trussing-rigging', real: true, alt: 'Our crew building an LED wall on its truss frame' },
+    { image: 'crew-bolting-frame', service: 'trussing-rigging', real: true, alt: 'Our crew bolting LED panels to the frame' },
+    { image: 'led-frame-rear', service: 'trussing-rigging', real: true, alt: 'Rear of an LED wall: panels locked onto the steel frame' },
+    { image: 'truss-circle-beams', service: 'trussing-rigging', real: true, alt: 'Performer under a circular truss rig and moving-head beams' },
+    { image: 'lights-columns-beams', service: 'event-lighting', real: true, alt: 'Singers under crossing beams and red and white light columns' },
+    { image: 'lights-red-columns', service: 'event-lighting', real: true, alt: 'Worship team lit by beams with red and white LED columns behind' },
+    { image: 'lights-singer-burst', service: 'event-lighting', real: true, alt: 'Singer in white caught in a burst of beam light' },
+    { image: 'lights-beams-performers', service: 'event-lighting', real: true, alt: 'Performers framed by sharp white beams' },
+    { image: 'lights-orange-beams', service: 'event-lighting', real: true, alt: 'Orange beams fanning over a singer on stage' },
+    { image: 'lights-purple-beams', service: 'event-lighting', real: true, alt: 'Purple wash and white beams over a performer' },
+    { image: 'lights-white-beams-band', service: 'event-lighting', real: true, alt: 'Band and singers under white beams' },
+    { image: 'lights-blue-beams', service: 'event-lighting', real: true, alt: 'Blue beams cutting through haze over the stage' },
+    { image: 'lights-green-beams', service: 'event-lighting', real: true, alt: 'Singers under green-tinted beams and light columns' },
+    { image: 'lights-led-bars', service: 'event-lighting', real: true, alt: 'Wide stage lined with colour LED bars and beams' },
+    { image: 'lights-singer-colour', service: 'event-lighting', real: true, alt: 'Singer in a bright gown under colourful beams and spots' },
+    { image: 'lights-performer-beams', service: 'event-lighting', real: true, alt: 'Performer under white beams on a dark stage' },
+    { image: 'lights-beams-portrait', service: 'event-lighting', real: true, alt: 'Band lit by a fan of white beams' },
+    { image: 'lights-beams-band', service: 'event-lighting', real: true, alt: 'Band and singers under a wall of beams' },
+    { image: 'led-comedy-ward-wide', service: 'led-screens-displays', real: true, project: 'comedy-ward', alt: 'Comedy Ward: the full stage with our LED wall, LED columns and beams' },
+    { image: 'led-side-screens-blue', service: 'led-screens-displays', real: true, alt: 'Packed hall with LED side screens either side of a blue-lit stage' },
+    { image: 'led-side-screens-colour', service: 'led-screens-displays', real: true, alt: 'Stage with LED side screens, truss and colour beams' },
+    { image: 'led-wall-hall-beams', service: 'led-screens-displays', real: true, alt: 'LED wall with beams and a lighting truss over a hall stage' },
+    { image: 'led-wall-cultural', service: 'led-screens-displays', real: true, alt: 'Performers in traditional dress in front of our LED wall' },
+    { image: 'led-backdrop-performer', service: 'led-screens-displays', real: true, alt: 'Performer in front of an LED backdrop under beams' },
+    { image: 'crew-hanging-led', service: 'led-screens-displays', real: true, alt: 'Our crew hanging LED panels on the frame' },
+    { image: 'crew-led-row', service: 'led-screens-displays', real: true, alt: 'Crew lifting a row of LED panels into place' },
+    { image: 'crew-mounting-panel', service: 'led-screens-displays', real: true, alt: 'Crew mounting an LED panel during the build' },
+    { image: 'crew-led-truss', service: 'led-screens-displays', real: true, alt: 'Crew fitting an LED row beside a truss tower' },
+    { image: 'crew-led-panel-wide', service: 'led-screens-displays', real: true, alt: 'Crew positioning a long run of LED panels' },
+    { image: 'led-install-hall', service: 'led-screens-displays', real: true, alt: 'LED wall build under way in a church hall' },
+    { image: 'led-cases-open', service: 'led-screens-displays', real: true, alt: 'LED panels packed in their flight cases, ready to build' },
+    { image: 'led-road-cases', service: 'led-screens-displays', real: true, alt: 'Our branded flight cases on site' },
+    { image: 'led-cases-wall', service: 'led-screens-displays', real: true, alt: 'Flight cases lined up in front of the LED wall build' },
+    { image: 'stage-purple-band', service: 'sound-audio-production', real: true, alt: 'Band and singers on a purple-lit stage with monitor speakers and LED wall' },
+    { image: 'stage-band-led-warm', service: 'sound-audio-production', real: true, alt: 'Live band and singers in front of an LED wall under warm lights' },
+    { image: 'crowd-green-lights', service: 'sound-audio-production', real: true, alt: 'Crowd dancing under green and yellow beams' },
+    { image: 'production-outdoor-screens', service: 'full-event-production', real: true, alt: 'Outdoor production at night with a main stage and two LED side screens' },
+    { image: 'production-aerial-crowd', service: 'full-event-production', real: true, alt: 'Aerial view of a large crowd in front of an outdoor stage at night' },
+    { image: 'production-outdoor-wide', service: 'full-event-production', real: true, alt: 'Wide view of an outdoor stage with side screens and truss lighting' },
+    { image: 'production-hall-crowd', service: 'full-event-production', real: true, alt: 'Hall full of guests in front of the stage, LED wall and lighting grid' },
+    { image: 'production-hall-blue', service: 'full-event-production', real: true, alt: 'Hall production with LED wall, blue wash and beams over the crowd' },
+    { image: 'production-choir-yellow', service: 'full-event-production', real: true, alt: 'Choir in front of an LED wall under yellow beams' },
+    { image: 'production-choir-wide', service: 'full-event-production', real: true, alt: 'Wide view of a choir on stage with LED wall and beams' },
 
     { image: 'video-tv-studio', service: 'photography-videography', alt: 'Camera crew filming a studio production' },
     { image: 'video-camera-operator', service: 'photography-videography', alt: 'Camera operator filming a studio interview' },
     { image: 'video-studio-lights', service: 'photography-videography', alt: 'Studio lights set up for a video shoot' },
     { image: 'video-fresnel-green', service: 'photography-videography', alt: 'Film light in front of a green screen' },
-
     { image: 'stream-green-screen-hall', service: 'livestreaming', alt: 'Production road case and green-screen monitor in a hall' },
-
-    { image: 'production-concert-dancers', service: 'full-event-production', alt: 'Performers dancing on a lit concert stage in front of the crowd' },
-    { image: 'production-crowd', service: 'full-event-production', alt: 'Crowd with hands raised in front of a lit stage' },
-    { image: 'production-banquet', service: 'full-event-production', alt: 'Banquet hall dressed for a corporate dinner with stage screens' },
 ];
 
 /** Equipment we rent, by department. No quantities: availability is confirmed per booking. */
 export const equipment = [
     {
-        slug: 'led-screens', icon: 'svc-led-screens-displays', tagline: 'Screens & video processing', name: 'LED Screens', service: 'led-screens-displays', image: 'led-giant-screen',
+        slug: 'led-screens', icon: 'svc-led-screens-displays', tagline: 'Screens & video processing', name: 'LED Screens', service: 'led-screens-displays', image: 'crew-hanging-led',
         text: 'Outdoor-rated P3.91 LED panels that build one large wall or a pair of side screens, driven by professional video processors.',
         specs: ['3.91 mm pixel pitch', 'Outdoor-rated, daylight bright', 'Flown or ground-stacked'],
         items: ['P3.91 outdoor LED panels, 0.5 × 0.5 m', 'P3.91 outdoor LED panels, 0.5 × 1 m', 'NovaStar VX600 Pro video processors', 'LED screen hanging hooks'],
     },
     {
-        slug: 'trussing', icon: 'svc-trussing-rigging', tagline: 'Spigot truss & connectors', name: 'Trussing', service: 'trussing-rigging', image: 'truss-moving-heads',
+        slug: 'trussing', icon: 'svc-trussing-rigging', tagline: 'Spigot truss & connectors', name: 'Trussing', service: 'trussing-rigging', image: 'crew-truss-led-build',
         text: 'Aluminium spigot truss for goalposts, towers, backdrops and lighting grids, with every connector, pin and clip it needs.',
         specs: ['400 × 600 and 400 × 400 profiles', 'Spigot connection', '1 m to 3 m lengths'],
         items: ['400 × 600 spigot truss: 1 m, 2 m and 3 m', '400 × 400 spigot truss: 1 m, 1.5 m, 2 m and 3 m', 'Egg-shaped spigot connectors', 'Pins with R-clips', 'Fasteners and joints'],
     },
     {
-        slug: 'roof-system', icon: 'eq-roof', tagline: 'Covered outdoor stages', name: 'Roof System', service: 'stage-rigging', image: 'mobile-stage-roof',
+        slug: 'roof-system', icon: 'eq-roof', tagline: 'Covered outdoor stages', name: 'Roof System', service: 'stage-rigging', image: 'stage-roof-day',
         text: 'A tower-lifted truss roof that covers outdoor stages, with a sloped run-off so the show carries on in sun and rain.',
         specs: ['Tower-lifted roof grid', 'Sloped for rain run-off', 'Adjustable feet for uneven ground'],
         items: ['Top sections', 'Sleeve blocks', 'Hinges', 'Steel pipe bases with extension feet', 'Aluminium slant supports, 50 × 1800', 'Top multi-directional adapters', 'Customised downhill slopes'],
     },
     {
-        slug: 'rigging', icon: 'eq-hoist', tagline: 'Hoists & lifting straps', name: 'Rigging', service: 'trussing-rigging', image: 'truss-pars-speakers',
+        slug: 'rigging', icon: 'eq-hoist', tagline: 'Hoists & lifting straps', name: 'Rigging', service: 'trussing-rigging', image: 'led-frame-rear',
         text: 'Hoists and rated straps to lift roof grids, flown truss and LED screens safely into position.',
         specs: ['Galvanised chain hoists', '2-tonne lifting straps'],
         items: ['Manual chain hoists (galvanised)', 'Lifting straps, 2 t × 3 m'],
     },
     {
-        slug: 'staging', icon: 'svc-stage-rigging', tagline: 'Decks, steps & fittings', name: 'Staging', service: 'stage-rigging', image: 'hall-stage-purple',
+        slug: 'staging', icon: 'svc-stage-rigging', tagline: 'Decks, steps & fittings', name: 'Staging', service: 'stage-rigging', image: 'stage-outdoor-choir',
         text: 'Modular stage decks that build any shape and size, with access steps and fittings for a safe, tidy finish.',
         specs: ['Modular decks', 'Any shape and size', 'Indoor and outdoor'],
         items: ['Stage panels', 'Staircases', 'Aluminium single buckles', 'Single racks, 300 mm wide'],

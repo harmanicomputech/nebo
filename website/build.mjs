@@ -142,11 +142,11 @@ function footer() {
 
 let assets = {};
 
-function layout({ path, title, description = site.description, image = 'mobile-stage-roof', body, schema = [] }) {
+function layout({ path, title, description = site.description, image = 'led-comedy-ward-wide', body, schema = [] }) {
     const fullTitle = path === '/' ? `${site.name} — Stages, LED Screens, Lighting & Sound, Nationwide` : `${title} | ${site.name}`;
     const org = {
         '@context': 'https://schema.org', '@type': 'LocalBusiness', name: site.name, url: site.url, email: site.email, telephone: site.phone,
-        image: site.url + largest('mobile-stage-roof'), logo: `${site.url}/brand/nebo-stage.png`, description: site.description,
+        image: site.url + largest('led-comedy-ward-wide'), logo: `${site.url}/brand/nebo-stage.png`, description: site.description,
         areaServed: { '@type': 'Country', name: 'Nigeria' }, sameAs: site.socials.map((s) => s.url),
     };
     return `<!DOCTYPE html>
@@ -237,7 +237,7 @@ function projectCard(p) {
 function galleryGrid(items, group) {
     return `<div class="masonry">${items.map((g) => `<button type="button" class="masonry__item" data-reveal data-lb-item data-lb-group="${group}" data-lb-src="${largest(g.image)}" data-lb-caption="${esc(g.alt)}">
         ${img(g.image, g.alt, { sizes: '(min-width: 1024px) 33vw, 50vw' })}
-        ${g.project ? `<span class="badge-real">${icon('play')}${esc(projectBySlug[g.project].name)}</span>` : ''}
+        ${g.project ? `<span class="badge-real">${icon('play')}${esc(projectBySlug[g.project].name)}</span>` : g.real ? `<span class="badge-real">${icon('check')}Our event</span>` : ''}
         <span class="masonry__zoom">${icon('expand')}</span>
     </button>`).join('')}</div>`;
 }
@@ -247,7 +247,7 @@ const marquee = (items, { reverse = false, cls = '' } = {}) => `<div class="marq
 // ---------------------------------------------------------------- pages
 
 function home() {
-    const heroSlides = ['production-concert-dancers', 'truss-red-beams', 'mobile-stage-roof', 'lighting-green-tubes', 'sound-dj-led-wall'];
+    const heroSlides = ['led-comedy-ward-wide', 'production-outdoor-screens', 'led-side-screens-blue', 'stage-roof-night', 'led-wall-hall-beams'];
     const kit = [
         { value: 24, suffix: ' m²', label: 'P3.91 outdoor LED screen', text: '72 panels and 3 NovaStar VX600 Pro processors', href: '/services/led-screens-displays/' },
         { value: 178, suffix: ' m', label: 'Aluminium spigot truss', text: '400 × 600 and 400 × 400, with 350 connectors and 900 pins', href: '/services/trussing-rigging/' },
@@ -255,8 +255,8 @@ function home() {
         { value: 6, suffix: '', label: 'Galvanised chain hoists', text: 'With 2-tonne lifting straps for roofs, screens and flown truss', href: '/services/trussing-rigging/' },
     ];
     const statement = 'At Nebo Stage, we don’t just provide event equipment — we create powerful visual experiences that command attention and leave lasting impressions.';
-    const realStills = gallery.filter((g) => g.project);
-    const strip = [...realStills, ...gallery.filter((g) => !g.project).slice(0, 8)];
+    const stripPicks = ['led-comedy-ward-wide', 'stage-roof-night', 'lights-columns-beams', 'production-outdoor-screens', 'crew-hanging-led', 'lights-singer-colour', 'truss-led-columns', 'led-side-screens-blue', 'stage-outdoor-choir', 'lights-orange-beams', 'led-road-cases', 'production-hall-crowd', 'stage-purple-band', 'zamar-orchestra-conductor'];
+    const strip = stripPicks.map((name) => gallery.find((g) => g.image === name)).filter(Boolean);
 
     const body = `
 <section class="stage-hero">
@@ -381,7 +381,7 @@ function home() {
         <div>${eyebrow('Gallery')}<h2 class="display" data-split>Light, steel and screens.</h2></div>
         ${button('/gallery/', 'Open the gallery', { variant: 'ghost' })}
     </div>
-    <div class="strip" data-drag>${strip.map((g) => `<a href="/gallery/#${g.service}" class="strip__item">${img(g.image, g.alt, { sizes: '360px' })}<span>${esc(g.project ? projectBySlug[g.project].name : serviceBySlug[g.service].name)}</span></a>`).join('')}</div>
+    <div class="strip" data-drag>${strip.map((g) => `<a href="/gallery/#${g.service}" class="strip__item">${img(g.image, g.alt, { sizes: '420px' })}<span>${esc(g.project ? projectBySlug[g.project].name : serviceBySlug[g.service].name)}</span></a>`).join('')}</div>
 </section>
 
 <section class="section">
@@ -397,7 +397,7 @@ function home() {
 }
 
 function servicesIndex() {
-    const body = `${pageHero({ eyebrowText: 'Services', title: 'Production, end to end.', lead: 'Nine services, one crew. Book a single service or let us run the whole technical production of your event.', image: 'truss-blue-beams', crumbs: [[null, 'Services']], actions: button(requestUrl(), 'Book now') })}
+    const body = `${pageHero({ eyebrowText: 'Services', title: 'Production, end to end.', lead: 'Nine services, one crew. Book a single service or let us run the whole technical production of your event.', image: 'led-side-screens-colour', crumbs: [[null, 'Services']], actions: button(requestUrl(), 'Book now') })}
 <section class="section">
     <div class="container">
         <div class="service-grid service-grid--index">${services.map((s, i) => serviceCard(s, i)).join('')}</div>
@@ -407,7 +407,7 @@ function servicesIndex() {
     <div class="container">${eyebrow('Who we work for')}</div>
     ${marquee(eventTypes, { cls: 'marquee--big' })}
 </section>`;
-    return layout({ path: '/services/', title: 'Services', description: `Event production services from ${site.name}: ${services.map((s) => s.name).join(', ')}. Nationwide in Nigeria.`, image: 'truss-blue-beams', body });
+    return layout({ path: '/services/', title: 'Services', description: `Event production services from ${site.name}: ${services.map((s) => s.name).join(', ')}. Nationwide in Nigeria.`, image: 'led-side-screens-colour', body });
 }
 
 function servicePage(s, i) {
@@ -490,7 +490,7 @@ ${s.faqs.length ? `<section class="section">
 
 function galleryPage() {
     const groups = services.map((s) => ({ s, items: gallery.filter((g) => g.service === s.slug) })).filter((g) => g.items.length);
-    const body = `${pageHero({ eyebrowText: 'Gallery', title: 'The work, by service.', lead: 'Our own shows first, then the looks we build — grouped by service so you can find exactly what you need.', image: 'truss-beams-violet', crumbs: [[null, 'Gallery']] })}
+    const body = `${pageHero({ eyebrowText: 'Gallery', title: 'The work, by service.', lead: 'Our own shows first, then the looks we build — grouped by service so you can find exactly what you need.', image: 'production-hall-crowd', crumbs: [[null, 'Gallery']] })}
 
 <section class="section">
     <div class="container">
@@ -517,11 +517,11 @@ ${groups.map(({ s, items }) => `<section class="section gallery-group" id="${s.s
     </div>
 </section>`).join('\n')}
 </div>`;
-    return layout({ path: '/gallery/', title: 'Gallery', description: `Photos and videos of ${site.name} stages, truss, LED screens, lighting and sound, grouped by service.`, image: 'truss-beams-violet', body });
+    return layout({ path: '/gallery/', title: 'Gallery', description: `Photos and videos of ${site.name} stages, truss, LED screens, lighting and sound, grouped by service.`, image: 'production-hall-crowd', body });
 }
 
 function equipmentPage() {
-    const show = { slug: 'lighting-sound-show', icon: 'eq-moving', tagline: 'Lighting, sound & effects', name: 'Lighting, Sound & Show', service: 'event-lighting', image: 'truss-red-beams',
+    const show = { slug: 'lighting-sound-show', icon: 'eq-moving', tagline: 'Lighting, sound & effects', name: 'Lighting, Sound & Show', service: 'event-lighting', image: 'lights-red-columns',
         text: 'Beyond our stages, truss and screens, we supply the lighting, sound and show equipment your event needs, with operators to run it.',
         specs: ['Supplied with operators', 'Designed for your venue'], items: departments.map((d) => ({ name: d.name, icon: d.icon, text: d.text })) };
     const groups = [...equipment.map((g) => ({ ...g, items: g.items.map((t) => ({ name: t, icon: g.icon })) })), show];
@@ -538,7 +538,7 @@ function equipmentPage() {
         { icon: 'map', title: 'Nationwide', text: 'Our equipment travels to events in every state.' },
     ];
 
-    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens, rigging, lighting and sound — delivered, installed and operated by the people who maintain it.', image: 'stage-deck-warm', crumbs: [[null, 'Equipment']], actions: button('#catalogue', 'Browse the catalogue', { ico: 'arrow-down' }) + button(requestUrl(), 'Request a quote', { variant: 'ghost' }) })}
+    const body = `${pageHero({ eyebrowText: 'Equipment', title: 'Rent the kit. Get the crew.', lead: 'Our own stages, truss, roof systems, LED screens, rigging, lighting and sound — delivered, installed and operated by the people who maintain it.', image: 'led-cases-wall', crumbs: [[null, 'Equipment']], actions: button('#catalogue', 'Browse the catalogue', { ico: 'arrow-down' }) + button(requestUrl(), 'Request a quote', { variant: 'ghost' }) })}
 
 <section class="section catalogue" id="catalogue">
     <div class="container">
@@ -608,11 +608,11 @@ function equipmentPage() {
         </div>
     </div>
 </section>`;
-    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists, stage decks, lighting, sound and show equipment.`, image: 'stage-deck-warm', body });
+    return layout({ path: '/equipment/', title: 'Equipment', description: `Equipment for rent from ${site.name}: P3.91 outdoor LED screens, NovaStar processors, 400 × 600 and 400 × 400 truss, roof systems, chain hoists, stage decks, lighting, sound and show equipment.`, image: 'led-cases-wall', body });
 }
 
 function aboutPage() {
-    const body = `${pageHero({ eyebrowText: 'About us', title: 'Reliable. Professional. Stunning.', lead: 'A nationwide event production and equipment rental company that turns ordinary spaces into unforgettable experiences.', image: 'mobile-stage-roof', crumbs: [[null, 'About']] })}
+    const body = `${pageHero({ eyebrowText: 'About us', title: 'Reliable. Professional. Stunning.', lead: 'A nationwide event production and equipment rental company that turns ordinary spaces into unforgettable experiences.', image: 'led-side-screens-blue', crumbs: [[null, 'About']] })}
 
 <section class="statement container">
     ${eyebrow('Our story')}
@@ -626,8 +626,16 @@ function aboutPage() {
             <p class="prose" data-reveal>Whether it’s a corporate function, concert, church programme, wedding or political campaign, our team ensures flawless execution from start to finish. With a strong commitment to quality, safety and precision, Nebo Stage has become a trusted partner for event planners, organisations and brands looking to deliver excellence.</p>
         </div>
         <div class="split__aside about-media" data-reveal>
-            ${img('production-concert-dancers', 'Performers on a lit concert stage', { sizes: '(min-width: 1024px) 40vw, 100vw' })}
+            ${img('lights-singer-colour', 'Singer in a bright gown under colourful beams on one of our stages', { sizes: '(min-width: 1024px) 40vw, 100vw' })}
         </div>
+    </div>
+</section>
+
+<section class="section section--dark build">
+    <div class="container">
+        <div class="section-head"><div>${eyebrow('Behind the build')}<h2 class="display" data-split>Our crew, our kit, on site.</h2></div>
+        <p class="section-head__aside" data-reveal>Before the lights go up, our own technicians unload, rig and test every panel, truss and fixture. These are our people at work.</p></div>
+        <div class="build__mosaic">${['crew-hanging-led', 'led-road-cases', 'crew-bolting-frame', 'crew-truss-led-build', 'led-frame-rear', 'led-cases-open'].map((name, i) => { const g = gallery.find((x) => x.image === name); return `<button type="button" class="build__item build__item--${i + 1}" data-reveal style="--stagger:${i % 3}" data-lb-item data-lb-group="build" data-lb-src="${largest(name)}" data-lb-caption="${esc(g.alt)}">${img(name, g.alt, { sizes: '(min-width: 1024px) 40vw, 100vw' })}<span class="masonry__zoom">${icon('expand')}</span></button>`; }).join('')}</div>
     </div>
 </section>
 
@@ -666,7 +674,7 @@ function contactPage() {
         { ico: 'mail', label: 'Email', value: site.email, href: `mailto:${site.email}` },
         { ico: 'map', label: 'Where we work', value: 'Nationwide — every state in Nigeria' },
     ];
-    const body = `${pageHero({ eyebrowText: 'Contact', title: 'Let’s talk about your event.', lead: 'Tell us the date, the venue and what you need. We will come back with a tailored production and equipment rental quotation.', image: 'production-crowd', crumbs: [[null, 'Contact']] })}
+    const body = `${pageHero({ eyebrowText: 'Contact', title: 'Let’s talk about your event.', lead: 'Tell us the date, the venue and what you need. We will come back with a tailored production and equipment rental quotation.', image: 'production-aerial-crowd', crumbs: [[null, 'Contact']] })}
 
 <section class="section">
     <div class="container contact-grid">
@@ -692,7 +700,7 @@ function contactPage() {
         </div>
     </div>
 </section>`;
-    return layout({ path: '/contact/', title: 'Contact', description: `Contact ${site.name}: call ${site.phone}, email ${site.email} or request a quotation online. Available nationwide.`, image: 'production-crowd', body });
+    return layout({ path: '/contact/', title: 'Contact', description: `Contact ${site.name}: call ${site.phone}, email ${site.email} or request a quotation online. Available nationwide.`, image: 'production-aerial-crowd', body });
 }
 
 function notFound() {
