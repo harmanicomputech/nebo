@@ -59,11 +59,12 @@ export const eventsWeEquip = [
     { name: 'Concerts', icon: 'ev-concert', text: 'Main stages, LED walls, beams and sound for live music.' },
     { name: 'Political Rallies', icon: 'ev-rally', text: 'Big roofed stages and screens the back of the crowd can read.' },
     { name: 'Church Programmes', icon: 'ev-church', text: 'Crusades, conventions and services, indoors or outdoors.' },
+    { name: 'Weddings', icon: 'ev-wedding', text: 'Ceremony and reception stages, lighting, screens and sound for the big day.' },
     { name: 'Corporate', icon: 'ev-corporate', text: 'Conferences, launches and dinners that look sharp on stage and on camera.' },
     { name: 'Theatre', icon: 'ev-theatre', text: 'Stages, risers and lighting for plays, musicals and school productions.' },
     { name: 'TV & Films', icon: 'ev-film', text: 'Set lighting, LED backdrops and power for shoots and broadcasts.' },
     { name: 'Tradeshows', icon: 'ev-tradeshow', text: 'Truss booths, branding frames, displays and lighting.' },
-    { name: 'Special Events', icon: 'ev-special', text: 'Weddings, birthdays, award nights and festivals.' },
+    { name: 'Special Events', icon: 'ev-special', text: 'Birthdays, award nights, festivals and parties.' },
 ];
 
 export const promise = [
