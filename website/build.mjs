@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { departments, equipment, eventsWeEquip, eventTypes, gallery, projects, promise, services, site, steps } from './content.mjs';
 import { icon } from './icons.mjs';
+import { policy } from './privacy.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const src = join(root, 'src');
@@ -127,6 +128,7 @@ function footer() {
     <div class="container footer-bottom">
         <p>© ${new Date().getFullYear()} ${site.name}. All rights reserved.</p>
         <p>Reliable. Professional. Stunning.</p>
+        <p><a href="/privacy/">Privacy policy</a></p>
         <p>Website by <a href="https://techatronagency.com" target="_blank" rel="noopener">Techatron Consulting Limited</a></p>
     </div>
 </footer>
@@ -703,6 +705,28 @@ function contactPage() {
     return layout({ path: '/contact/', title: 'Contact', description: `Contact ${site.name}: call ${site.phone}, email ${site.email} or request a quotation online. Available nationwide.`, image: 'production-aerial-crowd', body });
 }
 
+function privacyPage() {
+    const body = `<section class="policy-hero">
+    <div class="beams beams--soft" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span aria-current="page">Privacy policy</span></nav>
+        <p class="eyebrow eyebrow--light">Last updated ${esc(policy.updated)}</p>
+        <h1 class="display display--xl">Privacy policy</h1>
+        <p class="lead">${esc(policy.intro)}</p>
+    </div>
+</section>
+<section class="section policy">
+    <div class="container policy__layout">
+        <nav class="policy__toc" aria-label="On this page">
+            <p>On this page</p>
+            <ol>${policy.sections.map((sec) => `<li><a href="#${sec.id}">${esc(sec.title)}</a></li>`).join('')}</ol>
+        </nav>
+        <div class="policy__body">${policy.sections.map((sec, i) => `<section id="${sec.id}"><h2><span>${pad(i + 1)}</span>${esc(sec.title)}</h2>${sec.html}</section>`).join('')}</div>
+    </div>
+</section>`;
+    return layout({ path: '/privacy/', title: 'Privacy Policy', description: `How ${site.name} collects, uses and protects personal information in the Nebo Stage operations app and on this website.`, body });
+}
+
 function notFound() {
     const body = `<section class="hero hero--small">
     <div class="beams" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -743,6 +767,7 @@ const pages = {
     '/equipment/': equipmentPage(),
     '/about/': aboutPage(),
     '/contact/': contactPage(),
+    '/privacy/': privacyPage(),
 };
 
 for (const [path, html] of Object.entries(pages)) {
